@@ -5,7 +5,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Varsayılan / Fallback projeler (Eğer API çekilemezse veya local'de çalıştırılıyorsa)
     // Sadece klasör adını ekleyin.
     const fallbackProjects = [
-        'havadurumu'
+        'havadurumu',
+        'avmarket'
     ];
     
     try {
