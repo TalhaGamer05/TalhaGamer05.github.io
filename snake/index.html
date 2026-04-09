@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Snake Oyunu | t4lhster</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css">
+
+    <meta name="description" content="Yapay zeka destekli, yenilmez algoritmaya sahip modern Snake oyunu.">
+</head>
+<body>
+    <div class="game-wrapper">
+        <header class="game-header">
+            <h1>🐍 SNAKE</h1>
+            <div class="stats-bar">
+                <div class="stat-card">
+                    <span class="stat-label">SKOR</span>
+                    <span class="stat-value" id="score">0</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-label">EN YÜKSEK</span>
+                    <span class="stat-value" id="highScore">0</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-label">UZUNLUK</span>
+                    <span class="stat-value" id="length">3</span>
+                </div>
+                <div class="stat-card ai-card" id="aiIndicator">
+                    <span class="stat-label">YAPAY ZEKA</span>
+                    <span class="stat-value ai-status" id="aiStatus">KAPALI</span>
+                </div>
+            </div>
+        </header>
+
+        <main class="game-area">
+            <canvas id="gameCanvas"></canvas>
+
+            <div class="game-overlay" id="startOverlay">
+                <div class="overlay-content">
+                    <h2>🐍 SNAKE</h2>
+                    <p>Yön tuşları veya WASD ile oynayın</p>
+                    <p class="hint">Duvarlardan ışınlanırsınız!</p>
+                    <p class="ai-hint">⚡ 10 saniye oynamazsanız<br>yenilmez yapay zeka devralır</p>
+                    <button id="startBtn" class="start-btn">BAŞLA</button>
+                </div>
+            </div>
+        </main>
+
+        <!-- Mobil Kontroller -->
+        <div class="touch-controls" id="touchControls">
+            <button class="touch-btn up" data-dir="up">▲</button>
+            <button class="touch-btn left" data-dir="left">◀</button>
+            <button class="touch-btn right" data-dir="right">▶</button>
+            <button class="touch-btn down" data-dir="down">▼</button>
+        </div>
+
+        <footer class="game-footer">
+            <p>&copy; 2026 t4lhster — Yapay zeka ile güçlendirilmiş Snake</p>
+        </footer>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+</html>

@@ -6,7 +6,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Sadece klasör adını ekleyin.
     const fallbackProjects = [
         'havadurumu',
-        'avmarket'
+        'avmarket',
+        'snake'
     ];
     
     try {
