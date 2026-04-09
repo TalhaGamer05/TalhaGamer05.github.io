@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>spider solitaire</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🃏</text></svg>">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <a href="../index.html" style="position:fixed;top:12px;left:12px;z-index:9999;background:rgba(0,0,0,0.6);color:#ccc;text-decoration:none;padding:7px 14px;border-radius:8px;font-size:0.8rem;backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,0.08);font-family:sans-serif">← ana sayfa</a>
+
+    <div class="ust-bar">
+        <div class="sol">
+            <h1>🃏 spider solitaire</h1>
+        </div>
+        <div class="bilgiler">
+            <div class="bilgi-kutu"><span class="etiket">skor</span><span class="deger" id="skorText">500</span></div>
+            <div class="bilgi-kutu"><span class="etiket">hamle</span><span class="deger" id="hamleText">0</span></div>
+            <div class="bilgi-kutu"><span class="etiket">süre</span><span class="deger" id="sureText">0:00</span></div>
+            <div class="bilgi-kutu"><span class="etiket">tamamlanan</span><span class="deger" id="tamamText">0/8</span></div>
+        </div>
+        <div class="sag">
+            <select id="zorlukSec" onchange="zorluguDegistir()">
+                <option value="1">1 takım (kolay)</option>
+                <option value="2">2 takım (orta)</option>
+                <option value="4">4 takım (zor)</option>
+            </select>
+            <button onclick="geriAl()">↩ geri</button>
+            <button onclick="yeniOyun()">🔄 yeni oyun</button>
+        </div>
+    </div>
+
+    <div id="masaAlani">
+        <div id="masa">
+            <!-- 10 kolon js ile oluşturulacak -->
+        </div>
+
+        <div id="stokAlani" onclick="stokDagit()">
+            <div class="stok-desteler" id="stokGorsel"></div>
+            <span id="stokSayac">5 dağıtım kaldı</span>
+        </div>
+
+        <div id="tamamlananAlan">
+            <!-- tamamlanan seriler buraya -->
+        </div>
+    </div>
+
+    <!-- kazanma ekranı -->
+    <div class="kazanma-ekrani" id="kazanmaEkrani" style="display:none">
+        <div class="kazanma-icerik">
+            <h2>🎉 tebrikler!</h2>
+            <p>oyunu kazandın!</p>
+            <div class="kazanma-bilgi">
+                <span>skor: <strong id="sonSkor">0</strong></span>
+                <span>hamle: <strong id="sonHamle">0</strong></span>
+                <span>süre: <strong id="sonSure">0:00</strong></span>
+            </div>
+            <button onclick="yeniOyun()">tekrar oyna</button>
+        </div>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+</html>

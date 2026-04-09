@@ -11,7 +11,8 @@ document.addEventListener('DOMContentLoaded', function() {
         'gorevler',
         'chatbot',
         'yazihizi',
-        'pomodoro'
+        'pomodoro',
+        'solitaire'
     ];
 
     // github apiden çekmeyi dene, olmazsa yukarıdaki listeyi kullan
