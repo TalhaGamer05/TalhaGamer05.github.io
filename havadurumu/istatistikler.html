@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>İstatistikler - Hava Durumu Panosu</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <video autoplay loop muted id="bg-video" class="bg-video">
+        <source id="bg-video-source" src="videolar/bulutlu.mp4" type="video/mp4">
+    </video>
+
+    <nav class="main-nav">
+        <ul>
+            <li><a href="index.html">Ana Sayfa</a></li>
+            <li><a href="hakkimizda.html">Hakkımızda</a></li>
+            <li><a href="istatistikler.html" class="active">İstatistikler</a></li>
+            <li><a href="galeri.html">Galeri</a></li>
+            <li><a href="iletisim.html">İletişim</a></li>
+            <li><a href="nasil-yapildi.html">Nasıl Yapıldı?</a></li>
+        </ul>
+    </nav>
+
+    <main>
+        <section class="content-dashboard">
+            <canvas id="glassCanvas"></canvas>
+            <div class="glass-overlay"></div>
+            
+            <div class="content-scroll">
+                <h2>Büyük Şehirler Hava Durumu Analizi</h2>
+                <p>Türkiye'deki büyükşehir verilerinin grafiksel analizi ve detaylı kıyaslaması.</p>
+                
+                <div class="charts-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-top: 20px;">
+                    <div class="chart-container" style="background: rgba(0,0,0,0.5); padding: 15px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.2);">
+                        <canvas id="tempLineChart"></canvas>
+                    </div>
+                    <div class="chart-container" style="background: rgba(0,0,0,0.5); padding: 15px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.2);">
+                        <canvas id="humidityPieChart"></canvas>
+                    </div>
+                </div>
+                
+                <div class="charts-grid" style="margin-top:20px; background: rgba(0,0,0,0.5); padding: 15px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.2);">
+                    <canvas id="windBarChart" style="max-height: 250px;"></canvas>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="main-footer">
+        <p>&copy; 2026 Hava Durumu Panosu. Tüm Hakları Saklıdır.</p>
+    </footer>
+
+    <script src="webgl.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            Chart.defaults.color = "rgba(255, 255, 255, 0.8)";
+            Chart.defaults.font.family = "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif";
+
+            // Sıcaklık Kıyaslaması (Line Chart)
+            const ctxTemp = document.getElementById('tempLineChart').getContext('2d');
+            new Chart(ctxTemp, {
+                type: 'line',
+                data: {
+                    labels: ['İstanbul', 'Ankara', 'İzmir', 'Erzurum', 'Antalya'],
+                    datasets: [{
+                        label: 'Ortalama Sıcaklık (°C)',
+                        data: [18, 15, 26, -2, 29],
+                        borderColor: '#f59e0b',
+                        backgroundColor: 'rgba(245, 158, 11, 0.2)',
+                        borderWidth: 3,
+                        pointBackgroundColor: '#fff',
+                        pointBorderColor: '#f59e0b',
+                        pointRadius: 5,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { position: 'top' }, title: { display: true, text: 'Şehir Sıcaklık Trendi', color: '#fff' } },
+                    scales: { y: { grid: { color: 'rgba(255,255,255,0.1)' } }, x: { grid: { color: 'rgba(255,255,255,0.1)' } } }
+                }
+            });
+
+            // Nem Oranı (Doughnut Chart)
+            const ctxHum = document.getElementById('humidityPieChart').getContext('2d');
+            new Chart(ctxHum, {
+                type: 'doughnut',
+                data: {
+                    labels: ['İstanbul', 'Ankara', 'İzmir', 'Erzurum', 'Antalya'],
+                    datasets: [{
+                        label: 'Nem Oranı (%)',
+                        data: [75, 60, 55, 85, 50],
+                        backgroundColor: [
+                            'rgba(59, 130, 246, 0.7)',
+                            'rgba(16, 185, 129, 0.7)',
+                            'rgba(245, 158, 11, 0.7)',
+                            'rgba(139, 92, 246, 0.7)',
+                            'rgba(239, 68, 68, 0.7)'
+                        ],
+                        borderColor: 'rgba(0,0,0,0.3)',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { position: 'right' }, title: { display: true, text: 'Nem Oranı Karşılaştırması', color: '#fff' } }
+                }
+            });
+
+            // Rüzgar Hızı (Bar Chart)
+            const ctxWind = document.getElementById('windBarChart').getContext('2d');
+            new Chart(ctxWind, {
+                type: 'bar',
+                data: {
+                    labels: ['İstanbul', 'Ankara', 'İzmir', 'Erzurum', 'Antalya'],
+                    datasets: [{
+                        label: 'Rüzgar Hızı (km/s)',
+                        data: [22, 11, 14, 12, 10],
+                        backgroundColor: 'rgba(16, 185, 129, 0.6)',
+                        borderColor: 'rgba(16, 185, 129, 1)',
+                        borderWidth: 2,
+                        borderRadius: 5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false }, title: { display: true, text: 'Rüzgar Hızı (km/s)', color: '#fff' } },
+                    scales: { y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.1)' } }, x: { grid: { display: false } } }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

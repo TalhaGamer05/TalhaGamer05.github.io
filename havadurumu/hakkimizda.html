@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hakkımızda - Hava Durumu Panosu</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <video autoplay loop muted id="bg-video" class="bg-video">
+        <source id="bg-video-source" src="videolar/gunesli.mp4" type="video/mp4">
+    </video>
+
+    <nav class="main-nav">
+        <ul>
+            <li><a href="index.html">Ana Sayfa</a></li>
+            <li><a href="hakkimizda.html" class="active">Hakkımızda</a></li>
+            <li><a href="istatistikler.html">İstatistikler</a></li>
+            <li><a href="galeri.html">Galeri</a></li>
+            <li><a href="iletisim.html">İletişim</a></li>
+            <li><a href="nasil-yapildi.html">Nasıl Yapıldı?</a></li>
+        </ul>
+    </nav>
+
+    <main>
+        <section class="content-dashboard">
+            <canvas id="glassCanvas"></canvas>
+            <div class="glass-overlay"></div>
+            
+            <div class="content-scroll">
+                <h2>Proje Hakkında</h2>
+                <p>Bu proje, estetik bir hava durumu panosu (dashboard) olarak tasarlanmış olup, Glassmorphism (Cam Efekti) konseptini merkeze alır. WebGL kullanılarak arka plan videoları üzerinden ince ışık kırılmaları (refraction) ve bükülmeler elde edilmektedir.</p>
+                
+                <div class="list-container">
+                    <h3>Öne Çıkan Özellikler</h3>
+                    <ul>
+                        <li>Dinamik arka plan yapısı ve hava durumuna göre değişen videolar</li>
+                        <li>WebGL ile optimize edilmiş gelişmiş materyal shader'ı</li>
+                        <li>Matter.js kullanılarak oluşturulmuş animasyonlu fizik olayları</li>
+                        <li>Tam ekran ve duyarlı (responsive) CSS Grid ve Flexbox dizilimi</li>
+                    </ul>
+                </div>
+
+                <div class="list-container">
+                    <h3>Kullanılan Teknolojiler</h3>
+                    <ol>
+                        <li>HTML5 & Semantic Etiketler</li>
+                        <li>CSS3 & Animasyonlar (Box Model Çerçevesi)</li>
+                        <li>Vanilla JavaScript (ES6+)</li>
+                        <li>WebGL Shader Programcılığı</li>
+                        <li>Matter.js Fizik Motoru</li>
+                    </ol>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="main-footer">
+        <p>&copy; 2026 Hava Durumu Panosu. Tüm Hakları Saklıdır.</p>
+    </footer>
+
+    <script src="webgl.js"></script>
+</body>
+</html>

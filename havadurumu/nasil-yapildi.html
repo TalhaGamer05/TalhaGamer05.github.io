@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nasıl Yapıldı? - Hava Durumu Panosu</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <video autoplay loop muted id="bg-video" class="bg-video">
+        <source id="bg-video-source" src="videolar/gunesli.mp4" type="video/mp4">
+    </video>
+
+    <nav class="main-nav">
+        <ul>
+            <li><a href="index.html">Ana Sayfa</a></li>
+            <li><a href="hakkimizda.html">Hakkımızda</a></li>
+            <li><a href="istatistikler.html">İstatistikler</a></li>
+            <li><a href="galeri.html">Galeri</a></li>
+            <li><a href="iletisim.html">İletişim</a></li>
+            <li><a href="nasil-yapildi.html" class="active">Nasıl Yapıldı?</a></li>
+        </ul>
+    </nav>
+
+    <main>
+        <section class="content-dashboard">
+            <canvas id="glassCanvas"></canvas>
+            <div class="glass-overlay"></div>
+            
+            <div class="content-scroll">
+                <h2>Nasıl Yapıldı?</h2>
+                <p>Bu proje, modern web teknolojilerini bir araya getirerek hem görsel hem de işlevsel açıdan zengin bir kullanıcı deneyimi sunmak amacıyla geliştirilmiştir. Aşağıda projede kullanılan temel teknolojiler ve kullanım amaçları detaylandırılmıştır.</p>
+                
+                <div class="list-container">
+                    <h3>1. HTML5 ve Semantik Yapı</h3>
+                    <p><strong>Nasıl Kullanıldı:</strong> Projenin iskeleti, anlamlı (semantik) HTML5 etiketleri (<code>&lt;header&gt;</code>, <code>&lt;main&gt;</code>, <code>&lt;section&gt;</code>, <code>&lt;nav&gt;</code> vb.) kullanılarak inşa edilmiştir.</p>
+                    <p><strong>Neden Kullanıldı:</strong> Arama motoru optimizasyonu (SEO) ve erişilebilirlik (ekran okuyucular vb.) standartlarına uygun, temiz ve okunabilir bir DOM yapısı oluşturmak için tercih edilmiştir.</p>
+                </div>
+
+                <div class="list-container">
+                    <h3>2. CSS3 (Flexbox & Grid) ve Glassmorphism Modeli</h3>
+                    <p><strong>Nasıl Kullanıldı:</strong> Tasarımda saydamlık, arka plan bulanıklığı (backdrop-filter) ve ince beyaz kenarlıklar birleştirilerek "cam (glass)" dokusu elde edildi. Düzen için Flexbox ve Grid sistemleri aktif bir biçimde kullanıldı.</p>
+                    <p><strong>Neden Kullanıldı:</strong> Apple/iPhone tarzı premium hissiyatı veren modern Glassmorphism tasarım dilini uygulamak, arayüzü daha şık göstermek ve cihaz uyumluluğunu (Responsive Design) sağlamak için saf (vanilla) CSS tercih edilmiştir.</p>
+                </div>
+
+                <div class="list-container">
+                    <h3>3. Vanilla JavaScript (ES6)</h3>
+                    <p><strong>Nasıl Kullanıldı:</strong> Şehir verileri doğrudan bir JSON / JS objesi olarak tutulup, DOM manipülasyonu işlemleri tamamen saf JavaScript ile (harici kütüphane kullanılmadan) eylemlere bağlanmıştır.</p>
+                    <p><strong>Neden Kullanıldı:</strong> Performansı artırmak, sayfalar arası geçişlerde ve hava durumu güncellemelerinde anlık tepki alabilmek ve React/Vue gibi büyük framework yüklerinden kaçınmak amacıyla kullanıldı.</p>
+                </div>
+
+                <div class="list-container">
+                    <h3>4. WebGL (Fragment & Vertex Shaders)</h3>
+                    <p><strong>Nasıl Kullanıldı:</strong> Arka plan videosundaki görseller alınarak bir HTML <code>&lt;canvas&gt;</code> üzerine doku (texture) olarak işlendi. Özel yazılmış GLSL shader kodlarıyla balık gözü (fisheye) bükümü, renk sapması ve iç cam yansıması (glossy) efektleri hesaplanıp panele yansıtıldı.</p>
+                    <p><strong>Neden Kullanıldı:</strong> Klasik CSS <code>backdrop-filter</code> yeteneklerinin çok ötesinde, ışığın camdan geçerken gerçekçi biçimde kırılmasını (refraction) ve panelin kenarlarındaki iç yansımaları simüle edebilmek için grafik kartı (GPU) destekli WebGL teknolojisine başvurduk.</p>
+                </div>
+
+                <div class="list-container">
+                    <h3>5. Matter.js (Fizik Motoru)</h3>
+                    <p><strong>Nasıl Kullanıldı:</strong> Sayfadaki DOM objelerinin pozisyon ve boyutları hesaplanarak Matter.js içinde katı cisimler (rigid bodies) oluşturuldu. Gizli bir yerçekimi motoru arkaplanda çalıştırılarak objelerin koordinatları, tıklama eylemiyle 60 FPS ile HTML etiketlerine dönüştürüldü.</p>
+                    <p><strong>Neden Kullanıldı:</strong> Sayfadaki sabit "sıkıcı" elementlere "Google Antigravity" tarzında interaktif, eğlenceli ve fiziksel bir gerçekçilik katarak projenin çarpıcılığını (wow effect) maksimize etmek için entegre edildi.</p>
+                </div>
+
+                <div class="list-container">
+                    <h3>6. Leaflet.js ve CartoDB (Harita)</h3>
+                    <p><strong>Nasıl Kullanıldı:</strong> Türkiye merkezine konumlandırılmış interaktif bir harita sol menüye entegre edildi. Her şehir JSON üzerinden konumlandırılarak özel renkli pinlere dönüştürüldü.</p>
+                    <p><strong>Neden Kullanıldı:</strong> Klasik bir "Arama" veya "Liste" formunun çok ötesinde, kullanıcının doğrudan gözlemleyebildiği coğrafi bir deneyim sunarak uygulamanın "Enterprise-grade" seviyesine çıkması sağlandı.</p>
+                </div>
+
+                <div class="list-container">
+                    <h3>7. Chart.js & Progressive Web App (PWA)</h3>
+                    <p><strong>Nasıl Kullanıldı:</strong> Veriler Chart.js kullanılarak İstatistikler sayfasındaki dinamik pasta/bar grafiklerine dönüştürüldü. Projeye `manifest.json` ve `sw.js` dahil edildi.</p>
+                    <p><strong>Neden Kullanıldı:</strong> Veri analitiğini görselleştirmek ve sitenin kullanıcıların cihazlarına (telefon, bilgisayar) "gerçek bir uygulama" gibi yüklenebilmesi, çevrimdışı dahi çalışabilmesi amaçlanmıştır.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="main-footer">
+        <p>&copy; 2026 Hava Durumu Panosu. Tüm Hakları Saklıdır.</p>
+    </footer>
+
+    <script src="webgl.js"></script>
+</body>
+</html>

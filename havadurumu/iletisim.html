@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>İletişim - Hava Durumu Panosu</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <video autoplay loop muted id="bg-video" class="bg-video">
+        <source id="bg-video-source" src="videolar/firtinali.mp4" type="video/mp4">
+    </video>
+
+    <nav class="main-nav">
+        <ul>
+            <li><a href="index.html">Ana Sayfa</a></li>
+            <li><a href="hakkimizda.html">Hakkımızda</a></li>
+            <li><a href="istatistikler.html">İstatistikler</a></li>
+            <li><a href="galeri.html">Galeri</a></li>
+            <li><a href="iletisim.html" class="active">İletişim</a></li>
+            <li><a href="nasil-yapildi.html">Nasıl Yapıldı?</a></li>
+        </ul>
+    </nav>
+
+    <main>
+        <section class="content-dashboard">
+            <canvas id="glassCanvas"></canvas>
+            <div class="glass-overlay"></div>
+            
+            <div class="content-scroll">
+                <h2>İletişim Formu</h2>
+                <p>Sorularınız veya geri bildirimleriniz için aşağıdaki formu doldurarak bize ulaşın.</p>
+                
+                <form class="contact-form" action="#" method="get">
+                    <div class="form-group">
+                        <label for="name">Adınız Soyadınız:</label>
+                        <input type="text" id="name" name="name" placeholder="Adınızı girin" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email">E-posta Adresiniz:</label>
+                        <input type="email" id="email" name="email" placeholder="ornek@mail.com" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="subject">Konu:</label>
+                        <input type="text" id="subject" name="subject" placeholder="Mesajınızın konusu">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="message">Mesajınız:</label>
+                        <textarea id="message" name="message" rows="5" placeholder="Lütfen mesajınızı buraya yazın..." required></textarea>
+                    </div>
+
+                    <button type="submit">Gönder</button>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <footer class="main-footer">
+        <p>&copy; 2026 Hava Durumu Panosu. Tüm Hakları Saklıdır.</p>
+    </footer>
+
+    <script src="webgl.js"></script>
+</body>
+</html>

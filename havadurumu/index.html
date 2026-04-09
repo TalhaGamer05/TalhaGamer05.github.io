@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hava Durumu Panosu</title>
+    
+    <!-- PWA Kurulabilirlik Etiketleri -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#8b5cf6">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/1163/1163661.png">
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="style.css">
+    
+    <style>
+        .floating-map-container {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            width: 350px;
+            height: 250px;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.2);
+            box-shadow: 0 8px 32px 0 rgba(0,0,0,0.37);
+            z-index: 8000;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+        @media (max-width: 768px) {
+            .floating-map-container {
+                width: calc(100% - 40px);
+                bottom: 80px; 
+                height: 200px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Arka Plan Videosu -->
+    <video autoplay loop muted id="bg-video" class="bg-video">
+        <source id="bg-video-source" src="videolar/gunesli.mp4" type="video/mp4">
+    </video>
+
+    <!-- Atmosferik Çevresel Ses (Ambient Audio) -->
+    <audio id="ambient-audio" loop></audio>
+
+    <!-- Navigasyon Menüsü -->
+    <nav class="main-nav">
+        <ul>
+            <li><a href="index.html" class="active">Ana Sayfa</a></li>
+            <li><a href="hakkimizda.html">Hakkımızda</a></li>
+            <li><a href="istatistikler.html">İstatistikler</a></li>
+            <li><a href="galeri.html">Galeri</a></li>
+            <li><a href="iletisim.html">İletişim</a></li>
+            <li><a href="nasil-yapildi.html">Nasıl Yapıldı?</a></li>
+            <li><button id="soundToggleBtn" onclick="toggleAmbientSound()" class="sound-toggle-btn">🔇 Ses: Kapalı</button></li>
+        </ul>
+    </nav>
+
+    <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+    <div class="sidebar-trigger" id="sidebarTrigger"></div>
+
+    <header id="sidebar">
+        <h1>Hava Durumu</h1>
+
+        <form id="searchForm" class="search-form">
+            <input type="text" id="searchInput" class="search-input" placeholder="Şehir ara..." required>
+            <button type="submit" class="search-button">Ara</button>
+        </form>
+
+        <div style="display:flex; gap:10px; margin-top:5px;">
+            <button id="luckyBtn" class="lucky-btn" style="flex:1;" onclick="feelingLucky()">Şanslı Tahmin</button>
+            <button id="mapToggleBtn" class="lucky-btn" style="flex:1; background: #8b5cf6;" onclick="toggleMap()">🌍 Harita</button>
+        </div>
+
+        <div class="city-selector" id="citySelector"></div>
+    </header>
+
+    <!-- Floating Map Container (Moved from sidebar) -->
+    <div id="mapContainer" class="floating-map-container" style="display: none;"></div>
+
+    <main>
+        <section id="weatherContainer"></section>
+    </main>
+
+    <!-- Antigravity Tetikleyici Buton -->
+    <button id="antigravityBtn" class="antigravity-trigger">Yerçekimi Aç/Kapat</button>
+
+    <footer class="main-footer">
+        <p>&copy; 2026 Hava Durumu Panosu. Tüm Hakları Saklıdır.</p>
+    </footer>
+
+    <!-- Matter.js ve Leaflet ve Script Dosyaları -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="webgl.js"></script>
+
+    <script>
+        const citiesWeatherData = {
+            adana: {"city": "Adana", "country": "Türkiye", "temperature": 0, "condition": "Karlı", "emoji": "❄️", "humidity": 31, "windSpeed": 11, "pressure": 1011, "uvIndex": 3, "feelsLike": -3, "visibility": 7, "dewPoint": -5, "forecast": [{"day": "Pzt", "high": 2, "low": -1, "condition": "Karlı", "emoji": "❄️"}, {"day": "Sal", "high": 2, "low": -2, "condition": "Bulutlu", "emoji": "☁️"}, {"day": "Çar", "high": 1, "low": -1, "condition": "Karla Karışık Yağmur", "emoji": "🌨️"}, {"day": "Per", "high": 4, "low": -3, "condition": "Kısmen Bulutlu", "emoji": "⛅"}, {"day": "Cum", "high": 0, "low": -4, "condition": "Güneşli", "emoji": "☀️"}, {"day": "Cmt", "high": 3, "low": -3, "condition": "Karla Karışık Yağmur", "emoji": "🌨️"}, {"day": "Paz", "high": 4, "low": -5, "condition": "Kısmen Bulutlu", "emoji": "⛅"}]},
+            adiyaman: {"city": "Adıyaman", "country": "Türkiye", "temperature": 24, "condition": "Sıcak", "emoji": "☀️", "humidity": 89, "windSpeed": 18, "pressure": 1016, "uvIndex": 5, "feelsLike": 23, "visibility": 12, "dewPoint": 18, "forecast": [{"day": "Pzt", "high": 26, "low": 19, "condition": "Açık", "emoji": "☀️"}, {"day": "Sal", "high": 27, "low": 21, "condition": "Fırtınalı", "emoji": "⛈️"}, {"day": "Çar", "high": 26, "low": 22, "condition": "Kısmen Bulutlu", "emoji": "⛅"}, {"day": "Per", "high": 29, "low": 21, "condition": "Güneşli", "emoji": "☀️"}, {"day": "Cum", "high": 27, "low": 20, "condition": "Kısmen Bulutlu", "emoji": "⛅"}, {"day": "Cmt", "high": 28, "low": 20, "condition": "Sıcak", "emoji": "☀️"}, {"day": "Paz", "high": 27, "low": 23, "condition": "Sıcak", "emoji": "☀️"}]},
+            afyonkarahisar: {"city": "Afyonkarahisar", "country": "Türkiye", "temperature": 33, "condition": "Sıcak", "emoji": "☀️", "humidity": 33, "windSpeed": 7, "pressure": 1017, "uvIndex": 1, "feelsLike": 32, "visibility": 12, "dewPoint": 30, "forecast": [{"day": "Pzt", "high": 37, "low": 28, "condition": "Açık", "emoji": "☀️"}, {"day": "Sal", "high": 35, "low": 32, "condition": "Yağmurlu", "emoji": "🌧️"}, {"day": "Çar", "high": 36, "low": 31, "condition": "Kısmen Bulutlu", "emoji": "⛅"}, {"day": "Per", "high": 38, "low": 33, "condition": "Sıcak", "emoji": "☀️"}, {"day": "Cum", "high": 37, "low": 33, "condition": "Güneşli", "emoji": "☀️"}, {"day": "Cmt", "high": 35, "low": 30, "condition": "Güneşli", "emoji": "☀️"}, {"day": "Paz", "high": 37, "low": 31, "condition": "Sıcak", "emoji": "☀️"}]},
+            agri: {"city": "Ağrı", "country": "Türkiye", "temperature": -10, "condition": "Açık", "emoji": "☀️", "humidity": 67, "windSpeed": 24, "pressure": 1008, "uvIndex": 3, "feelsLike": -8, "visibility": 7, "dewPoint": -16, "forecast": [{"day": "Pzt", "high": -7, "low": -14, "condition": "Açık", "emoji": "☀️"}, {"day": "Sal", "high": -9, "low": -14, "condition": "Karlı", "emoji": "❄️"}, {"day": "Çar", "high": -8, "low": -12, "condition": "Bulutlu", "emoji": "☁️"}, {"day": "Per", "high": -8, "low": -15, "condition": "Bulutlu", "emoji": "☁️"}, {"day": "Cum", "high": -7, "low": -11, "condition": "Karlı", "emoji": "❄️"}, {"day": "Cmt", "high": -8, "low": -11, "condition": "Güneşli", "emoji": "☀️"}, {"day": "Paz", "high": -9, "low": -13, "condition": "Yoğun Kar", "emoji": "❄️"}]},
+            amasya: {"city": "Amasya", "country": "Türkiye", "temperature": -14, "condition": "Açık", "emoji": "☀️", "humidity": 71, "windSpeed": 9, "pressure": 1018, "uvIndex": 2, "feelsLike": -12, "visibility": 5, "dewPoint": -20, "forecast": [{"day": "Pzt", "high": -10, "low": -15, "condition": "Güneşli", "emoji": "☀️"}, {"day": "Sal", "high": -9, "low": -14, "condition": "Yoğun Kar", "emoji": "❄️"}, {"day": "Çar", "high": -12, "low": -15, "condition": "Güneşli", "emoji": "☀️"}, {"day": "Per", "high": -13, "low": -17, "condition": "Yoğun Kar", "emoji": "❄️"}, {"day": "Cum", "high": -12, "low": -19, "condition": "Karlı", "emoji": "❄️"}, {"day": "Cmt", "high": -12, "low": -20, "condition": "Güneşli", "emoji": "☀️"}, {"day": "Paz", "high": -13, "low": -19, "condition": "Bulutlu", "emoji": "☁️"}]},
+            ankara: {"city": "Ankara", "country": "Türkiye", "temperature": 35, "condition": "Kısmen Bulutlu", "emoji": "⛅", "humidity": 74, "windSpeed": 25, "pressure": 1016, "uvIndex": 8, "feelsLike": 37, "visibility": 5, "dewPoint": 32, "forecast": [{"day": "Pzt", "high": 38, "low": 32, "condition": "Açık", "emoji": "☀️"}, {"day": "Sal", "high": 36, "low": 32, "condition": "Sıcak", "emoji": "☀️"}, {"day": "Çar", "high": 36, "low": 33, "condition": "Yağmurlu", "emoji": "🌧️"}, {"day": "Per", "high": 38, "low": 34, "condition": "Fırtınalı", "emoji": "⛈️"}, {"day": "Cum", "high": 39, "low": 30, "condition": "Fırtınalı", "emoji": "⛈️"}, {"day": "Cmt", "high": 38, "low": 33, "condition": "Kısmen Bulutlu", "emoji": "⛅"}, {"day": "Paz", "high": 40, "low": 34, "condition": "Sıcak", "emoji": "☀️"}]},
+            antalya: {"city": "Antalya", "country": "Türkiye", "temperature": 0, "condition": "Karla Karışık Yağmur", "emoji": "🌨️", "humidity": 34, "windSpeed": 5, "pressure": 1015, "uvIndex": 2, "feelsLike": 1, "visibility": 12, "dewPoint": -5, "forecast": [{"day": "Pzt", "high": 4, "low": -1, "condition": "Bulutlu", "emoji": "☁️"}, {"day": "Sal", "high": 4, "low": -2, "condition": "Bulutlu", "emoji": "☁️"}, {"day": "Çar", "high": 2, "low": -1, "condition": "Kısmen Bulutlu", "emoji": "⛅"}, {"day": "Per", "high": 3, "low": -3, "condition": "Karlı", "emoji": "❄️"}, {"day": "Cum", "high": 5, "low": 0, "condition": "Yağmurlu", "emoji": "🌧️"}, {"day": "Cmt", "high": 4, "low": 1, "condition": "Yağmurlu", "emoji": "🌧️"}, {"day": "Paz", "high": 5, "low": -4, "condition": "Karlı", "emoji": "❄️"}]},
+            artvin: {"city": "Artvin", "country": "Türkiye", "temperature": -2, "condition": "Kısmen Bulutlu", "emoji": "⛅", "humidity": 60, "windSpeed": 6, "pressure": 1017, "uvIndex": 1, "feelsLike": -1, "visibility": 8, "dewPoint": -4, "forecast": [{"day": "Pzt", "high": 2, "low": -5, "condition": "Açık", "emoji": "☀️"}, {"day": "Sal", "high": -1, "low": -5, "condition": "Bulutlu", "emoji": "☁️"}, {"day": "Çar", "high": 1, "low": -6, "condition": "Kısmen Bulutlu", "emoji": "⛅"}, {"day": "Per", "high": 2, "low": -6, "condition": "Karlı", "emoji": "❄️"}, {"day": "Cum", "high": 1, "low": -3, "condition": "Kısmen Bulutlu", "emoji": "⛅"}, {"day": "Cmt", "high": 0, "low": -6, "condition": "Kısmen Bulutlu", "emoji": "⛅"}, {"day": "Paz", "high": 3, "low": -5, "condition": "Karlı", "emoji": "❄️"}]},
+            aydin: {"city": "Aydın", "country": "Türkiye", "temperature": 18, "condition": "Yağmurlu", "emoji": "🌧️", "humidity": 58, "windSpeed": 27, "pressure": 1003, "uvIndex": 4, "feelsLike": 15, "visibility": 13, "dewPoint": 12, "forecast": [{"day": "Pzt", "high": 22, "low": 14, "condition": "Açık", "emoji": "☀️"}, {"day": "Sal", "high": 22, "low": 14, "condition": "Kısmen Bulutlu", "emoji": "⛅"}, {"day": "Çar", "high": 23, "low": 17, "condition": "Sıcak", "emoji": "☀️"}, {"day": "Per", "high": 21, "low": 15, "condition": "Sıcak", "emoji": "☀️"}, {"day": "Cum", "high": 18, "low": 14, "condition": "Fırtınalı", "emoji": "⛈️"}, {"day": "Cmt", "high": 21, "low": 15, "condition": "Sıcak", "emoji": "☀️"}, {"day": "Paz", "high": 21, "low": 17, "condition": "Kısmen Bulutlu", "emoji": "⛅"}]},
+            balikesir: {"city": "Balıkesir", "country": "Türkiye", "temperature": -8, "condition": "Karlı", "emoji": "❄️", "humidity": 67, "windSpeed": 11, "pressure": 1015, "uvIndex": 2, "feelsLike": -6, "visibility": 10, "dewPoint": -10, "forecast": [{"day": "Pzt", "high": -7, "low": -13, "condition": "Yoğun Kar", "emoji": "❄️"}, {"day": "Sal", "high": -5, "low": -10, "condition": "Kısmen Bulutlu", "emoji": "⛅"}, {"day": "Çar", "high": -4, "low": -8, "condition": "Yoğun Kar", "emoji": "❄️"}, {"day": "Per", "high": -4, "low": -9, "condition": "Yoğun Kar", "emoji": "❄️"}, {"day": "Cum", "high": -1, "low": -7, "condition": "Karlı", "emoji": "❄️"}, {"day": "Cmt", "high": -2, "low": -11, "condition": "Yoğun Kar", "emoji": "❄️"}, {"day": "Paz", "high": -3, "low": -9, "condition": "Bulutlu", "emoji": "☁️"}]},
+            bilecik: {"city": "Bilecik", "country": "Türkiye", "temperature": 18, "condition": "Kısmen Bulutlu", "emoji": "⛅", "humidity": 50, "windSpeed": 10, "pressure": 1013, "uvIndex": 1, "feelsLike": 19, "visibility": 15, "dewPoint": 14, "forecast": [{"day": "Pzt", "high": 22, "low": 14, "condition": "Yağmurlu", "emoji": "🌧️"}, {"day": "Sal", "high": 19, "low": 15, "condition": "Açık", "emoji": "☀️"}, {"day": "Çar", "high": 21, "low": 17, "condition": "Güneşli", "emoji": "☀️"}, {"day": "Per", "high": 22, "low": 15, "condition": "Fırtınalı", "emoji": "⛈️"}, {"day": "Cum", "high": 20, "low": 16, "condition": "Yağmurlu", "emoji": "🌧️"}, {"day": "Cmt", "high": 19, "low": 16, "condition": "Fırtınalı", "emoji": "⛈️"}, {"day": "Paz", "high": 20, "low": 14, "condition": "Açık", "emoji": "☀️"}]},
+            bingol: {"city": "Bingöl", "country": "Türkiye", "temperature": 10, "condition": "Fırtınalı", "emoji": "⛈️", "humidity": 81, "windSpeed": 29, "pressure": 1011, "uvIndex": 2, "feelsLike": 9, "visibility": 10, "dewPoint": 6, "forecast": [{"day": "Pzt", "high": 13, "low": 7, "condition": "Yağmurlu", "emoji": "🌧️"}, {"day": "Sal", "high": 14, "low": 8, "condition": "Fırtınalı", "emoji": "⛈️"}, {"day": "Çar", "high": 12, "low": 8, "condition": "Şiddetli Yağmur", "emoji": "🌧️"}, {"day": "Per", "high": 16, "low": 9, "condition": "Bulutlu", "emoji": "☁️"}, {"day": "Cum", "high": 16, "low": 11, "condition": "Şiddetli Yağmur", "emoji": "🌧️"}, {"day": "Cmt", "high": 13, "low": 11, "condition": "Yağmurlu", "emoji": "🌧️"}, {"day": "Paz", "high": 17, "low": 12, "condition": "Şiddetli Yağmur", "emoji": "🌧️"}]},
+            bitlis: {"city": "Bitlis", "country": "Türkiye", "temperature": 18, "condition": "Sıcak", "emoji": "☀️", "humidity": 84, "windSpeed": 19, "pressure": 1017, "uvIndex": 2, "feelsLike": 20, "visibility": 5, "dewPoint": 12, "forecast": [{"day": "Pzt", "high": 20, "low": 17, "condition": "Açık", "emoji": "☀️"}, {"day": "Sal", "high": 20, "low": 17, "condition": "Güneşli", "emoji": "☀️"}, {"day": "Çar", "high": 23, "low": 17, "condition": "Kısmen Bulutlu", "emoji": "⛅"}, {"day": "Per", "high": 22, "low": 17, "condition": "Güneşli", "emoji": "☀️"}, {"day": "Cum", "high": 21, "low": 19, "condition": "Güneşli", "emoji": "☀️"}, {"day": "Cmt", "high": 22, "low": 16, "condition": "Güneşli", "emoji": "☀️"}, {"day": "Paz", "high": 22, "low": 19, "condition": "Yağmurlu", "emoji": "🌧️"}]},
+            bolu: {"city": "Bolu", "country": "Türkiye", "temperature": 35, "condition": "Açık", "emoji": "☀️", "humidity": 65, "windSpeed": 20, "pressure": 1004, "uvIndex": 2, "feelsLike": 34, "visibility": 14, "dewPoint": 31, "forecast": [{"day": "Pzt", "high": 38, "low": 34, "condition": "Fırtınalı", "emoji": "⛈️"}, {"day": "Sal", "high": 38, "low": 31, "condition": "Güneşli", "emoji": "☀️"}, {"day": "Çar", "high": 38, "low": 33, "condition": "Açık", "emoji": "☀️"}, {"day": "Per", "high": 37, "low": 33, "condition": "Güneşli", "emoji": "☀️"}, {"day": "Cum", "high": 40, "low": 35, "condition": "Fırtınalı", "emoji": "⛈️"}, {"day": "Cmt", "high": 39, "low": 32, "condition": "Sıcak", "emoji": "☀️"}, {"day": "Paz", "high": 41, "low": 33, "condition": "Açık", "emoji": "☀️"}]},
+            burdur: {"city": "Burdur", "country": "Türkiye", "temperature": -9, "condition": "Açık", "emoji": "☀️", "humidity": 43, "windSpeed": 19, "pressure": 1011, "uvIndex": 1, "feelsLike": -9, "visibility": 7, "dewPoint": -11, "forecast": [{"day": "Pzt", "high": -6, "low": -11, "condition": "Karlı", "emoji": "❄️"}, {"day": "Sal", "high": -8, "low": -13, "condition": "Kısmen Bulutlu", "emoji": "⛅"}, {"day": "Çar", "high": -8, "low": -14, "condition": "Açık", "emoji": "☀️"}, {"day": "Per", "high": -9, "low": -13, "condition": "Bulutlu", "emoji": "☁️"}, {"day": "Cum", "high": -7, "low": -12, "condition": "Güneşli", "emoji": "☀️"}, {"day": "Cmt", "high": -8, "low": -12, "condition": "Güneşli", "emoji": "☀️"}, {"day": "Paz", "high": -9, "low": -15, "condition": "Kısmen Bulutlu", "emoji": "⛅"}]},
+            bursa: {"city": "Bursa", "country": "Türkiye", "temperature": 28, "condition": "Sıcak", "emoji": "☀️", "humidity": 71, "windSpeed": 10, "pressure": 1002, "uvIndex": 6, "feelsLike": 29, "visibility": 5, "dewPoint": 23, "forecast": [{"day": "Pzt", "high": 31, "low": 27, "condition": "Güneşli", "emoji": "☀️"}, {"day": "Sal", "high": 30, "low": 26, "condition": "Kısmen Bulutlu", "emoji": "⛅"}, {"day": "Çar", "high": 31, "low": 27, "condition": "Açık", "emoji": "☀️"}, {"day": "Per", "high": 29, "low": 24, "condition": "Kısmen Bulutlu", "emoji": "⛅"}, {"day": "Cum", "high": 30, "low": 24, "condition": "Sıcak", "emoji": "☀️"}, {"day": "Cmt", "high": 29, "low": 24, "condition": "Kısmen Bulutlu", "emoji": "⛅"}, {"day": "Paz", "high": 29, "low": 27, "condition": "Açık", "emoji": "☀️"}]},
+            canakkale: {"city": "Çanakkale", "country": "Türkiye", "temperature": 28, "condition": "Fırtınalı", "emoji": "⛈️", "humidity": 60, "windSpeed": 19, "pressure": 1019, "uvIndex": 5, "feelsLike": 27, "visibility": 6, "dewPoint": 22, "forecast": [{"day": "Pzt", "high": 31, "low": 25, "condition": "Açık", "emoji": "☀️"}, {"day": "Sal", "high": 30, "low": 24, "condition": "Kısmen Bulutlu", "emoji": "⛅"}, {"day": "Çar", "high": 32, "low": 23, "condition": "Kısmen Bulutlu", "emoji": "⛅"}, {"day": "Per", "high": 30, "low": 23, "condition": "Kısmen Bulutlu", "emoji": "⛅"}, {"day": "Cum", "high": 32, "low": 24, "condition": "Açık", "emoji": "☀️"}, {"day": "Cmt", "high": 30, "low": 26, "condition": "Açık", "emoji": "☀️"}, {"day": "Paz", "high": 30, "low": 24, "condition": "Fırtınalı", "emoji": "⛈️"}]},
+            cankiri: {"city": "Çankırı", "country": "Türkiye", "temperature": 25, "condition": "Yağmurlu", "emoji": "🌧️", "humidity": 62, "windSpeed": 11, "pressure": 1002, "uvIndex": 8, "feelsLike": 27, "visibility": 8, "dewPoint": 22, "forecast": [{"day": "Pzt", "high": 26, "low": 23, "condition": "Sıcak", "emoji": "☀️"}, {"day": "Sal", "high": 27, "low": 19, "condition": "Açık", "emoji": "☀️"}, {"day": "Çar", "high": 29, "low": 23, "condition": "Fırtınalı", "emoji": "⛈️"}, {"day": "Per", "high": 28, "low": 24, "condition": "Sıcak", "emoji": "☀️"}, {"day": "Cum", "high": 30, "low": 24, "condition": "Kısmen Bulutlu", "emoji": "⛅"}, {"day": "Cmt", "high": 32, "low": 25, "condition": "Fırtınalı", "emoji": "⛈️"}, {"day": "Paz", "high": 30, "low": 22, "condition": "Kısmen Bulutlu", "emoji": "⛅"}]},
+            corum: {"city": "Çorum", "country": "Türkiye", "temperature": 35, "condition": "Sıcak", "emoji": "☀️", "humidity": 60, "windSpeed": 30, "pressure": 1006, "uvIndex": 6, "feelsLike": 35, "visibility": 12, "dewPoint": 31, "forecast": [{"day": "Pzt", "high": 38, "low": 30, "condition": "Güneşli", "emoji": "☀️"}, {"day": "Sal", "high": 39, "low": 34, "condition": "Yağmurlu", "emoji": "🌧️"}, {"day": "Çar", "high": 39, "low": 32, "condition": "Sıcak", "emoji": "☀️"}, {"day": "Per", "high": 37, "low": 34, "condition": "Kısmen Bulutlu", "emoji": "⛅"}, {"day": "Cum", "high": 40, "low": 36, "condition": "Yağmurlu", "emoji": "🌧️"}, {"day": "Cmt", "high": 38, "low": 32, "condition": "Kısmen Bulutlu", "emoji": "⛅"}, {"day": "Paz", "high": 40, "low": 34, "condition": "Güneşli", "emoji": "☀️"}]},
+            denizli: {"city": "Denizli", "country": "Türkiye", "temperature": -6, "condition": "Karlı", "emoji": "❄️", "humidity": 50, "windSpeed": 17, "pressure": 1018, "uvIndex": 4, "feelsLike": -5, "visibility": 9, "dewPoint": -10, "forecast": [{"day": "Pzt", "high": -5, "low": -9, "condition": "Kısmen Bulutlu", "emoji": "⛅"}, {"day": "Sal", "high": -4, "low": -10, "condition": "Yoğun Kar", "emoji": "❄️"}, {"day": "Çar", "high": -3, "low": -10, "condition": "Karlı", "emoji": "❄️"}, {"day": "Per", "high": -3, "low": -11, "condition": "Açık", "emoji": "☀️"}, {"day": "Cum", "high": -3, "low": -10, "condition": "Açık", "emoji": "☀️"}, {"day": "Cmt", "high": -3, "low": -8, "condition": "Kısmen Bulutlu", "emoji": "⛅"}, {"day": "Paz", "high": -3, "low": -10, "condition": "Bulutlu", "emoji": "☁️"}]},
+            diyarbakir: {"city": "Diyarbakır", "country": "Türkiye", "temperature": 9, "condition": "Kısmen Bulutlu", "emoji": "⛅", "humidity": 35, "windSpeed": 8, "pressure": 1012, "uvIndex": 2, "feelsLike": 8, "visibility": 15, "dewPoint": 3, "forecast": [{"day": "Pzt", "high": 12, "low": 5, "condition": "Güneşli", "emoji": "☀️"}, {"day": "Sal", "high": 11, "low": 5, "condition": "Güneşli", "emoji": "☀️"}, {"day": "Çar", "high": 13, "low": 8, "condition": "Bulutlu", "emoji": "☁️"}, {"day": "Per", "high": 10, "low": 6, "condition": "Bulutlu", "emoji": "☁️"}, {"day": "Cum", "high": 11, "low": 5, "condition": "Kısmen Bulutlu", "emoji": "⛅"}, {"day": "Cmt", "high": 13, "low": 7, "condition": "Bulutlu", "emoji": "☁️"}, {"day": "Paz", "high": 9, "low": 7, "condition": "Yağmurlu", "emoji": "🌧️"}]},
+            edirne: {"city": "Edirne", "country": "Türkiye", "temperature": 1, "condition": "Kısmen Bulutlu", "emoji": "⛅", "humidity": 42, "windSpeed": 30, "pressure": 1006, "uvIndex": 2, "feelsLike": -1, "visibility": 11, "dewPoint": -1, "forecast": [{"day": "Pzt", "high": 3, "low": -2, "condition": "Karla Karışık Yağmur", "emoji": "🌨️"}, {"day": "Sal", "high": 4, "low": -1, "condition": "Bulutlu", "emoji": "☁️"}, {"day": "Çar", "high": 4, "low": -4, "condition": "Karlı", "emoji": "❄️"}, {"day": "Per", "high": 3, "low": -4, "condition": "Bulutlu", "emoji": "☁️"}, {"day": "Cum", "high": 0, "low": -2, "condition": "Güneşli", "emoji": "☀️"}, {"day": "Cmt", "high": 1, "low": -4, "condition": "Güneşli", "emoji": "☀️"}, {"day": "Paz", "high": 2, "low": -1, "condition": "Bulutlu", "emoji": "☁️"}]},
+            elazig: {"city": "Elazığ", "country": "Türkiye", "temperature": 28, "condition": "Sıcak", "emoji": "☀️", "humidity": 33, "windSpeed": 13, "pressure": 1008, "uvIndex": 1, "feelsLike": 27, "visibility": 5, "dewPoint": 24, "forecast": [{"day": "Pzt", "high": 29, "low": 24, "condition": "Açık", "emoji": "☀️"}, {"day": "Sal", "high": 28, "low": 25, "condition": "Fırtınalı", "emoji": "⛈️"}, {"day": "Çar", "high": 27, "low": 22, "condition": "Kısmen Bulutlu", "emoji": "⛅"}, {"day": "Per", "high": 27, "low": 21, "condition": "Kısmen Bulutlu", "emoji": "⛅"}, {"day": "Cum", "high": 27, "low": 21, "condition": "Fırtınalı", "emoji": "⛈️"}, {"day": "Cmt", "high": 25, "low": 19, "condition": "Kısmen Bulutlu", "emoji": "⛅"}, {"day": "Paz", "high": 29, "low": 24, "condition": "Sıcak", "emoji": "☀️"}]},
+            erzincan: {"city": "Erzincan", "country": "Türkiye", "temperature": 28, "condition": "Sıcak", "emoji": "☀️", "humidity": 64, "windSpeed": 22, "pressure": 1005, "uvIndex": 6, "feelsLike": 28, "visibility": 15, "dewPoint": 25, "forecast": [{"day": "Pzt", "high": 31, "low": 27, "condition": "Açık", "emoji": "☀️"}, {"day": "Sal", "high": 31, "low": 26, "condition": "Kısmen Bulutlu", "emoji": "⛅"}, {"day": "Çar", "high": 29, "low": 25, "condition": "Güneşli", "emoji": "☀️"}, {"day": "Per", "high": 30, "low": 23, "condition": "Açık", "emoji": "☀️"}, {"day": "Cum", "high": 31, "low": 23, "condition": "Açık", "emoji": "☀️"}, {"day": "Cmt", "high": 31, "low": 26, "condition": "Fırtınalı", "emoji": "⛈️"}, {"day": "Paz", "high": 31, "low": 27, "condition": "Kısmen Bulutlu", "emoji": "⛅"}]},
+            erzurum: {"city": "Erzurum", "country": "Türkiye", "temperature": -9, "condition": "Güneşli", "emoji": "☀️", "humidity": 89, "windSpeed": 7, "pressure": 1014, "uvIndex": 3, "feelsLike": -10, "visibility": 11, "dewPoint": -14, "forecast": [{"day": "Pzt", "high": -5, "low": -13, "condition": "Karlı", "emoji": "❄️"}, {"day": "Sal", "high": -6, "low": -14, "condition": "Yoğun Kar", "emoji": "❄️"}, {"day": "Çar", "high": -9, "low": -15, "condition": "Açık", "emoji": "☀️"}, {"day": "Per", "high": -5, "low": -10, "condition": "Karlı", "emoji": "❄️"}, {"day": "Cum", "high": -6, "low": -11, "condition": "Açık", "emoji": "☀️"}, {"day": "Cmt", "high": -4, "low": -11, "condition": "Yoğun Kar", "emoji": "❄️"}, {"day": "Paz", "high": -3, "low": -9, "condition": "Açık", "emoji": "☀️"}]},
+            eskisehir: {"city": "Eskişehir", "country": "Türkiye", "temperature": -15, "condition": "Güneşli", "emoji": "☀️", "humidity": 43, "windSpeed": 12, "pressure": 1018, "uvIndex": 4, "feelsLike": -14, "visibility": 14, "dewPoint": -19, "forecast": [{"day": "Pzt", "high": -12, "low": -20, "condition": "Kısmen Bulutlu", "emoji": "⛅"}, {"day": "Sal", "high": -12, "low": -21, "condition": "Karlı", "emoji": "❄️"}, {"day": "Çar", "high": -13, "low": -22, "condition": "Yoğun Kar", "emoji": "❄️"}, {"day": "Per", "high": -14, "low": -21, "condition": "Bulutlu", "emoji": "☁️"}, {"day": "Cum", "high": -15, "low": -21, "condition": "Yoğun Kar", "emoji": "❄️"}, {"day": "Cmt", "high": -15, "low": -23, "condition": "Karlı", "emoji": "❄️"}, {"day": "Paz", "high": -13, "low": -21, "condition": "Kısmen Bulutlu", "emoji": "⛅"}]},
+            gaziantep: {"city": "Gaziantep", "country": "Türkiye", "temperature": 1, "condition": "Yağmurlu", "emoji": "🌧️", "humidity": 32, "windSpeed": 19, "pressure": 1003, "uvIndex": 1, "feelsLike": -2, "visibility": 15, "dewPoint": -4, "forecast": [{"day": "Pzt", "high": 2, "low": -1, "condition": "Bulutlu", "emoji": "☁️"}, {"day": "Sal", "high": 4, "low": -4, "condition": "Yağmurlu", "emoji": "🌧️"}, {"day": "Çar", "high": 0, "low": -3, "condition": "Güneşli", "emoji": "☀️"}, {"day": "Per", "high": 3, "low": -2, "condition": "Bulutlu", "emoji": "☁️"}, {"day": "Cum", "high": 4, "low": -2, "condition": "Kısmen Bulutlu", "emoji": "⛅"}, {"day": "Cmt", "high": 3, "low": -5, "condition": "Açık", "emoji": "☀️"}, {"day": "Paz", "high": 3, "low": -2, "condition": "Yağmurlu", "emoji": "🌧️"}]},
+            giresun: {"city": "Giresun", "country": "Türkiye", "temperature": 10, "condition": "Güneşli", "emoji": "☀️", "humidity": 35, "windSpeed": 15, "pressure": 1007, "uvIndex": 1, "feelsLike": 7, "visibility": 12, "dewPoint": 7, "forecast": [{"day": "Pzt", "high": 13, "low": 8, "condition": "Şiddetli Yağmur", "emoji": "🌧️"}, {"day": "Sal", "high": 10, "low": 5, "condition": "Kısmen Bulutlu", "emoji": "⛅"}, {"day": "Çar", "high": 10, "low": 7, "condition": "Bulutlu", "emoji": "☁️"}, {"day": "Per", "high": 12, "low": 5, "condition": "Yağmurlu", "emoji": "🌧️"}, {"day": "Cum", "high": 13, "low": 6, "condition": "Güneşli", "emoji": "☀️"}, {"day": "Cmt", "high": 11, "low": 5, "condition": "Güneşli", "emoji": "☀️"}, {"day": "Paz", "high": 10, "low": 7, "condition": "Fırtınalı", "emoji": "⛈️"}]},
+            gumushane: {"city": "Gümüşhane", "country": "Türkiye", "temperature": 1, "condition": "Kısmen Bulutlu", "emoji": "⛅", "humidity": 52, "windSpeed": 16, "pressure": 1018, "uvIndex": 3, "feelsLike": 3, "visibility": 12, "dewPoint": -4, "forecast": [{"day": "Pzt", "high": 4, "low": -2, "condition": "Karla Karışık Yağmur", "emoji": "🌨️"}, {"day": "Sal", "high": 5, "low": -2, "condition": "Bulutlu", "emoji": "☁️"}, {"day": "Çar", "high": 3, "low": -2, "condition": "Karla Karışık Yağmur", "emoji": "🌨️"}, {"day": "Per", "high": 3, "low": -4, "condition": "Bulutlu", "emoji": "☁️"}, {"day": "Cum", "high": 5, "low": -3, "condition": "Kısmen Bulutlu", "emoji": "⛅"}, {"day": "Cmt", "high": 6, "low": -1, "condition": "Yağmurlu", "emoji": "🌧️"}, {"day": "Paz", "high": 4, "low": -2, "condition": "Karlı", "emoji": "❄️"}]},
+            hakkari: {"city": "Hakkari", "country": "Türkiye", "temperature": 29, "condition": "Fırtınalı", "emoji": "⛈️", "humidity": 83, "windSpeed": 22, "pressure": 1010, "uvIndex": 9, "feelsLike": 31, "visibility": 13, "dewPoint": 27, "forecast": [{"day": "Pzt", "high": 31, "low": 26, "condition": "Kısmen Bulutlu", "emoji": "⛅"}, {"day": "Sal", "high": 32, "low": 28, "condition": "Fırtınalı", "emoji": "⛈️"}, {"day": "Çar", "high": 33, "low": 29, "condition": "Yağmurlu", "emoji": "🌧️"}, {"day": "Per", "high": 34, "low": 26, "condition": "Kısmen Bulutlu", "emoji": "⛅"}, {"day": "Cum", "high": 36, "low": 29, "condition": "Güneşli", "emoji": "☀️"}, {"day": "Cmt", "high": 35, "low": 28, "condition": "Fırtınalı", "emoji": "⛈️"}, {"day": "Paz", "high": 34, "low": 26, "condition": "Güneşli", "emoji": "☀️"}]},
+            hatay: {"city": "Hatay", "country": "Türkiye", "temperature": 32, "condition": "Fırtınalı", "emoji": "⛈️", "humidity": 74, "windSpeed": 9, "pressure": 1015, "uvIndex": 1, "feelsLike": 31, "visibility": 5, "dewPoint": 26, "forecast": [{"day": "Pzt", "high": 34, "low": 29, "condition": "Güneşli", "emoji": "☀️"}, {"day": "Sal", "high": 33, "low": 30, "condition": "Yağmurlu", "emoji": "🌧️"}, {"day": "Çar", "high": 34, "low": 29, "condition": "Açık", "emoji": "☀️"}, {"day": "Per", "high": 32, "low": 27, "condition": "Yağmurlu", "emoji": "🌧️"}, {"day": "Cum", "high": 31, "low": 24, "condition": "Kısmen Bulutlu", "emoji": "⛅"}, {"day": "Cmt", "high": 32, "low": 27, "condition": "Güneşli", "emoji": "☀️"}, {"day": "Paz", "high": 33, "low": 27, "condition": "Kısmen Bulutlu", "emoji": "⛅"}]},
+            isparta: {"city": "Isparta", "country": "Türkiye", "temperature": -13, "condition": "Güneşli", "emoji": "☀️", "humidity": 88, "windSpeed": 8, "pressure": 1019, "uvIndex": 1, "feelsLike": -12, "visibility": 6, "dewPoint": -16, "forecast": [{"day": "Pzt", "high": -9, "low": -17, "condition": "Bulutlu", "emoji": "☁️"}, {"day": "Sal", "high": -9, "low": -17, "condition": "Güneşli", "emoji": "☀️"}, {"day": "Çar", "high": -9, "low": -17, "condition": "Açık", "emoji": "☀️"}, {"day": "Per", "high": -11, "low": -17, "condition": "Kısmen Bulutlu", "emoji": "⛅"}, {"day": "Cum", "high": -11, "low": -13, "condition": "Yoğun Kar", "emoji": "❄️"}, {"day": "Cmt", "high": -9, "low": -18, "condition": "Yoğun Kar", "emoji": "❄️"}, {"day": "Paz", "high": -8, "low": -14, "condition": "Yoğun Kar", "emoji": "❄️"}]},
+            mersin: {"city": "Mersin", "country": "Türkiye", "temperature": -1, "condition": "Güneşli", "emoji": "☀️", "humidity": 46, "windSpeed": 16, "pressure": 1002, "uvIndex": 4, "feelsLike": -2, "visibility": 15, "dewPoint": -4, "forecast": [{"day": "Pzt", "high": 1, "low": -5, "condition": "Güneşli", "emoji": "☀️"}, {"day": "Sal", "high": 1, "low": -3, "condition": "Karlı", "emoji": "❄️"}, {"day": "Çar", "high": 1, "low": -6, "condition": "Karlı", "emoji": "❄️"}, {"day": "Per", "high": 0, "low": -4, "condition": "Açık", "emoji": "☀️"}, {"day": "Cum", "high": 0, "low": -5, "condition": "Kısmen Bulutlu", "emoji": "⛅"}, {"day": "Cmt", "high": -2, "low": -5, "condition": "Kısmen Bulutlu", "emoji": "⛅"}, {"day": "Paz", "high": -3, "low": -9, "condition": "Bulutlu", "emoji": "☁️"}]},
+            i̇stanbul: {"city": "İstanbul", "country": "Türkiye", "temperature": 23, "condition": "Açık", "emoji": "☀️", "humidity": 88, "windSpeed": 16, "pressure": 1010, "uvIndex": 9, "feelsLike": 22, "visibility": 5, "dewPoint": 18, "forecast": [{"day": "Pzt", "high": 25, "low": 22, "condition": "Yağmurlu", "emoji": "🌧️"}, {"day": "Sal", "high": 25, "low": 23, "condition": "Güneşli", "emoji": "☀️"}, {"day": "Çar", "high": 25, "low": 22, "condition": "Fırtınalı", "emoji": "⛈️"}, {"day": "Per", "high": 26, "low": 22, "condition": "Sıcak", "emoji": "☀️"}, {"day": "Cum", "high": 27, "low": 21, "condition": "Sıcak", "emoji": "☀️"}, {"day": "Cmt", "high": 24, "low": 17, "condition": "Fırtınalı", "emoji": "⛈️"}, {"day": "Paz", "high": 23, "low": 21, "condition": "Sıcak", "emoji": "☀️"}]},
+            i̇zmir: {"city": "İzmir", "country": "Türkiye", "temperature": -13, "condition": "Açık", "emoji": "☀️", "humidity": 90, "windSpeed": 29, "pressure": 1004, "uvIndex": 3, "feelsLike": -15, "visibility": 12, "dewPoint": -17, "forecast": [{"day": "Pzt", "high": -11, "low": -15, "condition": "Kısmen Bulutlu", "emoji": "⛅"}, {"day": "Sal", "high": -8, "low": -17, "condition": "Bulutlu", "emoji": "☁️"}, {"day": "Çar", "high": -10, "low": -16, "condition": "Açık", "emoji": "☀️"}, {"day": "Per", "high": -8, "low": -15, "condition": "Bulutlu", "emoji": "☁️"}, {"day": "Cum", "high": -5, "low": -14, "condition": "Karlı", "emoji": "❄️"}, {"day": "Cmt", "high": -5, "low": -13, "condition": "Güneşli", "emoji": "☀️"}, {"day": "Paz", "high": -7, "low": -13, "condition": "Kısmen Bulutlu", "emoji": "⛅"}]},
+            kars: {"city": "Kars", "country": "Türkiye", "temperature": 10, "condition": "Yağmurlu", "emoji": "🌧️", "humidity": 52, "windSpeed": 29, "pressure": 1004, "uvIndex": 3, "feelsLike": 7, "visibility": 13, "dewPoint": 6, "forecast": [{"day": "Pzt", "high": 12, "low": 8, "condition": "Fırtınalı", "emoji": "⛈️"}, {"day": "Sal", "high": 13, "low": 6, "condition": "Bulutlu", "emoji": "☁️"}, {"day": "Çar", "high": 9, "low": 5, "condition": "Fırtınalı", "emoji": "⛈️"}, {"day": "Per", "high": 10, "low": 7, "condition": "Fırtınalı", "emoji": "⛈️"}, {"day": "Cum", "high": 11, "low": 6, "condition": "Fırtınalı", "emoji": "⛈️"}, {"day": "Cmt", "high": 9, "low": 6, "condition": "Bulutlu", "emoji": "☁️"}, {"day": "Paz", "high": 10, "low": 3, "condition": "Bulutlu", "emoji": "☁️"}]},
+            kastamonu: {"city": "Kastamonu", "country": "Türkiye", "temperature": -4, "condition": "Karlı", "emoji": "❄️", "humidity": 70, "windSpeed": 13, "pressure": 1002, "uvIndex": 2, "feelsLike": -6, "visibility": 13, "dewPoint": -6, "forecast": [{"day": "Pzt", "high": -1, "low": -5, "condition": "Yoğun Kar", "emoji": "❄️"}, {"day": "Sal", "high": 0, "low": -5, "condition": "Güneşli", "emoji": "☀️"}, {"day": "Çar", "high": 1, "low": -5, "condition": "Kısmen Bulutlu", "emoji": "⛅"}, {"day": "Per", "high": -3, "low": -8, "condition": "Karlı", "emoji": "❄️"}, {"day": "Cum", "high": -1, "low": -5, "condition": "Bulutlu", "emoji": "☁️"}, {"day": "Cmt", "high": 1, "low": -7, "condition": "Açık", "emoji": "☀️"}, {"day": "Paz", "high": 0, "low": -6, "condition": "Bulutlu", "emoji": "☁️"}]},
+            kayseri: {"city": "Kayseri", "country": "Türkiye", "temperature": 10, "condition": "Fırtınalı", "emoji": "⛈️", "humidity": 79, "windSpeed": 15, "pressure": 1009, "uvIndex": 2, "feelsLike": 9, "visibility": 5, "dewPoint": 4, "forecast": [{"day": "Pzt", "high": 13, "low": 6, "condition": "Kısmen Bulutlu", "emoji": "⛅"}, {"day": "Sal", "high": 12, "low": 6, "condition": "Güneşli", "emoji": "☀️"}, {"day": "Çar", "high": 14, "low": 6, "condition": "Güneşli", "emoji": "☀️"}, {"day": "Per", "high": 15, "low": 6, "condition": "Kısmen Bulutlu", "emoji": "⛅"}, {"day": "Cum", "high": 14, "low": 9, "condition": "Bulutlu", "emoji": "☁️"}, {"day": "Cmt", "high": 16, "low": 10, "condition": "Kısmen Bulutlu", "emoji": "⛅"}, {"day": "Paz", "high": 15, "low": 8, "condition": "Bulutlu", "emoji": "☁️"}]},
+            kirklareli: {"city": "Kırklareli", "country": "Türkiye", "temperature": 25, "condition": "Açık", "emoji": "☀️", "humidity": 44, "windSpeed": 5, "pressure": 1002, "uvIndex": 9, "feelsLike": 23, "visibility": 10, "dewPoint": 22, "forecast": [{"day": "Pzt", "high": 27, "low": 21, "condition": "Fırtınalı", "emoji": "⛈️"}, {"day": "Sal", "high": 26, "low": 21, "condition": "Güneşli", "emoji": "☀️"}, {"day": "Çar", "high": 26, "low": 20, "condition": "Kısmen Bulutlu", "emoji": "⛅"}, {"day": "Per", "high": 27, "low": 23, "condition": "Kısmen Bulutlu", "emoji": "⛅"}, {"day": "Cum", "high": 29, "low": 24, "condition": "Sıcak", "emoji": "☀️"}, {"day": "Cmt", "high": 25, "low": 20, "condition": "Açık", "emoji": "☀️"}, {"day": "Paz", "high": 25, "low": 18, "condition": "Güneşli", "emoji": "☀️"}]},
+            kirsehir: {"city": "Kırşehir", "country": "Türkiye", "temperature": 13, "condition": "Şiddetli Yağmur", "emoji": "🌧️", "humidity": 31, "windSpeed": 8, "pressure": 1007, "uvIndex": 5, "feelsLike": 11, "visibility": 13, "dewPoint": 9, "forecast": [{"day": "Pzt", "high": 14, "low": 12, "condition": "Yağmurlu", "emoji": "🌧️"}, {"day": "Sal", "high": 15, "low": 13, "condition": "Fırtınalı", "emoji": "⛈️"}, {"day": "Çar", "high": 18, "low": 9, "condition": "Kısmen Bulutlu", "emoji": "⛅"}, {"day": "Per", "high": 15, "low": 10, "condition": "Yağmurlu", "emoji": "🌧️"}, {"day": "Cum", "high": 17, "low": 11, "condition": "Kısmen Bulutlu", "emoji": "⛅"}, {"day": "Cmt", "high": 17, "low": 14, "condition": "Sıcak", "emoji": "☀️"}, {"day": "Paz", "high": 15, "low": 11, "condition": "Fırtınalı", "emoji": "⛈️"}]},
+            kocaeli: {"city": "Kocaeli", "country": "Türkiye", "temperature": -11, "condition": "Yoğun Kar", "emoji": "❄️", "humidity": 39, "windSpeed": 11, "pressure": 1019, "uvIndex": 3, "feelsLike": -9, "visibility": 14, "dewPoint": -17, "forecast": [{"day": "Pzt", "high": -9, "low": -16, "condition": "Bulutlu", "emoji": "☁️"}, {"day": "Sal", "high": -9, "low": -11, "condition": "Kısmen Bulutlu", "emoji": "⛅"}, {"day": "Çar", "high": -8, "low": -15, "condition": "Açık", "emoji": "☀️"}, {"day": "Per", "high": -10, "low": -13, "condition": "Kısmen Bulutlu", "emoji": "⛅"}, {"day": "Cum", "high": -10, "low": -15, "condition": "Kısmen Bulutlu", "emoji": "⛅"}, {"day": "Cmt", "high": -13, "low": -17, "condition": "Güneşli", "emoji": "☀️"}, {"day": "Paz", "high": -11, "low": -15, "condition": "Kısmen Bulutlu", "emoji": "⛅"}]},
+            konya: {"city": "Konya", "country": "Türkiye", "temperature": 17, "condition": "Güneşli", "emoji": "☀️", "humidity": 77, "windSpeed": 17, "pressure": 1009, "uvIndex": 10, "feelsLike": 14, "visibility": 15, "dewPoint": 12, "forecast": [{"day": "Pzt", "high": 20, "low": 13, "condition": "Açık", "emoji": "☀️"}, {"day": "Sal", "high": 18, "low": 11, "condition": "Bulutlu", "emoji": "☁️"}, {"day": "Çar", "high": 21, "low": 13, "condition": "Fırtınalı", "emoji": "⛈️"}, {"day": "Per", "high": 22, "low": 17, "condition": "Sıcak", "emoji": "☀️"}, {"day": "Cum", "high": 21, "low": 16, "condition": "Sıcak", "emoji": "☀️"}, {"day": "Cmt", "high": 22, "low": 18, "condition": "Güneşli", "emoji": "☀️"}, {"day": "Paz", "high": 24, "low": 19, "condition": "Güneşli", "emoji": "☀️"}]},
+            kutahya: {"city": "Kütahya", "country": "Türkiye", "temperature": -12, "condition": "Karlı", "emoji": "❄️", "humidity": 41, "windSpeed": 29, "pressure": 1018, "uvIndex": 4, "feelsLike": -12, "visibility": 8, "dewPoint": -18, "forecast": [{"day": "Pzt", "high": -8, "low": -14, "condition": "Bulutlu", "emoji": "☁️"}, {"day": "Sal", "high": -8, "low": -15, "condition": "Açık", "emoji": "☀️"}, {"day": "Çar", "high": -10, "low": -17, "condition": "Açık", "emoji": "☀️"}, {"day": "Per", "high": -11, "low": -15, "condition": "Bulutlu", "emoji": "☁️"}, {"day": "Cum", "high": -9, "low": -17, "condition": "Bulutlu", "emoji": "☁️"}, {"day": "Cmt", "high": -10, "low": -17, "condition": "Güneşli", "emoji": "☀️"}, {"day": "Paz", "high": -11, "low": -17, "condition": "Açık", "emoji": "☀️"}]},
+            malatya: {"city": "Malatya", "country": "Türkiye", "temperature": 19, "condition": "Fırtınalı", "emoji": "⛈️", "humidity": 34, "windSpeed": 10, "pressure": 1007, "uvIndex": 1, "feelsLike": 16, "visibility": 12, "dewPoint": 16, "forecast": [{"day": "Pzt", "high": 22, "low": 17, "condition": "Fırtınalı", "emoji": "⛈️"}, {"day": "Sal", "high": 21, "low": 13, "condition": "Kısmen Bulutlu", "emoji": "⛅"}, {"day": "Çar", "high": 19, "low": 17, "condition": "Yağmurlu", "emoji": "🌧️"}, {"day": "Per", "high": 20, "low": 17, "condition": "Sıcak", "emoji": "☀️"}, {"day": "Cum", "high": 21, "low": 17, "condition": "Yağmurlu", "emoji": "🌧️"}, {"day": "Cmt", "high": 21, "low": 15, "condition": "Kısmen Bulutlu", "emoji": "⛅"}, {"day": "Paz", "high": 20, "low": 15, "condition": "Açık", "emoji": "☀️"}]},
+            manisa: {"city": "Manisa", "country": "Türkiye", "temperature": 8, "condition": "Fırtınalı", "emoji": "⛈️", "humidity": 59, "windSpeed": 10, "pressure": 1019, "uvIndex": 3, "feelsLike": 10, "visibility": 15, "dewPoint": 5, "forecast": [{"day": "Pzt", "high": 10, "low": 3, "condition": "Güneşli", "emoji": "☀️"}, {"day": "Sal", "high": 10, "low": 6, "condition": "Kısmen Bulutlu", "emoji": "⛅"}, {"day": "Çar", "high": 11, "low": 7, "condition": "Bulutlu", "emoji": "☁️"}, {"day": "Per", "high": 12, "low": 5, "condition": "Bulutlu", "emoji": "☁️"}, {"day": "Cum", "high": 13, "low": 6, "condition": "Fırtınalı", "emoji": "⛈️"}, {"day": "Cmt", "high": 11, "low": 8, "condition": "Yağmurlu", "emoji": "🌧️"}, {"day": "Paz", "high": 11, "low": 4, "condition": "Güneşli", "emoji": "☀️"}]},
+            kahramanmaras: {"city": "Kahramanmaraş", "country": "Türkiye", "temperature": 17, "condition": "Yağmurlu", "emoji": "🌧️", "humidity": 36, "windSpeed": 25, "pressure": 1005, "uvIndex": 2, "feelsLike": 18, "visibility": 8, "dewPoint": 13, "forecast": [{"day": "Pzt", "high": 20, "low": 16, "condition": "Fırtınalı", "emoji": "⛈️"}, {"day": "Sal", "high": 20, "low": 17, "condition": "Kısmen Bulutlu", "emoji": "⛅"}, {"day": "Çar", "high": 23, "low": 15, "condition": "Sıcak", "emoji": "☀️"}, {"day": "Per", "high": 23, "low": 18, "condition": "Açık", "emoji": "☀️"}, {"day": "Cum", "high": 22, "low": 13, "condition": "Kısmen Bulutlu", "emoji": "⛅"}, {"day": "Cmt", "high": 21, "low": 17, "condition": "Fırtınalı", "emoji": "⛈️"}, {"day": "Paz", "high": 20, "low": 16, "condition": "Güneşli", "emoji": "☀️"}]},
+            mardin: {"city": "Mardin", "country": "Türkiye", "temperature": 20, "condition": "Açık", "emoji": "☀️", "humidity": 83, "windSpeed": 9, "pressure": 1017, "uvIndex": 7, "feelsLike": 19, "visibility": 6, "dewPoint": 16, "forecast": [{"day": "Pzt", "high": 21, "low": 19, "condition": "Güneşli", "emoji": "☀️"}, {"day": "Sal", "high": 22, "low": 17, "condition": "Güneşli", "emoji": "☀️"}, {"day": "Çar", "high": 23, "low": 17, "condition": "Yağmurlu", "emoji": "🌧️"}, {"day": "Per", "high": 24, "low": 19, "condition": "Güneşli", "emoji": "☀️"}, {"day": "Cum", "high": 24, "low": 21, "condition": "Açık", "emoji": "☀️"}, {"day": "Cmt", "high": 24, "low": 21, "condition": "Fırtınalı", "emoji": "⛈️"}, {"day": "Paz", "high": 26, "low": 18, "condition": "Güneşli", "emoji": "☀️"}]},
+            mugla: {"city": "Muğla", "country": "Türkiye", "temperature": 11, "condition": "Güneşli", "emoji": "☀️", "humidity": 68, "windSpeed": 22, "pressure": 1002, "uvIndex": 10, "feelsLike": 13, "visibility": 15, "dewPoint": 6, "forecast": [{"day": "Pzt", "high": 14, "low": 10, "condition": "Bulutlu", "emoji": "☁️"}, {"day": "Sal", "high": 13, "low": 10, "condition": "Güneşli", "emoji": "☀️"}, {"day": "Çar", "high": 15, "low": 10, "condition": "Şiddetli Yağmur", "emoji": "🌧️"}, {"day": "Per", "high": 12, "low": 6, "condition": "Güneşli", "emoji": "☀️"}, {"day": "Cum", "high": 11, "low": 4, "condition": "Yağmurlu", "emoji": "🌧️"}, {"day": "Cmt", "high": 11, "low": 5, "condition": "Şiddetli Yağmur", "emoji": "🌧️"}, {"day": "Paz", "high": 12, "low": 6, "condition": "Kısmen Bulutlu", "emoji": "⛅"}]},
+            mus: {"city": "Muş", "country": "Türkiye", "temperature": 21, "condition": "Kısmen Bulutlu", "emoji": "⛅", "humidity": 31, "windSpeed": 18, "pressure": 1002, "uvIndex": 4, "feelsLike": 21, "visibility": 10, "dewPoint": 18, "forecast": [{"day": "Pzt", "high": 24, "low": 19, "condition": "Açık", "emoji": "☀️"}, {"day": "Sal", "high": 22, "low": 16, "condition": "Güneşli", "emoji": "☀️"}, {"day": "Çar", "high": 22, "low": 18, "condition": "Fırtınalı", "emoji": "⛈️"}, {"day": "Per", "high": 23, "low": 17, "condition": "Kısmen Bulutlu", "emoji": "⛅"}, {"day": "Cum", "high": 21, "low": 15, "condition": "Fırtınalı", "emoji": "⛈️"}, {"day": "Cmt", "high": 23, "low": 19, "condition": "Yağmurlu", "emoji": "🌧️"}, {"day": "Paz", "high": 24, "low": 17, "condition": "Fırtınalı", "emoji": "⛈️"}]},
+            nevsehir: {"city": "Nevşehir", "country": "Türkiye", "temperature": 15, "condition": "Güneşli", "emoji": "☀️", "humidity": 56, "windSpeed": 27, "pressure": 1000, "uvIndex": 3, "feelsLike": 17, "visibility": 9, "dewPoint": 11, "forecast": [{"day": "Pzt", "high": 19, "low": 10, "condition": "Kısmen Bulutlu", "emoji": "⛅"}, {"day": "Sal", "high": 17, "low": 13, "condition": "Güneşli", "emoji": "☀️"}, {"day": "Çar", "high": 17, "low": 11, "condition": "Yağmurlu", "emoji": "🌧️"}, {"day": "Per", "high": 20, "low": 12, "condition": "Açık", "emoji": "☀️"}, {"day": "Cum", "high": 17, "low": 10, "condition": "Fırtınalı", "emoji": "⛈️"}, {"day": "Cmt", "high": 18, "low": 13, "condition": "Yağmurlu", "emoji": "🌧️"}, {"day": "Paz", "high": 18, "low": 14, "condition": "Açık", "emoji": "☀️"}]},
+            nigde: {"city": "Niğde", "country": "Türkiye", "temperature": -4, "condition": "Yoğun Kar", "emoji": "❄️", "humidity": 60, "windSpeed": 25, "pressure": 1001, "uvIndex": 1, "feelsLike": -4, "visibility": 5, "dewPoint": -7, "forecast": [{"day": "Pzt", "high": -3, "low": -7, "condition": "Açık", "emoji": "☀️"}, {"day": "Sal", "high": -1, "low": -7, "condition": "Bulutlu", "emoji": "☁️"}, {"day": "Çar", "high": -1, "low": -4, "condition": "Açık", "emoji": "☀️"}, {"day": "Per", "high": 0, "low": -7, "condition": "Güneşli", "emoji": "☀️"}, {"day": "Cum", "high": 0, "low": -4, "condition": "Güneşli", "emoji": "☀️"}, {"day": "Cmt", "high": -1, "low": -3, "condition": "Bulutlu", "emoji": "☁️"}, {"day": "Paz", "high": 2, "low": -4, "condition": "Güneşli", "emoji": "☀️"}]},
+            ordu: {"city": "Ordu", "country": "Türkiye", "temperature": 5, "condition": "Karlı", "emoji": "❄️", "humidity": 43, "windSpeed": 5, "pressure": 1009, "uvIndex": 4, "feelsLike": 3, "visibility": 6, "dewPoint": 2, "forecast": [{"day": "Pzt", "high": 8, "low": 4, "condition": "Bulutlu", "emoji": "☁️"}, {"day": "Sal", "high": 6, "low": 4, "condition": "Kısmen Bulutlu", "emoji": "⛅"}, {"day": "Çar", "high": 8, "low": 2, "condition": "Kısmen Bulutlu", "emoji": "⛅"}, {"day": "Per", "high": 9, "low": 2, "condition": "Yağmurlu", "emoji": "🌧️"}, {"day": "Cum", "high": 8, "low": 4, "condition": "Fırtınalı", "emoji": "⛈️"}, {"day": "Cmt", "high": 9, "low": 0, "condition": "Yağmurlu", "emoji": "🌧️"}, {"day": "Paz", "high": 8, "low": 1, "condition": "Karla Karışık Yağmur", "emoji": "🌨️"}]},
+            rize: {"city": "Rize", "country": "Türkiye", "temperature": 12, "condition": "Şiddetli Yağmur", "emoji": "🌧️", "humidity": 54, "windSpeed": 15, "pressure": 1006, "uvIndex": 6, "feelsLike": 10, "visibility": 9, "dewPoint": 6, "forecast": [{"day": "Pzt", "high": 15, "low": 10, "condition": "Yağmurlu", "emoji": "🌧️"}, {"day": "Sal", "high": 15, "low": 6, "condition": "Kısmen Bulutlu", "emoji": "⛅"}, {"day": "Çar", "high": 14, "low": 7, "condition": "Bulutlu", "emoji": "☁️"}, {"day": "Per", "high": 14, "low": 6, "condition": "Bulutlu", "emoji": "☁️"}, {"day": "Cum", "high": 14, "low": 8, "condition": "Şiddetli Yağmur", "emoji": "🌧️"}, {"day": "Cmt", "high": 13, "low": 7, "condition": "Şiddetli Yağmur", "emoji": "🌧️"}, {"day": "Paz", "high": 15, "low": 11, "condition": "Yağmurlu", "emoji": "🌧️"}]},
+            sakarya: {"city": "Sakarya", "country": "Türkiye", "temperature": -4, "condition": "Kısmen Bulutlu", "emoji": "⛅", "humidity": 52, "windSpeed": 30, "pressure": 1002, "uvIndex": 3, "feelsLike": -6, "visibility": 5, "dewPoint": -8, "forecast": [{"day": "Pzt", "high": -3, "low": -6, "condition": "Açık", "emoji": "☀️"}, {"day": "Sal", "high": -2, "low": -9, "condition": "Güneşli", "emoji": "☀️"}, {"day": "Çar", "high": -5, "low": -11, "condition": "Yoğun Kar", "emoji": "❄️"}, {"day": "Per", "high": -3, "low": -11, "condition": "Karlı", "emoji": "❄️"}, {"day": "Cum", "high": -6, "low": -11, "condition": "Bulutlu", "emoji": "☁️"}, {"day": "Cmt", "high": -7, "low": -11, "condition": "Karlı", "emoji": "❄️"}, {"day": "Paz", "high": -7, "low": -14, "condition": "Güneşli", "emoji": "☀️"}]},
+            samsun: {"city": "Samsun", "country": "Türkiye", "temperature": 0, "condition": "Karlı", "emoji": "❄️", "humidity": 52, "windSpeed": 14, "pressure": 1002, "uvIndex": 3, "feelsLike": 1, "visibility": 5, "dewPoint": -2, "forecast": [{"day": "Pzt", "high": 1, "low": -2, "condition": "Güneşli", "emoji": "☀️"}, {"day": "Sal", "high": 0, "low": -5, "condition": "Kısmen Bulutlu", "emoji": "⛅"}, {"day": "Çar", "high": 2, "low": -4, "condition": "Kısmen Bulutlu", "emoji": "⛅"}, {"day": "Per", "high": 0, "low": -7, "condition": "Kısmen Bulutlu", "emoji": "⛅"}, {"day": "Cum", "high": 2, "low": -2, "condition": "Kısmen Bulutlu", "emoji": "⛅"}, {"day": "Cmt", "high": 2, "low": -4, "condition": "Karlı", "emoji": "❄️"}, {"day": "Paz", "high": 2, "low": -5, "condition": "Bulutlu", "emoji": "☁️"}]},
+            siirt: {"city": "Siirt", "country": "Türkiye", "temperature": -1, "condition": "Kısmen Bulutlu", "emoji": "⛅", "humidity": 55, "windSpeed": 5, "pressure": 1011, "uvIndex": 4, "feelsLike": -3, "visibility": 14, "dewPoint": -3, "forecast": [{"day": "Pzt", "high": 2, "low": -5, "condition": "Yoğun Kar", "emoji": "❄️"}, {"day": "Sal", "high": 1, "low": -5, "condition": "Açık", "emoji": "☀️"}, {"day": "Çar", "high": 0, "low": -4, "condition": "Güneşli", "emoji": "☀️"}, {"day": "Per", "high": 3, "low": -5, "condition": "Kısmen Bulutlu", "emoji": "⛅"}, {"day": "Cum", "high": 2, "low": -7, "condition": "Güneşli", "emoji": "☀️"}, {"day": "Cmt", "high": 0, "low": -3, "condition": "Bulutlu", "emoji": "☁️"}, {"day": "Paz", "high": -1, "low": -7, "condition": "Yoğun Kar", "emoji": "❄️"}]},
+            sinop: {"city": "Sinop", "country": "Türkiye", "temperature": -4, "condition": "Bulutlu", "emoji": "☁️", "humidity": 42, "windSpeed": 11, "pressure": 1002, "uvIndex": 4, "feelsLike": -3, "visibility": 7, "dewPoint": -8, "forecast": [{"day": "Pzt", "high": -3, "low": -6, "condition": "Güneşli", "emoji": "☀️"}, {"day": "Sal", "high": -3, "low": -9, "condition": "Karlı", "emoji": "❄️"}, {"day": "Çar", "high": -3, "low": -6, "condition": "Bulutlu", "emoji": "☁️"}, {"day": "Per", "high": 1, "low": -4, "condition": "Bulutlu", "emoji": "☁️"}, {"day": "Cum", "high": -1, "low": -8, "condition": "Güneşli", "emoji": "☀️"}, {"day": "Cmt", "high": -2, "low": -10, "condition": "Güneşli", "emoji": "☀️"}, {"day": "Paz", "high": -1, "low": -9, "condition": "Yoğun Kar", "emoji": "❄️"}]},
+            sivas: {"city": "Sivas", "country": "Türkiye", "temperature": 14, "condition": "Yağmurlu", "emoji": "🌧️", "humidity": 33, "windSpeed": 29, "pressure": 1006, "uvIndex": 2, "feelsLike": 15, "visibility": 13, "dewPoint": 11, "forecast": [{"day": "Pzt", "high": 17, "low": 10, "condition": "Bulutlu", "emoji": "☁️"}, {"day": "Sal", "high": 14, "low": 11, "condition": "Kısmen Bulutlu", "emoji": "⛅"}, {"day": "Çar", "high": 16, "low": 11, "condition": "Güneşli", "emoji": "☀️"}, {"day": "Per", "high": 18, "low": 11, "condition": "Şiddetli Yağmur", "emoji": "🌧️"}, {"day": "Cum", "high": 17, "low": 14, "condition": "Yağmurlu", "emoji": "🌧️"}, {"day": "Cmt", "high": 19, "low": 10, "condition": "Kısmen Bulutlu", "emoji": "⛅"}, {"day": "Paz", "high": 20, "low": 14, "condition": "Güneşli", "emoji": "☀️"}]},
+            tekirdag: {"city": "Tekirdağ", "country": "Türkiye", "temperature": 24, "condition": "Sıcak", "emoji": "☀️", "humidity": 41, "windSpeed": 22, "pressure": 1008, "uvIndex": 3, "feelsLike": 24, "visibility": 6, "dewPoint": 22, "forecast": [{"day": "Pzt", "high": 26, "low": 19, "condition": "Yağmurlu", "emoji": "🌧️"}, {"day": "Sal", "high": 25, "low": 22, "condition": "Fırtınalı", "emoji": "⛈️"}, {"day": "Çar", "high": 24, "low": 19, "condition": "Kısmen Bulutlu", "emoji": "⛅"}, {"day": "Per", "high": 23, "low": 21, "condition": "Yağmurlu", "emoji": "🌧️"}, {"day": "Cum", "high": 27, "low": 20, "condition": "Açık", "emoji": "☀️"}, {"day": "Cmt", "high": 26, "low": 21, "condition": "Açık", "emoji": "☀️"}, {"day": "Paz", "high": 28, "low": 19, "condition": "Güneşli", "emoji": "☀️"}]},
+            tokat: {"city": "Tokat", "country": "Türkiye", "temperature": 5, "condition": "Bulutlu", "emoji": "☁️", "humidity": 75, "windSpeed": 16, "pressure": 1013, "uvIndex": 4, "feelsLike": 7, "visibility": 5, "dewPoint": 0, "forecast": [{"day": "Pzt", "high": 9, "low": 2, "condition": "Şiddetli Yağmur", "emoji": "🌧️"}, {"day": "Sal", "high": 9, "low": 2, "condition": "Şiddetli Yağmur", "emoji": "🌧️"}, {"day": "Çar", "high": 9, "low": 3, "condition": "Yağmurlu", "emoji": "🌧️"}, {"day": "Per", "high": 10, "low": 1, "condition": "Bulutlu", "emoji": "☁️"}, {"day": "Cum", "high": 8, "low": 6, "condition": "Yağmurlu", "emoji": "🌧️"}, {"day": "Cmt", "high": 10, "low": 3, "condition": "Güneşli", "emoji": "☀️"}, {"day": "Paz", "high": 9, "low": 4, "condition": "Güneşli", "emoji": "☀️"}]},
+            trabzon: {"city": "Trabzon", "country": "Türkiye", "temperature": 3, "condition": "Karlı", "emoji": "❄️", "humidity": 48, "windSpeed": 10, "pressure": 1003, "uvIndex": 1, "feelsLike": 1, "visibility": 8, "dewPoint": -1, "forecast": [{"day": "Pzt", "high": 5, "low": -2, "condition": "Karla Karışık Yağmur", "emoji": "🌨️"}, {"day": "Sal", "high": 6, "low": 0, "condition": "Karlı", "emoji": "❄️"}, {"day": "Çar", "high": 2, "low": -4, "condition": "Kısmen Bulutlu", "emoji": "⛅"}, {"day": "Per", "high": 3, "low": -1, "condition": "Kısmen Bulutlu", "emoji": "⛅"}, {"day": "Cum", "high": 5, "low": -4, "condition": "Kısmen Bulutlu", "emoji": "⛅"}, {"day": "Cmt", "high": 5, "low": 0, "condition": "Bulutlu", "emoji": "☁️"}, {"day": "Paz", "high": 4, "low": -4, "condition": "Karlı", "emoji": "❄️"}]},
+            tunceli: {"city": "Tunceli", "country": "Türkiye", "temperature": -3, "condition": "Kısmen Bulutlu", "emoji": "⛅", "humidity": 46, "windSpeed": 13, "pressure": 1020, "uvIndex": 3, "feelsLike": -1, "visibility": 12, "dewPoint": -9, "forecast": [{"day": "Pzt", "high": 1, "low": -4, "condition": "Karlı", "emoji": "❄️"}, {"day": "Sal", "high": 0, "low": -4, "condition": "Karlı", "emoji": "❄️"}, {"day": "Çar", "high": 1, "low": -5, "condition": "Açık", "emoji": "☀️"}, {"day": "Per", "high": -2, "low": -8, "condition": "Güneşli", "emoji": "☀️"}, {"day": "Cum", "high": -4, "low": -7, "condition": "Kısmen Bulutlu", "emoji": "⛅"}, {"day": "Cmt", "high": -2, "low": -9, "condition": "Güneşli", "emoji": "☀️"}, {"day": "Paz", "high": -2, "low": -9, "condition": "Kısmen Bulutlu", "emoji": "⛅"}]},
+            sanliurfa: {"city": "Şanlıurfa", "country": "Türkiye", "temperature": 14, "condition": "Şiddetli Yağmur", "emoji": "🌧️", "humidity": 90, "windSpeed": 27, "pressure": 1019, "uvIndex": 10, "feelsLike": 12, "visibility": 9, "dewPoint": 10, "forecast": [{"day": "Pzt", "high": 18, "low": 13, "condition": "Fırtınalı", "emoji": "⛈️"}, {"day": "Sal", "high": 15, "low": 9, "condition": "Yağmurlu", "emoji": "🌧️"}, {"day": "Çar", "high": 14, "low": 10, "condition": "Yağmurlu", "emoji": "🌧️"}, {"day": "Per", "high": 16, "low": 7, "condition": "Fırtınalı", "emoji": "⛈️"}, {"day": "Cum", "high": 15, "low": 9, "condition": "Bulutlu", "emoji": "☁️"}, {"day": "Cmt", "high": 16, "low": 7, "condition": "Kısmen Bulutlu", "emoji": "⛅"}, {"day": "Paz", "high": 14, "low": 9, "condition": "Fırtınalı", "emoji": "⛈️"}]},
+            usak: {"city": "Uşak", "country": "Türkiye", "temperature": 18, "condition": "Sıcak", "emoji": "☀️", "humidity": 38, "windSpeed": 11, "pressure": 1006, "uvIndex": 10, "feelsLike": 16, "visibility": 13, "dewPoint": 14, "forecast": [{"day": "Pzt", "high": 19, "low": 17, "condition": "Yağmurlu", "emoji": "🌧️"}, {"day": "Sal", "high": 19, "low": 16, "condition": "Güneşli", "emoji": "☀️"}, {"day": "Çar", "high": 19, "low": 13, "condition": "Fırtınalı", "emoji": "⛈️"}, {"day": "Per", "high": 23, "low": 15, "condition": "Yağmurlu", "emoji": "🌧️"}, {"day": "Cum", "high": 22, "low": 18, "condition": "Yağmurlu", "emoji": "🌧️"}, {"day": "Cmt", "high": 19, "low": 13, "condition": "Yağmurlu", "emoji": "🌧️"}, {"day": "Paz", "high": 20, "low": 15, "condition": "Güneşli", "emoji": "☀️"}]},
+            van: {"city": "Van", "country": "Türkiye", "temperature": 32, "condition": "Fırtınalı", "emoji": "⛈️", "humidity": 43, "windSpeed": 13, "pressure": 1019, "uvIndex": 3, "feelsLike": 33, "visibility": 5, "dewPoint": 26, "forecast": [{"day": "Pzt", "high": 36, "low": 29, "condition": "Kısmen Bulutlu", "emoji": "⛅"}, {"day": "Sal", "high": 34, "low": 29, "condition": "Kısmen Bulutlu", "emoji": "⛅"}, {"day": "Çar", "high": 35, "low": 26, "condition": "Sıcak", "emoji": "☀️"}, {"day": "Per", "high": 34, "low": 31, "condition": "Yağmurlu", "emoji": "🌧️"}, {"day": "Cum", "high": 34, "low": 30, "condition": "Kısmen Bulutlu", "emoji": "⛅"}, {"day": "Cmt", "high": 36, "low": 31, "condition": "Yağmurlu", "emoji": "🌧️"}, {"day": "Paz", "high": 33, "low": 31, "condition": "Güneşli", "emoji": "☀️"}]},
+            yozgat: {"city": "Yozgat", "country": "Türkiye", "temperature": -11, "condition": "Yoğun Kar", "emoji": "❄️", "humidity": 39, "windSpeed": 14, "pressure": 1004, "uvIndex": 1, "feelsLike": -9, "visibility": 6, "dewPoint": -15, "forecast": [{"day": "Pzt", "high": -7, "low": -12, "condition": "Açık", "emoji": "☀️"}, {"day": "Sal", "high": -10, "low": -12, "condition": "Açık", "emoji": "☀️"}, {"day": "Çar", "high": -11, "low": -13, "condition": "Açık", "emoji": "☀️"}, {"day": "Per", "high": -12, "low": -15, "condition": "Bulutlu", "emoji": "☁️"}, {"day": "Cum", "high": -9, "low": -16, "condition": "Yoğun Kar", "emoji": "❄️"}, {"day": "Cmt", "high": -12, "low": -15, "condition": "Karlı", "emoji": "❄️"}, {"day": "Paz", "high": -10, "low": -16, "condition": "Güneşli", "emoji": "☀️"}]},
+            zonguldak: {"city": "Zonguldak", "country": "Türkiye", "temperature": 12, "condition": "Şiddetli Yağmur", "emoji": "🌧️", "humidity": 79, "windSpeed": 28, "pressure": 1006, "uvIndex": 1, "feelsLike": 9, "visibility": 11, "dewPoint": 8, "forecast": [{"day": "Pzt", "high": 13, "low": 7, "condition": "Fırtınalı", "emoji": "⛈️"}, {"day": "Sal", "high": 13, "low": 6, "condition": "Yağmurlu", "emoji": "🌧️"}, {"day": "Çar", "high": 14, "low": 7, "condition": "Kısmen Bulutlu", "emoji": "⛅"}, {"day": "Per", "high": 14, "low": 9, "condition": "Bulutlu", "emoji": "☁️"}, {"day": "Cum", "high": 12, "low": 6, "condition": "Şiddetli Yağmur", "emoji": "🌧️"}, {"day": "Cmt", "high": 16, "low": 11, "condition": "Yağmurlu", "emoji": "🌧️"}, {"day": "Paz", "high": 13, "low": 7, "condition": "Kısmen Bulutlu", "emoji": "⛅"}]},
+            aksaray: {"city": "Aksaray", "country": "Türkiye", "temperature": 22, "condition": "Kısmen Bulutlu", "emoji": "⛅", "humidity": 35, "windSpeed": 20, "pressure": 1012, "uvIndex": 4, "feelsLike": 20, "visibility": 10, "dewPoint": 18, "forecast": [{"day": "Pzt", "high": 23, "low": 20, "condition": "Sıcak", "emoji": "☀️"}, {"day": "Sal", "high": 23, "low": 20, "condition": "Açık", "emoji": "☀️"}, {"day": "Çar", "high": 23, "low": 21, "condition": "Kısmen Bulutlu", "emoji": "⛅"}, {"day": "Per", "high": 27, "low": 19, "condition": "Kısmen Bulutlu", "emoji": "⛅"}, {"day": "Cum", "high": 26, "low": 19, "condition": "Fırtınalı", "emoji": "⛈️"}, {"day": "Cmt", "high": 27, "low": 22, "condition": "Sıcak", "emoji": "☀️"}, {"day": "Paz", "high": 28, "low": 23, "condition": "Güneşli", "emoji": "☀️"}]},
+            bayburt: {"city": "Bayburt", "country": "Türkiye", "temperature": 27, "condition": "Güneşli", "emoji": "☀️", "humidity": 86, "windSpeed": 19, "pressure": 1017, "uvIndex": 8, "feelsLike": 25, "visibility": 8, "dewPoint": 23, "forecast": [{"day": "Pzt", "high": 31, "low": 25, "condition": "Sıcak", "emoji": "☀️"}, {"day": "Sal", "high": 28, "low": 22, "condition": "Yağmurlu", "emoji": "🌧️"}, {"day": "Çar", "high": 30, "low": 26, "condition": "Açık", "emoji": "☀️"}, {"day": "Per", "high": 29, "low": 23, "condition": "Açık", "emoji": "☀️"}, {"day": "Cum", "high": 31, "low": 26, "condition": "Açık", "emoji": "☀️"}, {"day": "Cmt", "high": 31, "low": 23, "condition": "Kısmen Bulutlu", "emoji": "⛅"}, {"day": "Paz", "high": 31, "low": 25, "condition": "Açık", "emoji": "☀️"}]},
+            karaman: {"city": "Karaman", "country": "Türkiye", "temperature": -9, "condition": "Yoğun Kar", "emoji": "❄️", "humidity": 90, "windSpeed": 21, "pressure": 1003, "uvIndex": 3, "feelsLike": -9, "visibility": 14, "dewPoint": -12, "forecast": [{"day": "Pzt", "high": -5, "low": -14, "condition": "Güneşli", "emoji": "☀️"}, {"day": "Sal", "high": -5, "low": -10, "condition": "Kısmen Bulutlu", "emoji": "⛅"}, {"day": "Çar", "high": -6, "low": -9, "condition": "Açık", "emoji": "☀️"}, {"day": "Per", "high": -4, "low": -12, "condition": "Güneşli", "emoji": "☀️"}, {"day": "Cum", "high": -6, "low": -10, "condition": "Yoğun Kar", "emoji": "❄️"}, {"day": "Cmt", "high": -5, "low": -11, "condition": "Açık", "emoji": "☀️"}, {"day": "Paz", "high": -7, "low": -11, "condition": "Karlı", "emoji": "❄️"}]},
+            kirikkale: {"city": "Kırıkkale", "country": "Türkiye", "temperature": 25, "condition": "Yağmurlu", "emoji": "🌧️", "humidity": 60, "windSpeed": 5, "pressure": 1000, "uvIndex": 9, "feelsLike": 27, "visibility": 6, "dewPoint": 23, "forecast": [{"day": "Pzt", "high": 29, "low": 24, "condition": "Fırtınalı", "emoji": "⛈️"}, {"day": "Sal", "high": 25, "low": 19, "condition": "Fırtınalı", "emoji": "⛈️"}, {"day": "Çar", "high": 27, "low": 18, "condition": "Açık", "emoji": "☀️"}, {"day": "Per", "high": 27, "low": 21, "condition": "Fırtınalı", "emoji": "⛈️"}, {"day": "Cum", "high": 27, "low": 22, "condition": "Güneşli", "emoji": "☀️"}, {"day": "Cmt", "high": 28, "low": 20, "condition": "Sıcak", "emoji": "☀️"}, {"day": "Paz", "high": 28, "low": 21, "condition": "Açık", "emoji": "☀️"}]},
+            batman: {"city": "Batman", "country": "Türkiye", "temperature": 33, "condition": "Fırtınalı", "emoji": "⛈️", "humidity": 62, "windSpeed": 24, "pressure": 1007, "uvIndex": 1, "feelsLike": 34, "visibility": 9, "dewPoint": 27, "forecast": [{"day": "Pzt", "high": 36, "low": 28, "condition": "Kısmen Bulutlu", "emoji": "⛅"}, {"day": "Sal", "high": 37, "low": 30, "condition": "Fırtınalı", "emoji": "⛈️"}, {"day": "Çar", "high": 36, "low": 31, "condition": "Açık", "emoji": "☀️"}, {"day": "Per", "high": 39, "low": 31, "condition": "Açık", "emoji": "☀️"}, {"day": "Cum", "high": 36, "low": 33, "condition": "Kısmen Bulutlu", "emoji": "⛅"}, {"day": "Cmt", "high": 36, "low": 32, "condition": "Açık", "emoji": "☀️"}, {"day": "Paz", "high": 38, "low": 32, "condition": "Yağmurlu", "emoji": "🌧️"}]},
+            sirnak: {"city": "Şırnak", "country": "Türkiye", "temperature": 26, "condition": "Yağmurlu", "emoji": "🌧️", "humidity": 55, "windSpeed": 24, "pressure": 1008, "uvIndex": 1, "feelsLike": 25, "visibility": 12, "dewPoint": 23, "forecast": [{"day": "Pzt", "high": 30, "low": 25, "condition": "Güneşli", "emoji": "☀️"}, {"day": "Sal", "high": 29, "low": 24, "condition": "Açık", "emoji": "☀️"}, {"day": "Çar", "high": 28, "low": 24, "condition": "Fırtınalı", "emoji": "⛈️"}, {"day": "Per", "high": 28, "low": 24, "condition": "Açık", "emoji": "☀️"}, {"day": "Cum", "high": 28, "low": 21, "condition": "Kısmen Bulutlu", "emoji": "⛅"}, {"day": "Cmt", "high": 30, "low": 22, "condition": "Sıcak", "emoji": "☀️"}, {"day": "Paz", "high": 28, "low": 25, "condition": "Fırtınalı", "emoji": "⛈️"}]},
+            bartin: {"city": "Bartın", "country": "Türkiye", "temperature": -15, "condition": "Açık", "emoji": "☀️", "humidity": 55, "windSpeed": 12, "pressure": 1000, "uvIndex": 3, "feelsLike": -15, "visibility": 9, "dewPoint": -19, "forecast": [{"day": "Pzt", "high": -11, "low": -20, "condition": "Güneşli", "emoji": "☀️"}, {"day": "Sal", "high": -12, "low": -17, "condition": "Karlı", "emoji": "❄️"}, {"day": "Çar", "high": -10, "low": -18, "condition": "Kısmen Bulutlu", "emoji": "⛅"}, {"day": "Per", "high": -12, "low": -18, "condition": "Güneşli", "emoji": "☀️"}, {"day": "Cum", "high": -10, "low": -19, "condition": "Kısmen Bulutlu", "emoji": "⛅"}, {"day": "Cmt", "high": -9, "low": -17, "condition": "Karlı", "emoji": "❄️"}, {"day": "Paz", "high": -10, "low": -15, "condition": "Karlı", "emoji": "❄️"}]},
+            ardahan: {"city": "Ardahan", "country": "Türkiye", "temperature": -12, "condition": "Güneşli", "emoji": "☀️", "humidity": 74, "windSpeed": 25, "pressure": 1002, "uvIndex": 2, "feelsLike": -14, "visibility": 8, "dewPoint": -17, "forecast": [{"day": "Pzt", "high": -10, "low": -14, "condition": "Güneşli", "emoji": "☀️"}, {"day": "Sal", "high": -10, "low": -17, "condition": "Açık", "emoji": "☀️"}, {"day": "Çar", "high": -9, "low": -17, "condition": "Bulutlu", "emoji": "☁️"}, {"day": "Per", "high": -8, "low": -13, "condition": "Açık", "emoji": "☀️"}, {"day": "Cum", "high": -9, "low": -16, "condition": "Açık", "emoji": "☀️"}, {"day": "Cmt", "high": -7, "low": -15, "condition": "Güneşli", "emoji": "☀️"}, {"day": "Paz", "high": -8, "low": -13, "condition": "Yoğun Kar", "emoji": "❄️"}]},
+            igdir: {"city": "Iğdır", "country": "Türkiye", "temperature": 2, "condition": "Yağmurlu", "emoji": "🌧️", "humidity": 79, "windSpeed": 7, "pressure": 1001, "uvIndex": 4, "feelsLike": 4, "visibility": 9, "dewPoint": -2, "forecast": [{"day": "Pzt", "high": 6, "low": -1, "condition": "Kısmen Bulutlu", "emoji": "⛅"}, {"day": "Sal", "high": 4, "low": -3, "condition": "Bulutlu", "emoji": "☁️"}, {"day": "Çar", "high": 6, "low": 0, "condition": "Karlı", "emoji": "❄️"}, {"day": "Per", "high": 3, "low": -3, "condition": "Karla Karışık Yağmur", "emoji": "🌨️"}, {"day": "Cum", "high": 3, "low": -2, "condition": "Karla Karışık Yağmur", "emoji": "🌨️"}, {"day": "Cmt", "high": 5, "low": -1, "condition": "Yağmurlu", "emoji": "🌧️"}, {"day": "Paz", "high": 5, "low": -3, "condition": "Yağmurlu", "emoji": "🌧️"}]},
+            yalova: {"city": "Yalova", "country": "Türkiye", "temperature": 21, "condition": "Fırtınalı", "emoji": "⛈️", "humidity": 86, "windSpeed": 11, "pressure": 1012, "uvIndex": 6, "feelsLike": 21, "visibility": 7, "dewPoint": 19, "forecast": [{"day": "Pzt", "high": 23, "low": 19, "condition": "Açık", "emoji": "☀️"}, {"day": "Sal", "high": 25, "low": 16, "condition": "Kısmen Bulutlu", "emoji": "⛅"}, {"day": "Çar", "high": 21, "low": 16, "condition": "Güneşli", "emoji": "☀️"}, {"day": "Per", "high": 24, "low": 16, "condition": "Fırtınalı", "emoji": "⛈️"}, {"day": "Cum", "high": 22, "low": 14, "condition": "Kısmen Bulutlu", "emoji": "⛅"}, {"day": "Cmt", "high": 20, "low": 17, "condition": "Yağmurlu", "emoji": "🌧️"}, {"day": "Paz", "high": 19, "low": 14, "condition": "Fırtınalı", "emoji": "⛈️"}]},
+            karabuk: {"city": "Karabük", "country": "Türkiye", "temperature": -3, "condition": "Açık", "emoji": "☀️", "humidity": 39, "windSpeed": 17, "pressure": 1000, "uvIndex": 3, "feelsLike": -6, "visibility": 14, "dewPoint": -7, "forecast": [{"day": "Pzt", "high": -1, "low": -7, "condition": "Yoğun Kar", "emoji": "❄️"}, {"day": "Sal", "high": 0, "low": -6, "condition": "Yoğun Kar", "emoji": "❄️"}, {"day": "Çar", "high": 1, "low": -7, "condition": "Açık", "emoji": "☀️"}, {"day": "Per", "high": 0, "low": -8, "condition": "Karlı", "emoji": "❄️"}, {"day": "Cum", "high": 0, "low": -8, "condition": "Karlı", "emoji": "❄️"}, {"day": "Cmt", "high": 0, "low": -5, "condition": "Yoğun Kar", "emoji": "❄️"}, {"day": "Paz", "high": 1, "low": -8, "condition": "Yoğun Kar", "emoji": "❄️"}]},
+            kilis: {"city": "Kilis", "country": "Türkiye", "temperature": 11, "condition": "Fırtınalı", "emoji": "⛈️", "humidity": 32, "windSpeed": 25, "pressure": 1019, "uvIndex": 1, "feelsLike": 8, "visibility": 6, "dewPoint": 6, "forecast": [{"day": "Pzt", "high": 13, "low": 8, "condition": "Şiddetli Yağmur", "emoji": "🌧️"}, {"day": "Sal", "high": 13, "low": 10, "condition": "Kısmen Bulutlu", "emoji": "⛅"}, {"day": "Çar", "high": 14, "low": 11, "condition": "Şiddetli Yağmur", "emoji": "🌧️"}, {"day": "Per", "high": 14, "low": 7, "condition": "Yağmurlu", "emoji": "🌧️"}, {"day": "Cum", "high": 15, "low": 9, "condition": "Şiddetli Yağmur", "emoji": "🌧️"}, {"day": "Cmt", "high": 11, "low": 7, "condition": "Bulutlu", "emoji": "☁️"}, {"day": "Paz", "high": 14, "low": 9, "condition": "Kısmen Bulutlu", "emoji": "⛅"}]},
+            osmaniye: {"city": "Osmaniye", "country": "Türkiye", "temperature": 20, "condition": "Sıcak", "emoji": "☀️", "humidity": 49, "windSpeed": 25, "pressure": 1001, "uvIndex": 9, "feelsLike": 19, "visibility": 5, "dewPoint": 16, "forecast": [{"day": "Pzt", "high": 22, "low": 19, "condition": "Kısmen Bulutlu", "emoji": "⛅"}, {"day": "Sal", "high": 22, "low": 20, "condition": "Açık", "emoji": "☀️"}, {"day": "Çar", "high": 23, "low": 17, "condition": "Sıcak", "emoji": "☀️"}, {"day": "Per", "high": 21, "low": 18, "condition": "Fırtınalı", "emoji": "⛈️"}, {"day": "Cum", "high": 22, "low": 15, "condition": "Yağmurlu", "emoji": "🌧️"}, {"day": "Cmt", "high": 22, "low": 15, "condition": "Açık", "emoji": "☀️"}, {"day": "Paz", "high": 21, "low": 17, "condition": "Kısmen Bulutlu", "emoji": "⛅"}]},
+            duzce: {"city": "Düzce", "country": "Türkiye", "temperature": -5, "condition": "Yoğun Kar", "emoji": "❄️", "humidity": 88, "windSpeed": 20, "pressure": 1001, "uvIndex": 2, "feelsLike": -4, "visibility": 10, "dewPoint": -7, "forecast": [{"day": "Pzt", "high": -4, "low": -8, "condition": "Kısmen Bulutlu", "emoji": "⛅"}, {"day": "Sal", "high": -5, "low": -7, "condition": "Yoğun Kar", "emoji": "❄️"}, {"day": "Çar", "high": -5, "low": -7, "condition": "Yoğun Kar", "emoji": "❄️"}, {"day": "Per", "high": -3, "low": -10, "condition": "Karlı", "emoji": "❄️"}, {"day": "Cum", "high": -7, "low": -11, "condition": "Karlı", "emoji": "❄️"}, {"day": "Cmt", "high": -3, "low": -12, "condition": "Açık", "emoji": "☀️"}, {"day": "Paz", "high": -5, "low": -7, "condition": "Kısmen Bulutlu", "emoji": "⛅"}]},
+            gonen: {"city": "Gönen", "country": "Türkiye", "temperature": 10, "condition": "Güneşli", "emoji": "☀️", "humidity": 77, "windSpeed": 27, "pressure": 1014, "uvIndex": 2, "feelsLike": 10, "visibility": 5, "dewPoint": 7, "forecast": [{"day": "Pzt", "high": 13, "low": 7, "condition": "Yağmurlu", "emoji": "🌧️"}, {"day": "Sal", "high": 13, "low": 9, "condition": "Fırtınalı", "emoji": "⛈️"}, {"day": "Çar", "high": 12, "low": 9, "condition": "Yağmurlu", "emoji": "🌧️"}, {"day": "Per", "high": 13, "low": 9, "condition": "Yağmurlu", "emoji": "🌧️"}, {"day": "Cum", "high": 15, "low": 7, "condition": "Kısmen Bulutlu", "emoji": "⛅"}, {"day": "Cmt", "high": 14, "low": 10, "condition": "Fırtınalı", "emoji": "⛈️"}, {"day": "Paz", "high": 13, "low": 11, "condition": "Bulutlu", "emoji": "☁️"}]},
+            bandirma: {"city": "Bandırma", "country": "Türkiye", "temperature": -2, "condition": "Kısmen Bulutlu", "emoji": "⛅", "humidity": 31, "windSpeed": 5, "pressure": 1008, "uvIndex": 2, "feelsLike": -1, "visibility": 13, "dewPoint": -5, "forecast": [{"day": "Pzt", "high": 2, "low": -7, "condition": "Açık", "emoji": "☀️"}, {"day": "Sal", "high": 0, "low": -7, "condition": "Bulutlu", "emoji": "☁️"}, {"day": "Çar", "high": 0, "low": -5, "condition": "Karlı", "emoji": "❄️"}, {"day": "Per", "high": 0, "low": -6, "condition": "Bulutlu", "emoji": "☁️"}, {"day": "Cum", "high": 3, "low": -4, "condition": "Açık", "emoji": "☀️"}, {"day": "Cmt", "high": 2, "low": -5, "condition": "Karlı", "emoji": "❄️"}, {"day": "Paz", "high": 2, "low": -5, "condition": "Açık", "emoji": "☀️"}]}
+        };
+
+        const sidebar = document.getElementById('sidebar');
+        const sidebarTrigger = document.getElementById('sidebarTrigger');
+        const sidebarBackdrop = document.getElementById('sidebarBackdrop');
+
+        function closeSidebar() {
+            sidebar.classList.remove('visible');
+            sidebarBackdrop.classList.remove('visible');
+        }
+
+        function openSidebar() {
+            sidebar.classList.add('visible');
+            sidebarBackdrop.classList.add('visible');
+        }
+
+        sidebarTrigger.addEventListener('click', openSidebar);
+        sidebarTrigger.addEventListener('mouseenter', openSidebar);
+        sidebar.addEventListener('mouseleave', (e) => {
+            const mapContainer = document.getElementById('mapContainer');
+            if (mapContainer && mapContainer.style.display === 'block') return; // Harita açıksa menü kapanmasın
+            closeSidebar();
+        });
+        sidebarBackdrop.addEventListener('click', closeSidebar);
+
+        // Arama Formu İşlemi
+        document.getElementById('searchForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            let searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
+            const charMap = { 'ı': 'i', 'ğ': 'g', 'ü': 'u', 'ş': 's', 'ö': 'o', 'ç': 'c' };
+            searchTerm = searchTerm.replace(/[ığüşöç]/g, match => charMap[match]);
+
+            if (citiesWeatherData[searchTerm]) {
+                const targetButton = document.querySelector(`.city-btn[data-city="${searchTerm}"]`);
+                loadWeather(searchTerm, targetButton);
+                closeSidebar();
+            } else {
+                alert("Şehir bulunamadı! Lütfen kayıtlı şehirleri deneyin (Örn: Gönen, Bandırma, Londra).");
+            }
+            document.getElementById('searchInput').value = '';
+        });
+
+        function feelingLucky() {
+            const keys = Object.keys(citiesWeatherData);
+            if (keys.length === 0) return;
+            const randomKey = keys[Math.floor(Math.random() * keys.length)];
+            const btn = document.querySelector(`.city-btn[data-city="${randomKey}"]`);
+            if (btn) btn.click();
+        }
+
+        function createCityButtons() {
+            const selector = document.getElementById('citySelector');
+            const sortedKeys = Object.keys(citiesWeatherData).sort((a,b) => citiesWeatherData[a].city.localeCompare(citiesWeatherData[b].city, 'tr'));
+            sortedKeys.forEach((key, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'city-btn';
+                btn.textContent = citiesWeatherData[key].city;
+                btn.dataset.city = key;
+                btn.onclick = () => {
+                    loadWeather(key, btn);
+                    closeSidebar();
+                };
+                selector.appendChild(btn);
+                if (index === 0) btn.click();
+            });
+        }
+
+        // Arka Plan Videosunu ve Sesini Değiştiren DOM Fonksiyonu
+        let isSoundEnabled = false;
+
+        function toggleAmbientSound() {
+            const audio = document.getElementById('ambient-audio');
+            const btn = document.getElementById('soundToggleBtn');
+            isSoundEnabled = !isSoundEnabled;
+            
+            if (isSoundEnabled) {
+                audio.play().catch(e => console.log("Otomatik ses oynatma engellendi."));
+                btn.innerHTML = "🔊 Ses: Açık";
+                btn.classList.add("active");
+            } else {
+                audio.pause();
+                btn.innerHTML = "🔇 Ses: Kapalı";
+                btn.classList.remove("active");
+            }
+        }
+
+        function updateBackgroundVideo(condition) {
+            const videoElement = document.getElementById('bg-video');
+            const sourceElement = document.getElementById('bg-video-source');
+            const audioElement = document.getElementById('ambient-audio');
+
+            let targetVideo = 'videolar/gunesli.mp4';
+            let targetAudio = 'https://upload.wikimedia.org/wikipedia/commons/2/23/Birds_in_spring.ogg'; // Default sunny chill wind
+
+            const condLower = condition.toLowerCase();
+
+            // Hava durumuna göre video ve ses ataması
+            if (condLower.includes('yağmur')) {
+                targetVideo = 'videolar/yagmur.mp4';
+                targetAudio = 'https://upload.wikimedia.org/wikipedia/commons/5/52/Rain_1.ogg'; // Rain sound
+            } else if (condLower.includes('bulut')) {
+                targetVideo = 'videolar/bulutlu.mp4';
+                targetAudio = 'https://upload.wikimedia.org/wikipedia/commons/9/9f/Wind_howling.ogg'; // Cloudy/Wind
+            } else if (condLower.includes('kar')) {
+                targetVideo = 'videolar/karli.mp4';
+                targetAudio = 'https://upload.wikimedia.org/wikipedia/commons/9/9f/Wind_howling.ogg'; // Snow/Cold wind
+            } else if (condLower.includes('güneş') || condLower.includes('açık')) {
+                targetVideo = 'videolar/gunesli.mp4';
+                targetAudio = 'https://upload.wikimedia.org/wikipedia/commons/2/23/Birds_in_spring.ogg'; // Birds/Sunny
+            } else if (condLower.includes('fırtına')) {
+                targetVideo = 'videolar/firtinali.mp4';
+                targetAudio = 'https://upload.wikimedia.org/wikipedia/commons/f/ff/Thunder_and_lightning.ogg'; // Thunderstorm
+            }
+
+            // Video Kaynak Kontrolü
+            if (!sourceElement.src.endsWith(targetVideo)) {
+                sourceElement.src = targetVideo;
+                videoElement.load(); 
+                videoElement.play(); 
+            }
+
+            // Ses Kaynak Kontrolü (Pixabay veya dış public API streaming)
+            if (audioElement.src !== targetAudio) {
+                audioElement.src = targetAudio;
+                audioElement.load();
+                if (isSoundEnabled) {
+                    audioElement.play().catch(e => console.log('Oynatma reddedildi:', e));
+                }
+            }
+        }
+
+        async function loadWeather(cityKey, button) {
+            document.querySelectorAll('.city-btn').forEach(btn => btn.classList.remove('active'));
+            if (button) button.classList.add('active');
+
+            // --- Gerçekçi Sınıf-A Atlama (Level-Up) Özelliği: Async Loader (Skeleton) ---
+            const container = document.getElementById('weatherContainer');
+            container.innerHTML = `
+                <div class="weather-dashboard skeleton-active">
+                    <div class="skeleton-header">
+                        <div class="skeleton-shimmer skeleton-circle"></div>
+                        <div class="skeleton-shimmer skeleton-text title"></div>
+                        <div class="skeleton-shimmer skeleton-text huge"></div>
+                        <div class="skeleton-shimmer skeleton-text sub"></div>
+                    </div>
+                </div>
+            `;
+
+            // Veritabanı gecikmesini (Fake API süresini) asenkron simülasyonla bekle
+            await new Promise(resolve => setTimeout(resolve, 600));
+
+            const weatherData = citiesWeatherData[cityKey];
+            generateDashboard(weatherData);
+
+            // Video ve Ses fonksiyonunu burada tetikliyoruz
+            updateBackgroundVideo(weatherData.condition);
+        }
+
+        function generateDashboard(weatherData) {
+            const container = document.getElementById('weatherContainer');
+            container.innerHTML = '';
+
+            const dashboard = document.createElement('div');
+            dashboard.className = 'weather-dashboard';
+
+            const canvas = document.createElement('canvas');
+            canvas.id = 'glassCanvas';
+            dashboard.appendChild(canvas);
+
+            const glassOverlay = document.createElement('div');
+            glassOverlay.className = 'glass-overlay';
+            dashboard.appendChild(glassOverlay);
+
+            const contentScrollBox = document.createElement('div');
+            contentScrollBox.className = 'weather-content-scroll';
+
+            const currentWeather = document.createElement('div');
+            currentWeather.className = 'current-weather';
+
+            const weatherHeader = document.createElement('div');
+            weatherHeader.className = 'weather-header';
+            weatherHeader.innerHTML = `
+                <div class="emoji">${weatherData.emoji}</div>
+                <div class="city-name">${weatherData.city}, ${weatherData.country}</div>
+                <div class="temperature">${weatherData.temperature}°C</div>
+                <div class="condition">${weatherData.condition}</div>
+            `;
+            currentWeather.appendChild(weatherHeader);
+
+            const detailsGrid = document.createElement('div');
+            detailsGrid.className = 'details-grid';
+            detailsGrid.innerHTML = `
+                <div class="detail-item">
+                    <div class="emoji">💧</div>
+                    <p>Nem: %${weatherData.humidity}</p>
+                </div>
+                <div class="detail-item">
+                    <div class="emoji">💨</div>
+                    <p>Rüzgar: ${weatherData.windSpeed} km/s</p>
+                </div>
+                <div class="detail-item">
+                    <div class="emoji">🔽</div>
+                    <p>Basınç: ${weatherData.pressure} mb</p>
+                </div>
+                <div class="detail-item">
+                    <div class="emoji">☀️</div>
+                    <p>UV İndeks: ${weatherData.uvIndex}</p>
+                </div>
+            `;
+            currentWeather.appendChild(detailsGrid);
+
+            const additionalDetails = document.createElement('div');
+            additionalDetails.className = 'additional-details';
+            additionalDetails.innerHTML = `
+                <div class="additional-item">
+                    <div class="label">Hissedilen Sıcaklık</div>
+                    <div class="value">${weatherData.feelsLike}°C</div>
+                </div>
+                <div class="additional-item">
+                    <div class="label">Görüş Mesafesi</div>
+                    <div class="value">${weatherData.visibility} km</div>
+                </div>
+                <div class="additional-item">
+                    <div class="label">Çiğ Noktası</div>
+                    <div class="value">${weatherData.dewPoint}°C</div>
+                </div>
+            `;
+            currentWeather.appendChild(additionalDetails);
+
+            const forecast = document.createElement('div');
+            forecast.className = 'forecast';
+            forecast.innerHTML = '<h3>7 Günlük Tahmin</h3>';
+
+            const forecastGrid = document.createElement('div');
+            forecastGrid.className = 'forecast-grid';
+
+            weatherData.forecast.forEach(day => {
+                const card = document.createElement('div');
+                card.className = 'forecast-card';
+                card.innerHTML = `
+                    <div class="emoji">${day.emoji}</div>
+                    <strong>${day.day}</strong>
+                    <p>${day.high}° / ${day.low}°</p>
+                    <p>${day.condition}</p>
+                `;
+                forecastGrid.appendChild(card);
+            });
+
+            forecast.appendChild(forecastGrid);
+            currentWeather.appendChild(forecast);
+            contentScrollBox.appendChild(currentWeather);
+            dashboard.appendChild(contentScrollBox);
+            container.appendChild(dashboard);
+        }
+
+        // Harita İçin Koordinatlar Kataloğu
+        let map;
+        let mapInitialized = false;
+
+        const cityCoordinates = {
+            "adana": [37.0000, 35.3213], "adiyaman": [37.7648, 38.2786], "afyonkarahisar": [38.7507, 30.5567],
+            "agri": [39.7191, 43.0503], "amasya": [40.6499, 35.8353], "ankara": [39.9208, 32.8541],
+            "antalya": [36.8969, 30.7133], "artvin": [41.1828, 41.8183], "aydin": [37.8481, 27.8453],
+            "balikesir": [39.6484, 27.8826], "bilecik": [40.1451, 29.9798], "bingol": [38.8847, 40.4939],
+            "bitlis": [38.4006, 42.1095], "bolu": [40.7392, 31.6116], "burdur": [37.7204, 30.2889],
+            "bursa": [40.1824, 29.0671], "canakkale": [40.1553, 26.4142], "cankiri": [40.6013, 33.6134],
+            "corum": [40.5489, 34.9533], "denizli": [37.7765, 29.0864], "diyarbakir": [37.9144, 40.2306],
+            "edirne": [41.6771, 26.5557], "elazig": [38.6810, 39.2264], "erzincan": [39.7500, 39.5000],
+            "erzurum": [39.9000, 41.2700], "eskisehir": [39.7767, 30.5206], "gaziantep": [37.0662, 37.3833],
+            "giresun": [40.9071, 38.3873], "gumushane": [40.4600, 39.4817], "hakkari": [37.5833, 43.7333],
+            "hatay": [36.2000, 36.1667], "isparta": [37.7648, 30.5566], "mersin": [36.8000, 34.6333],
+            "i̇stanbul": [41.0082, 28.9784], "i̇zmir": [38.4192, 27.1287], "kars": [40.6020, 43.0950],
+            "kastamonu": [41.3887, 33.7827], "kayseri": [38.7312, 35.4787], "kirklareli": [41.7333, 27.2167],
+            "kirsehir": [39.1425, 34.1709], "kocaeli": [40.8533, 29.8815], "konya": [37.8667, 32.4833],
+            "kutahya": [39.4167, 29.9833], "malatya": [38.3552, 38.3095], "manisa": [38.6191, 27.4289],
+            "kahramanmaras": [37.5858, 36.9371], "mardin": [37.3212, 40.7245], "mugla": [37.2153, 28.3636],
+            "mus": [38.7304, 41.4862], "nevsehir": [38.6258, 34.7122], "nigde": [37.9667, 34.6833],
+            "ordu": [40.9839, 37.8764], "rize": [41.0201, 40.5234], "sakarya": [40.7569, 29.9765],
+            "samsun": [41.2867, 36.33], "siirt": [37.9333, 41.95], "sinop": [42.0231, 35.1531],
+            "sivas": [39.7477, 37.0179], "tekirdag": [40.9833, 27.5167], "tokat": [40.3167, 36.55],
+            "trabzon": [41.0015, 39.7178], "tunceli": [39.1079, 39.5401], "sanliurfa": [37.15, 38.8],
+            "usak": [38.6823, 29.4082], "van": [38.4891, 43.3833], "yozgat": [39.82, 34.8044],
+            "zonguldak": [41.4564, 31.7762], "aksaray": [38.3687, 34.037], "bayburt": [40.2552, 40.2249],
+            "karaman": [37.1811, 33.2222], "kirikkale": [39.8453, 33.5064], "batman": [37.8812, 41.1351],
+            "sirnak": [37.5228, 42.4594], "bartin": [41.6344, 32.3375], "ardahan": [41.1105, 42.7022],
+            "igdir": [39.9237, 44.045], "yalova": [40.65, 29.2667], "karabuk": [41.2061, 32.6204],
+            "kilis": [36.7184, 37.1147], "osmaniye": [37.0742, 36.2475], "duzce": [40.8438, 31.1565],
+            "gonen": [40.0989, 27.6539], "bandirma": [40.35, 27.9792]
+        };
+
+        function toggleMap() {
+            const mapContainer = document.getElementById('mapContainer');
+            if (mapContainer.style.display === 'none') {
+                mapContainer.style.display = 'block';
+                if (!mapInitialized) {
+                    map = L.map('mapContainer', {
+                        zoomControl: false // Sidebar kısıtlı alan olduğu için default zoom kontrolünü kapatıyoruz
+                    }).setView([39.0, 35.0], 5);
+                    
+                    L.control.zoom({ position: 'bottomright' }).addTo(map);
+
+                    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+                        attribution: '&copy; <a href="https://carto.com/">CartoDB</a>',
+                        maxZoom: 18
+                    }).addTo(map);
+
+                    for (let cityKey in citiesWeatherData) {
+                        if (cityCoordinates[cityKey]) {
+                            const coord = cityCoordinates[cityKey];
+                            const marker = L.circleMarker(coord, {
+                                color: '#8b5cf6',
+                                radius: 6,
+                                fillOpacity: 0.8,
+                                weight: 2
+                            }).addTo(map);
+                            
+                            marker.bindPopup(`<b>${citiesWeatherData[cityKey].city}</b>`, { closeButton: false });
+                            
+                            marker.on('mouseover', function(e) { this.openPopup(); });
+                            marker.on('mouseout', function(e) { this.closePopup(); });
+                            marker.on('click', () => {
+                                const btn = document.querySelector(`.city-btn[data-city="${cityKey}"]`);
+                                if(btn) loadWeather(cityKey, btn);
+                            });
+                        }
+                    }
+                    mapInitialized = true;
+                }
+                setTimeout(() => map.invalidateSize(), 150);
+            } else {
+                mapContainer.style.display = 'none';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', createCityButtons);
+
+        // ==========================================
+        // ANTIGRAVITY FİZİK MOTORU (Matter.js)
+        // ==========================================
+        let engine;
+        let isGravityOn = false;
+
+        document.getElementById('antigravityBtn').addEventListener('click', function() {
+            if (isGravityOn) return; // Sadece bir kere başlat
+            isGravityOn = true;
+            this.style.display = 'none';
+            // Arka planı derin uzaya çevir (Devasa Güneş Sistemi Görseli)
+            const bgVideo = document.getElementById('bg-video');
+            if (bgVideo) {
+                bgVideo.style.transition = "opacity 2s ease";
+                bgVideo.style.opacity = "0"; // Videoyu yavaşça gizle
+            }
+            
+            const spaceBg = document.createElement('div');
+            spaceBg.style.position = 'fixed';
+            spaceBg.style.top = '0';
+            spaceBg.style.left = '0';
+            spaceBg.style.width = '100vw';
+            spaceBg.style.height = '100vh';
+            spaceBg.style.zIndex = '2'; // Video'nun (0) üstünde, uçan UI panellerinin (9999) altında kalacak!
+            spaceBg.style.backgroundImage = "url('https://images.unsplash.com/photo-1462331940025-496dfbfc7564?q=80&w=2000&auto=format&fit=crop')"; // Çok şık bir uzay/gözlem/galaksi haritası
+            spaceBg.style.backgroundSize = "cover";
+            spaceBg.style.backgroundPosition = "center";
+            spaceBg.style.opacity = '0';
+            spaceBg.style.transition = 'opacity 2s ease';
+            spaceBg.style.pointerEvents = 'none'; // Tıklamaları engellemesin
+            document.body.appendChild(spaceBg);
+
+            setTimeout(() => {
+                spaceBg.style.opacity = '1';
+            }, 100);
+
+            // Matter.js modülleri
+            const Engine = Matter.Engine,
+                  Render = Matter.Render,
+                  Runner = Matter.Runner,
+                  Bodies = Matter.Bodies,
+                  Composite = Matter.Composite,
+                  Mouse = Matter.Mouse,
+                  MouseConstraint = Matter.MouseConstraint;
+
+            // Motor oluştur
+            engine = Engine.create();
+            engine.world.gravity.y = 0; // Sıfır yerçekimi (uzay boşluğu)
+            engine.world.gravity.x = 0;
+            engine.timing.timeScale = 1.0; // Akıcı hareket etmesi için donukluğu sildim, gerçekçi bir akış hızı
+            engine.enableSleeping = false; // Belli bir süre sonra algılayıp uyku moduna (donmaya) geçmelerini tamemen engelle
+
+            // Görünmez canvas oluştur
+            const render = Render.create({
+                element: document.body,
+                engine: engine,
+                options: {
+                    width: window.innerWidth,
+                    height: window.innerHeight,
+                    wireframes: false,
+                    background: 'transparent'
+                }
+            });
+
+            // Ekran sınırlarını (duvarları) oluştur
+            const wallOptions = { isStatic: true, render: { visible: false } };
+            const ground = Bodies.rectangle(window.innerWidth / 2, window.innerHeight + 50, window.innerWidth, 100, wallOptions);
+            const leftWall = Bodies.rectangle(-50, window.innerHeight / 2, 100, window.innerHeight, wallOptions);
+            const rightWall = Bodies.rectangle(window.innerWidth + 50, window.innerHeight / 2, 100, window.innerHeight, wallOptions);
+            const roof = Bodies.rectangle(window.innerWidth / 2, -50, window.innerWidth, 100, wallOptions);
+            Composite.add(engine.world, [ground, leftWall, rightWall, roof]);
+
+            // Düşmesini istediğimiz HTML elementleri a
+            const selectors = [
+                '.weather-dashboard', 
+                '.main-nav',
+                '#sidebar'
+            ];
+
+            const bodies = [];
+
+            selectors.forEach(selector => {
+                const elements = document.querySelectorAll(selector);
+                elements.forEach(el => {
+                    const rect = el.getBoundingClientRect();
+                    if (rect.width === 0 || rect.height === 0) return;
+
+                    // Animasyon çakışmasını durdur! Yoksa CSS transformu Matter js koordinatlarını bozar (Bu yüzden konum ve boyut bozuluyordu)
+                    el.style.animation = 'none';
+                    el.style.transition = 'none';
+
+                    // Elementin mevcut stilini sabitle (Kaymayı/Jump'ı önlemek için left, top değerlerini de veriyoruz)
+                    el.style.left = rect.left + 'px';
+                    el.style.top = rect.top + 'px';
+                    el.style.width = rect.width + 'px';
+                    el.style.height = rect.height + 'px';
+                    el.style.position = 'fixed'; // Absolute yerine fixed olması scroll esnasında da bozulmayı önler
+                    el.style.margin = '0';
+                    el.style.transformOrigin = '50% 50%';
+                    el.style.zIndex = '9999'; // Objeler arkada kalmasın
+                    
+                    // Box için X, Y hesapla (matter.js merkezi referans alır)
+                    const x = rect.left + (rect.width / 2);
+                    const y = rect.top + (rect.height / 2);
+
+                    // Rigid Body oluştur
+                    const body = Bodies.rectangle(x, y, rect.width, rect.height, {
+                        restitution: 0.8, // Duvara çarpınca yavaşça seker
+                        friction: 0.0,
+                        frictionAir: 0.0, // Sıfır sürtünme: Objeler UZAYDA ASLA DURMAZ! Sonsuza dek süzülür.
+                        render: { visible: false } // Görselleştirme matter üzerinden değil DOM üzerinden olacak
+                    });
+
+                    // Body'ye HTML elementini bağla
+                    body.plugin = { htmlElement: el };
+                    bodies.push(body);
+                    Composite.add(engine.world, body);
+
+                    // Fırlatış (Gerçek uzaydaki gibi sabit sürüklenme)
+                    Matter.Body.applyForce(body, body.position, {
+                        x: (Math.random() - 0.5) * 0.005 * body.mass,
+                        y: (Math.random() - 0.5) * 0.005 * body.mass
+                    });
+                    Matter.Body.setAngularVelocity(body, (Math.random() - 0.5) * 0.02);
+                });
+            });
+
+            // Motoru çalıştır
+            Runner.run(Runner.create(), engine);
+
+            // Her frame'de (güncellemede) DOM elementlerinin pozisyonunu güncelle
+            Matter.Events.on(engine, 'afterUpdate', function() {
+                bodies.forEach(body => {
+                    const el = body.plugin.htmlElement;
+                    // Matter.js pos -> DOM pos transformasyonu (merkezli hesaplama)
+                    const x = body.position.x - (el.offsetWidth / 2);
+                    const y = body.position.y - (el.offsetHeight / 2);
+                    const angle = body.angle;
+
+                    el.style.left = x + 'px';
+                    el.style.top = y + 'px';
+                    el.style.transform = "rotate(" + angle + "rad)";
+                    // Webgl çalışıyorsa canvas resize işini bozmasın diye ek kontrol
+                    el.style.width = el.offsetWidth + 'px';
+                    el.style.height = el.offsetHeight + 'px'; 
+                });
+            });
+
+            // Fare (Mouse) etkileşimi ekle
+            const mouse = Mouse.create(document.body);
+            const mouseConstraint = MouseConstraint.create(engine, {
+                mouse: mouse,
+                constraint: {
+                    stiffness: 0.2,
+                    render: { visible: false }
+                }
+            });
+            Composite.add(engine.world, mouseConstraint);
+            render.mouse = mouse;
+            
+            // MatterJS Canvas'ı css ile görünmez yap ama pointer-events geçişine izin ver
+            render.canvas.style.position = 'absolute';
+            render.canvas.style.top = '0';
+            render.canvas.style.left = '0';
+            render.canvas.style.pointerEvents = 'none'; // DOM'a tıklanabilsin (mouse kısıtlaması arkada)
+        });
+
+        // ==========================================
+        // SERVICE WORKER KAYDI (PWA İÇİN)
+        // ==========================================
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js').then((registration) => {
+                    console.log('ServiceWorker kayıt başarılı: ', registration.scope);
+                }, (err) => {
+                    console.log('ServiceWorker kayıt başarısız: ', err);
+                });
+            });
+        }
+    </script>
+</body>
+
+</html>

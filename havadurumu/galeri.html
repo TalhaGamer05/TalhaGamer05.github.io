@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Galeri - Hava Durumu Panosu</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <video autoplay loop muted id="bg-video" class="bg-video">
+        <source id="bg-video-source" src="videolar/yagmur.mp4" type="video/mp4">
+    </video>
+
+    <nav class="main-nav">
+        <ul>
+            <li><a href="index.html">Ana Sayfa</a></li>
+            <li><a href="hakkimizda.html">Hakkımızda</a></li>
+            <li><a href="istatistikler.html">İstatistikler</a></li>
+            <li><a href="galeri.html" class="active">Galeri</a></li>
+            <li><a href="iletisim.html">İletişim</a></li>
+            <li><a href="nasil-yapildi.html">Nasıl Yapıldı?</a></li>
+        </ul>
+    </nav>
+
+    <main>
+        <section class="content-dashboard">
+            <canvas id="glassCanvas"></canvas>
+            <div class="glass-overlay"></div>
+            
+            <div class="content-scroll">
+                <h2>Medya Galerisi</h2>
+                <p>Türkiye'nin çeşitli bölgelerinden derlenen hava durumu manzaraları ve ortam sesleri.</p>
+                
+                <div style="margin-bottom: 2rem; background: rgba(255,255,255,0.25); padding: 1rem; border-radius: 15px; text-align: center;">
+                    <h3>Arka Plan Yağmur Sesi</h3>
+                    <p>Çalışırken dinleyebileceğiniz rahatlatıcı yağmur efekti:</p>
+                    <audio controls style="margin-top: 10px; border-radius: 20px;">
+                        <!-- Projede varsa gerçek bir mp3 veya placeholder eklenebilir -->
+                        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+                        Tarayıcınız audio etiketini desteklemiyor.
+                    </audio>
+                </div>
+
+                <div class="gallery-grid">
+                    <div class="gallery-item" style="cursor:pointer;" onclick="document.getElementById('bg-video-source').src='videolar/gunesli.mp4'; document.getElementById('bg-video').load(); document.getElementById('bg-video').play();">
+                        <video src="videolar/gunesli.mp4" autoplay muted loop style="width:100%; border-radius:10px; height:150px; object-fit:cover;"></video>
+                        <h4>Güneşli Hava</h4>
+                    </div>
+                    <div class="gallery-item" style="cursor:pointer;" onclick="document.getElementById('bg-video-source').src='videolar/yagmur.mp4'; document.getElementById('bg-video').load(); document.getElementById('bg-video').play();">
+                        <video src="videolar/yagmur.mp4" autoplay muted loop style="width:100%; border-radius:10px; height:150px; object-fit:cover;"></video>
+                        <h4>Yağmurlu Hava</h4>
+                    </div>
+                    <div class="gallery-item" style="cursor:pointer;" onclick="document.getElementById('bg-video-source').src='videolar/karli.mp4'; document.getElementById('bg-video').load(); document.getElementById('bg-video').play();">
+                        <video src="videolar/karli.mp4" autoplay muted loop style="width:100%; border-radius:10px; height:150px; object-fit:cover;"></video>
+                        <h4>Karlı Hava</h4>
+                    </div>
+                    <div class="gallery-item" style="cursor:pointer;" onclick="document.getElementById('bg-video-source').src='videolar/bulutlu.mp4'; document.getElementById('bg-video').load(); document.getElementById('bg-video').play();">
+                        <video src="videolar/bulutlu.mp4" autoplay muted loop style="width:100%; border-radius:10px; height:150px; object-fit:cover;"></video>
+                        <h4>Bulutlu Hava</h4>
+                    </div>
+                    <div class="gallery-item" style="cursor:pointer;" onclick="document.getElementById('bg-video-source').src='videolar/firtinali.mp4'; document.getElementById('bg-video').load(); document.getElementById('bg-video').play();">
+                        <video src="videolar/firtinali.mp4" autoplay muted loop style="width:100%; border-radius:10px; height:150px; object-fit:cover;"></video>
+                        <h4>Fırtınalı Hava</h4>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="main-footer">
+        <p>&copy; 2026 Hava Durumu Panosu. Tüm Hakları Saklıdır.</p>
+    </footer>
+
+    <script src="webgl.js"></script>
+</body>
+</html>
