@@ -13,6 +13,17 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/1163/1163661.png">
 
+    <!-- Kritik Kaynakları Önceden Yükle -->
+    <link rel="preload" href="style.css" as="style">
+    <link rel="preload" href="webgl.js" as="script">
+
+    <!-- Diğer Sayfaları Önceden Getir (Prefetch) -->
+    <link rel="prefetch" href="hakkimizda.html">
+    <link rel="prefetch" href="istatistikler.html">
+    <link rel="prefetch" href="galeri.html">
+    <link rel="prefetch" href="iletisim.html">
+    <link rel="prefetch" href="nasil-yapildi.html">
+
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="style.css">
@@ -56,11 +67,11 @@
     <nav class="main-nav">
         <ul>
             <li><a href="index.html" class="active">Ana Sayfa</a></li>
-            <li><a href="hakkimizda.html">Hakkımızda</a></li>
-            <li><a href="istatistikler.html">İstatistikler</a></li>
-            <li><a href="galeri.html">Galeri</a></li>
-            <li><a href="iletisim.html">İletişim</a></li>
-            <li><a href="nasil-yapildi.html">Nasıl Yapıldı?</a></li>
+            <li><a href="hakkimizda.html" rel="prefetch">Hakkımızda</a></li>
+            <li><a href="istatistikler.html" rel="prefetch">İstatistikler</a></li>
+            <li><a href="galeri.html" rel="prefetch">Galeri</a></li>
+            <li><a href="iletisim.html" rel="prefetch">İletişim</a></li>
+            <li><a href="nasil-yapildi.html" rel="prefetch">Nasıl Yapıldı?</a></li>
             <li><button id="soundToggleBtn" onclick="toggleAmbientSound()" class="sound-toggle-btn">🔇 Ses: Kapalı</button></li>
         </ul>
     </nav>

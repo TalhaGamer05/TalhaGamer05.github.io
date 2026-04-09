@@ -4,6 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hakkımızda - Hava Durumu Panosu</title>
+
+    <!-- Kritik Kaynakları Önceden Yükle -->
+    <link rel="preload" href="style.css" as="style">
+    <link rel="preload" href="webgl.js" as="script">
+
+    <!-- Diğer Sayfaları Önceden Getir (Prefetch) -->
+    <link rel="prefetch" href="index.html">
+    <link rel="prefetch" href="istatistikler.html">
+    <link rel="prefetch" href="galeri.html">
+    <link rel="prefetch" href="iletisim.html">
+    <link rel="prefetch" href="nasil-yapildi.html">
+
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -13,12 +25,12 @@
 
     <nav class="main-nav">
         <ul>
-            <li><a href="index.html">Ana Sayfa</a></li>
+            <li><a href="index.html" rel="prefetch">Ana Sayfa</a></li>
             <li><a href="hakkimizda.html" class="active">Hakkımızda</a></li>
-            <li><a href="istatistikler.html">İstatistikler</a></li>
-            <li><a href="galeri.html">Galeri</a></li>
-            <li><a href="iletisim.html">İletişim</a></li>
-            <li><a href="nasil-yapildi.html">Nasıl Yapıldı?</a></li>
+            <li><a href="istatistikler.html" rel="prefetch">İstatistikler</a></li>
+            <li><a href="galeri.html" rel="prefetch">Galeri</a></li>
+            <li><a href="iletisim.html" rel="prefetch">İletişim</a></li>
+            <li><a href="nasil-yapildi.html" rel="prefetch">Nasıl Yapıldı?</a></li>
         </ul>
     </nav>
 
