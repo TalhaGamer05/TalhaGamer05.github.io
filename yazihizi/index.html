@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>yazı hızı testi</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="kapsayici">
+        <header>
+            <h1>⌨️ yazı hızı testi</h1>
+        </header>
+
+        <div class="ayarlar" id="ayarlar">
+            <span>süre:</span>
+            <button class="sure-btn aktif" data-sure="30">30s</button>
+            <button class="sure-btn" data-sure="60">60s</button>
+            <button class="sure-btn" data-sure="120">120s</button>
+        </div>
+
+        <div class="bilgi-cubuk">
+            <div class="bilgi"><span id="sayac">30</span><small>saniye</small></div>
+            <div class="bilgi"><span id="wpm">0</span><small>WPM</small></div>
+            <div class="bilgi"><span id="dogruluk">100</span><small>doğruluk %</small></div>
+            <div class="bilgi"><span id="hata">0</span><small>hata</small></div>
+        </div>
+
+        <div class="metin-alan" id="metinAlan">
+            <!-- buraya cumle gelecek -->
+        </div>
+
+        <input type="text" id="yaziInput" class="yazi-girdi" placeholder="yazmaya başlamak için tıkla..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+
+        <div class="alt-bilgi">
+            <button class="tekrar-btn" id="tekrarBtn" onclick="tekrarBasla()">🔄 tekrar başla</button>
+            <span class="en-iyi">en iyi: <strong id="enIyi">0</strong> WPM</span>
+        </div>
+
+        <!-- sonuç ekranı -->
+        <div class="sonuc-ekrani" id="sonucEkrani" style="display:none">
+            <h2>sonuçlar</h2>
+            <div class="sonuc-grid">
+                <div class="sonuc-kart"><span class="buyuk" id="sonWpm">0</span><small>WPM</small></div>
+                <div class="sonuc-kart"><span class="buyuk" id="sonDogruluk">0</span><small>doğruluk %</small></div>
+                <div class="sonuc-kart"><span class="buyuk" id="sonKarakter">0</span><small>karakter</small></div>
+                <div class="sonuc-kart"><span class="buyuk" id="sonHata">0</span><small>hata</small></div>
+            </div>
+            <button class="tekrar-btn buyuk-btn" onclick="tekrarBasla()">tekrar dene</button>
+        </div>
+    </div>
+
+    <script src="typing.js"></script>
+</body>
+</html>

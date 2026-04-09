@@ -1,0 +1,130 @@
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    font-family: 'Outfit', sans-serif;
+    background: #0a0a0f;
+    color: #fff;
+    min-height: 100vh;
+    overflow: hidden;
+}
+
+#canvas {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 0;
+}
+
+.kontroller {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+    background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 20px;
+    padding: 1.5rem 2rem;
+    max-width: 500px;
+    width: 90%;
+}
+
+.kontroller h1 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    text-align: center;
+    margin-bottom: 1rem;
+    opacity: 0.9;
+}
+
+.dosya-alan {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 0.8rem;
+}
+
+#dosyaSec { display: none; }
+
+.dosya-btn {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.15);
+    color: #fff;
+    padding: 8px 16px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-family: inherit;
+    transition: background 0.2s;
+    white-space: nowrap;
+}
+.dosya-btn:hover { background: rgba(255,255,255,0.15); }
+
+.dosya-adi {
+    color: #666;
+    font-size: 0.8rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.butonlar {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 0.8rem;
+}
+
+.butonlar button {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 10px;
+    background: rgba(255,255,255,0.05);
+    color: #fff;
+    font-family: inherit;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.butonlar button:hover:not(:disabled) { background: rgba(255,255,255,0.12); }
+.butonlar button:disabled { opacity: 0.3; cursor: not-allowed; }
+
+.mod-secim {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 0.8rem;
+    font-size: 0.85rem;
+    color: #888;
+}
+
+.mod-btn {
+    padding: 5px 14px;
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.1);
+    background: transparent;
+    color: #888;
+    font-family: inherit;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.mod-btn.aktif {
+    background: rgba(139, 92, 246, 0.3);
+    color: #c4b5fd;
+    border-color: rgba(139, 92, 246, 0.5);
+}
+
+.ses-ayar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.85rem;
+    color: #888;
+}
+.ses-ayar input[type="range"] {
+    flex: 1;
+    accent-color: #8b5cf6;
+}

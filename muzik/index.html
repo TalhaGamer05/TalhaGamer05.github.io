@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>müzik görselleştirici</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+
+    <div class="kontroller">
+        <h1>🎵 müzik görselleştirici</h1>
+
+        <div class="dosya-alan">
+            <input type="file" id="dosyaSec" accept="audio/*">
+            <label for="dosyaSec" class="dosya-btn">müzik dosyası seç</label>
+            <span id="dosyaAdi" class="dosya-adi">dosya seçilmedi</span>
+        </div>
+
+        <div class="butonlar">
+            <button id="oynatBtn" disabled>▶ oynat</button>
+            <button id="duraklatBtn" disabled>⏸ duraklat</button>
+            <button id="mikBtn">🎤 mikrofon</button>
+        </div>
+
+        <div class="mod-secim">
+            <span>görünüm:</span>
+            <button class="mod-btn aktif" data-mod="bar">bar</button>
+            <button class="mod-btn" data-mod="dalga">dalga</button>
+            <button class="mod-btn" data-mod="daire">daire</button>
+        </div>
+
+        <div class="ses-ayar">
+            <label>ses: </label>
+            <input type="range" id="sesSlider" min="0" max="100" value="70">
+        </div>
+    </div>
+
+    <script src="visualizer.js"></script>
+</body>
+</html>

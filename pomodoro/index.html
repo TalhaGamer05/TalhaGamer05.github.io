@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>pomodoro zamanlayıcı</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="kapsayici">
+        <h1>🍅 pomodoro</h1>
+
+        <div class="mod-secim">
+            <button class="mod-btn aktif" data-mod="calisma" onclick="modSec('calisma')">çalışma</button>
+            <button class="mod-btn" data-mod="mola" onclick="modSec('mola')">mola</button>
+            <button class="mod-btn" data-mod="uzunMola" onclick="modSec('uzunMola')">uzun mola</button>
+        </div>
+
+        <div class="timer-alan">
+            <svg class="daire-svg" viewBox="0 0 200 200">
+                <circle class="arka-cember" cx="100" cy="100" r="90" />
+                <circle class="ilerleme-cember" id="ilerlemeCember" cx="100" cy="100" r="90" />
+            </svg>
+            <div class="saat" id="saat">25:00</div>
+        </div>
+
+        <div class="butonlar">
+            <button class="kontrol-btn" id="baslatBtn" onclick="baslatDuraklat()">▶ başlat</button>
+            <button class="kontrol-btn" onclick="sifirla()">↺ sıfırla</button>
+        </div>
+
+        <div class="istatistik">
+            <div class="ist-kart">
+                <span id="turSayac">0</span>
+                <small>tamamlanan tur</small>
+            </div>
+            <div class="ist-kart">
+                <span id="toplamDakika">0</span>
+                <small>toplam dakika</small>
+            </div>
+            <div class="ist-kart">
+                <span id="hedef">🎯</span>
+                <small>günlük: 8 tur</small>
+            </div>
+        </div>
+
+        <div class="tur-gorunumu" id="turGorunumu">
+            <!-- turlar buraya eklenir -->
+        </div>
+
+        <footer>
+            <p>t4lhster © 2026</p>
+        </footer>
+    </div>
+
+    <script src="timer.js"></script>
+</body>
+</html>

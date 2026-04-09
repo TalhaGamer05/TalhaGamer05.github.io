@@ -1,0 +1,197 @@
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    font-family: 'Outfit', sans-serif;
+    background: #0a0a0f;
+    color: #e5e5e5;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem;
+}
+
+.kapsayici {
+    max-width: 750px;
+    width: 100%;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+header h1 {
+    font-size: 1.6rem;
+    font-weight: 600;
+}
+
+.ayarlar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 1.5rem;
+    color: #888;
+    font-size: 0.9rem;
+}
+
+.sure-btn {
+    padding: 6px 18px;
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.1);
+    background: transparent;
+    color: #888;
+    font-family: inherit;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.sure-btn.aktif {
+    background: rgba(99,102,241,0.25);
+    color: #a5b4fc;
+    border-color: rgba(99,102,241,0.4);
+}
+
+.bilgi-cubuk {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    margin-bottom: 1.5rem;
+}
+
+.bilgi {
+    text-align: center;
+}
+
+.bilgi span {
+    display: block;
+    font-size: 2rem;
+    font-weight: 700;
+    color: #fff;
+    font-family: 'JetBrains Mono', monospace;
+}
+
+.bilgi small {
+    color: #666;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.metin-alan {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 14px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.15rem;
+    line-height: 2;
+    min-height: 120px;
+    user-select: none;
+}
+
+.metin-alan .harf {
+    transition: color 0.1s;
+}
+
+.metin-alan .harf.bekliyor { color: #555; }
+.metin-alan .harf.dogru { color: #22c55e; }
+.metin-alan .harf.yanlis { color: #ef4444; background: rgba(239,68,68,0.1); border-radius: 2px; }
+.metin-alan .harf.aktif {
+    color: #fff;
+    border-bottom: 2px solid #8b5cf6;
+}
+
+.yazi-girdi {
+    width: 100%;
+    padding: 14px 18px;
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.04);
+    color: #fff;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1rem;
+    outline: none;
+    margin-bottom: 1rem;
+}
+.yazi-girdi:focus { border-color: #8b5cf6; }
+
+.alt-bilgi {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.tekrar-btn {
+    padding: 8px 20px;
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.05);
+    color: #ccc;
+    font-family: inherit;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.tekrar-btn:hover { background: rgba(255,255,255,0.1); }
+
+.en-iyi {
+    color: #666;
+    font-size: 0.9rem;
+}
+.en-iyi strong { color: #f59e0b; }
+
+/* sonuc ekranı */
+.sonuc-ekrani {
+    text-align: center;
+    margin-top: 2rem;
+    animation: gelYukari 0.5s ease;
+}
+
+.sonuc-ekrani h2 {
+    margin-bottom: 1.5rem;
+    font-weight: 600;
+}
+
+.sonuc-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.sonuc-kart {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 12px;
+    padding: 1.2rem;
+}
+
+.sonuc-kart .buyuk {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #8b5cf6;
+    font-family: 'JetBrains Mono', monospace;
+    display: block;
+}
+
+.buyuk-btn {
+    padding: 12px 32px;
+    background: #8b5cf6;
+    color: #fff;
+    border: none;
+    font-weight: 600;
+}
+
+@keyframes gelYukari {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 640px) {
+    .bilgi-cubuk { gap: 1rem; }
+    .bilgi span { font-size: 1.5rem; }
+    .metin-alan { font-size: 1rem; }
+    .sonuc-grid { grid-template-columns: repeat(2, 1fr); }
+}

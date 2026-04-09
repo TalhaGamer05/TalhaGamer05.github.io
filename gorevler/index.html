@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>görev yöneticisi</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="ust-bar">
+        <h1>📋 görev yöneticisi</h1>
+        <div class="istatistik">
+            <span id="toplamSayac">0 görev</span>
+            <div class="ilerleme-bar">
+                <div class="ilerleme-dolu" id="ilerlemeDolu"></div>
+            </div>
+            <span id="yuzde">0%</span>
+        </div>
+    </div>
+
+    <div class="kanban">
+        <div class="kolon" data-durum="yapilacak">
+            <div class="kolon-baslik">
+                <span>📝 yapılacak</span>
+                <button class="ekle-btn" onclick="yeniGorevGoster('yapilacak')">+</button>
+            </div>
+            <div class="kart-listesi" id="yapilacak"></div>
+        </div>
+
+        <div class="kolon" data-durum="devam">
+            <div class="kolon-baslik">
+                <span>🔄 devam ediyor</span>
+                <button class="ekle-btn" onclick="yeniGorevGoster('devam')">+</button>
+            </div>
+            <div class="kart-listesi" id="devam"></div>
+        </div>
+
+        <div class="kolon" data-durum="bitti">
+            <div class="kolon-baslik">
+                <span>✅ tamamlandı</span>
+            </div>
+            <div class="kart-listesi" id="bitti"></div>
+        </div>
+    </div>
+
+    <!-- yeni görev popup -->
+    <div class="popup-arka" id="popupArka" onclick="popupKapat()">
+        <div class="popup" onclick="event.stopPropagation()">
+            <h3>yeni görev ekle</h3>
+            <input type="text" id="gorevBaslik" placeholder="görev başlığı..." maxlength="60">
+            <textarea id="gorevAciklama" placeholder="açıklama (opsiyonel)" rows="3"></textarea>
+            <div class="renk-secim">
+                <span>öncelik:</span>
+                <button class="renk-btn aktif" data-renk="#3b82f6" style="background:#3b82f6"></button>
+                <button class="renk-btn" data-renk="#f59e0b" style="background:#f59e0b"></button>
+                <button class="renk-btn" data-renk="#ef4444" style="background:#ef4444"></button>
+                <button class="renk-btn" data-renk="#22c55e" style="background:#22c55e"></button>
+            </div>
+            <button class="kaydet-btn" onclick="gorevKaydet()">kaydet</button>
+        </div>
+    </div>
+
+    <script src="kanban.js"></script>
+</body>
+</html>
