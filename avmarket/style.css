@@ -1,0 +1,298 @@
+/* --- GENEL AYARLAR --- */
+body { 
+    font-family: 'Roboto', sans-serif; 
+    margin: 0; 
+    padding: 0; 
+    color: #f0e6d2;
+    background-color: #0a1005; 
+    overflow-x: hidden;
+}
+
+#arka-plan-video {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    object-fit: cover; 
+    z-index: -1; 
+    filter: brightness(0.4); 
+}
+
+.icerik-kapsayici {
+    position: relative;
+    z-index: 1; 
+    max-width: 1300px; 
+    margin: 0 auto; 
+    padding: 40px 20px; 
+}
+
+h1, h2, h3 {
+    font-family: 'Oswald', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+h1 { 
+    color: #d4af37;
+    text-shadow: 3px 3px 6px rgba(0,0,0,0.9); 
+    border-bottom: 3px solid #d4af37;
+    padding-bottom: 15px;
+    text-align: center;
+    margin-top: 10px;
+    margin-bottom: 40px;
+    font-weight: 700;
+}
+
+/* --- ÜRÜN KARTLARI --- */
+.pazar-yeri {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 25px; 
+    margin-bottom: 50px;
+}
+
+.urun-karti {
+    background: rgba(15, 15, 15, 0.85); 
+    border: 2px solid #d4af37;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 6px 12px rgba(0,0,0,0.7); 
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    cursor: pointer;
+    backdrop-filter: blur(5px); 
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.urun-karti:hover {
+    transform: translateY(-8px); 
+    box-shadow: 0 12px 25px rgba(212, 175, 55, 0.3);
+}
+
+.urun-resmi {
+    width: 100%;
+    height: 240px;
+    background: #ffffff; 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-bottom: 2px solid #d4af37;
+    overflow: hidden;
+    flex-shrink: 0;
+    padding: 15px; 
+    box-sizing: border-box;
+}
+
+.urun-resmi img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain; 
+    transition: transform 0.4s ease;
+}
+
+.urun-karti:hover .urun-resmi img {
+    transform: scale(1.08); 
+}
+
+.urun-bilgisi {
+    padding: 20px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.urun-adi {
+    font-family: 'Oswald', sans-serif;
+    color: #d4af37;
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+}
+
+.urun-aciklamasi {
+    color: #e8dcc8;
+    font-size: 14px;
+    margin-bottom: 20px;
+    line-height: 1.6;
+    flex: 1;
+}
+
+.urun-fiyati {
+    font-family: 'Oswald', sans-serif;
+    color: #d4af37;
+    font-size: 26px;
+    font-weight: 700;
+    margin-bottom: 15px;
+    letter-spacing: 1px;
+}
+
+.urun-butonlari {
+    display: flex;
+    gap: 12px;
+}
+
+.buton {
+    font-family: 'Oswald', sans-serif;
+    flex: 1;
+    padding: 12px;
+    border: none;
+    border-radius: 4px;
+    font-weight: 700;
+    font-size: 15px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    text-decoration: none;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); 
+}
+
+.buton-satin-al {
+    background: #d4af37;
+    color: #1a3a0a;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.4);
+}
+
+.buton-satin-al:hover {
+    background: #f0c94a;
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(212, 175, 55, 0.4);
+}
+
+.buton-satin-al:active {
+    transform: scale(0.95) translateY(0);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.buton-sepete-ekle {
+    background: rgba(212, 175, 55, 0.15);
+    color: #d4af37;
+    border: 2px solid #d4af37;
+    backdrop-filter: blur(3px);
+}
+
+.buton-sepete-ekle:hover {
+    background: rgba(212, 175, 55, 0.35);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(212, 175, 55, 0.2);
+}
+
+.buton-sepete-ekle:active {
+    transform: scale(0.95) translateY(0);
+}
+
+/* --- İMZA BÖLÜMÜ --- */
+.site-alt-bilgi {
+    width: 100%;
+    background: rgba(10, 10, 10, 0.95);
+    border-top: 1px solid #d4af37;
+    color: #e8dcc8;
+    padding: 12px 0;
+    font-family: 'Roboto', sans-serif;
+    font-size: 14px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 30px;
+    position: relative;
+    z-index: 10;
+}
+
+.site-alt-bilgi span {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.ayirici {
+    color: #d4af37;
+}
+
+/* --- YÜZEN BUTONLAR --- */
+.yuzen-sepet-butonu {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background: rgba(20, 20, 20, 0.9);
+    color: #d4af37;
+    text-decoration: none;
+    font-family: 'Oswald', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    padding: 15px 25px;
+    border: 2px solid #d4af37;
+    border-radius: 50px;
+    box-shadow: 0 0 15px rgba(212, 175, 55, 0.4);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    z-index: 1000;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    backdrop-filter: blur(5px);
+    animation: bounceIn 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+.yuzen-sepet-butonu:hover {
+    background: #d4af37;
+    color: #1a3a0a;
+    transform: translateY(-5px) scale(1.05);
+    box-shadow: 0 10px 25px rgba(212, 175, 55, 0.6);
+}
+
+.yuzen-rehber-butonu {
+    position: fixed;
+    bottom: 30px;
+    left: 30px;
+    background: rgba(20, 20, 20, 0.9);
+    color: #d4af37;
+    text-decoration: none;
+    font-family: 'Oswald', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    padding: 15px 25px;
+    border: 2px solid #d4af37;
+    border-radius: 50px;
+    box-shadow: 0 0 15px rgba(212, 175, 55, 0.4);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    z-index: 1000;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    backdrop-filter: blur(5px);
+    animation: bounceInLeft 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+.yuzen-rehber-butonu:hover {
+    background: #d4af37;
+    color: #1a3a0a;
+    transform: translateY(-5px) scale(1.05);
+    box-shadow: 0 10px 25px rgba(212, 175, 55, 0.6);
+}
+
+@keyframes bounceIn {
+    0% { transform: scale(0); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes bounceInLeft {
+    0% { transform: scale(0) translateX(-50px); opacity: 0; }
+    100% { transform: scale(1) translateX(0); opacity: 1; }
+}
+
+@media (max-width: 768px) {
+    .icerik-kapsayici { padding: 20px 10px; }
+    .pazar-yeri { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; }
+    .urun-butonlari { flex-direction: column; }
+    .site-alt-bilgi { flex-direction: column; gap: 8px; padding: 15px 0; }
+    .yuzen-sepet-butonu { bottom: 20px; right: 20px; font-size: 16px; padding: 12px 20px; }
+    .yuzen-rehber-butonu { bottom: 20px; left: 20px; font-size: 16px; padding: 12px 20px; }
+}

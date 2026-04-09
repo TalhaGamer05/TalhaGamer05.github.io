@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sepetim - AvMarket</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="sepet_style.css">
+</head>
+<body>
+
+    <video autoplay loop muted playsinline id="sepet-arka-plan-video">
+        <source src="resimler/doga_videosu.mp4" type="video/mp4">
+        Tarayıcınız video etiketini desteklemiyor.
+    </video>
+
+    <div class="sepet-kapsayici">
+        <a href="index.html" class="geri-don-linki">← Av Pazarına Dön</a>
+        <h1>🛒 Sepetim</h1>
+        <div id="sepet-icerigi"></div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', sepetiYukle);
+
+        function sepetiYukle() {
+            // LocalStorage'dan "sepetVerisi" adıyla güncellediğimiz veriyi çekiyoruz
+            const sepet = JSON.parse(localStorage.getItem('sepetVerisi')) || [];
+            const sepetIcerigi = document.getElementById('sepet-icerigi');
+            sepetIcerigi.innerHTML = ''; 
+            
+            // Sepet boşsa uyarı ver
+            if (sepet.length === 0) {
+                sepetIcerigi.innerHTML = '<div class="bos-sepet-mesaji">🕸️ Sepetinizde henüz av malzemesi bulunmuyor.</div>';
+                return;
+            }
+            
+            let toplamFiyat = 0;
+            const liste = document.createElement('ul');
+            
+            sepet.forEach((urun, indeks) => {
+                const listeElemani = document.createElement('li');
+                listeElemani.style.animationDelay = `${indeks * 0.1}s`; 
+
+                // Adet miktarını alıyoruz
+                const miktar = urun.adet || 1;
+
+                // Fiyatı sayısal değere çeviriyoruz
+                let islenmisFiyat = urun.fiyat ? urun.fiyat.replace('₺', '').replace(',', '').trim() : "0";
+                
+                // Toplam fiyatı adet ile çarparak hesapla
+                toplamFiyat += (parseInt(islenmisFiyat) || 0) * miktar;
+
+                listeElemani.innerHTML = `
+                    <img src="${urun.resim}" alt="Ürün" style="width: 80px; height: 80px; object-fit: contain;">
+                    <div class="urun-detaylari">
+                        <span class="urun-adi">${urun.isim}</span>
+                        <span class="urun-fiyati">${urun.fiyat || 'Fiyat Belirtilmemiş'}</span>
+                    </div>
+                    <div class="aksiyon-kapsayici">
+                        <div class="miktar-kontrolleri">
+                            <button class="miktar-butonu eksi-butonu" data-indeks="${indeks}">-</button>
+                            <span class="miktar-gostergesi">${miktar}</span>
+                            <button class="miktar-butonu arti-butonu" data-indeks="${indeks}">+</button>
+                        </div>
+                        <button class="kaldir-butonu" data-indeks="${indeks}">Kaldır</button>
+                    </div>
+                `;
+                liste.appendChild(listeElemani);
+            });
+            
+            sepetIcerigi.appendChild(liste);
+            
+            // Alt Kısım (Toplam Fiyat ve Temizleme) Oluşturma
+            const sepetAltBilgi = document.createElement('div');
+            sepetAltBilgi.className = 'sepet-alt-bilgi';
+            
+            const formatlanmisToplam = toplamFiyat.toLocaleString('tr-TR');
+
+            sepetAltBilgi.innerHTML = `
+                <div class="toplam-fiyat">Toplam: ₺${formatlanmisToplam}</div>
+                <button class="temizle-butonu" id="sepetiTemizleButonu">🗑️ Sepeti Tamamen Boşalt</button>
+            `;
+            sepetIcerigi.appendChild(sepetAltBilgi);
+            
+            // --- ETKİLEŞİMLER (EVENT LISTENERS) ---
+
+            // Sepeti Tamamen Boşalt
+            document.getElementById('sepetiTemizleButonu').addEventListener('click', () => {
+                localStorage.removeItem('sepetVerisi');
+                sepetiYukle(); 
+            });
+            
+            // Ürünü Listeden Kaldır (Animasyonlu)
+            document.querySelectorAll('.kaldir-butonu').forEach(buton => {
+                buton.addEventListener('click', function() {
+                    const indeks = parseInt(this.getAttribute('data-indeks'));
+                    const listeElemani = this.closest('li');
+                    
+                    listeElemani.classList.add('siliniyor');
+                    setTimeout(() => {
+                        sepet.splice(indeks, 1);
+                        localStorage.setItem('sepetVerisi', JSON.stringify(sepet));
+                        sepetiYukle(); 
+                    }, 400); 
+                });
+            });
+
+            // Ürün Adedini Arttır (+)
+            document.querySelectorAll('.arti-butonu').forEach(buton => {
+                buton.addEventListener('click', function() {
+                    const indeks = parseInt(this.getAttribute('data-indeks'));
+                    sepet[indeks].adet = (sepet[indeks].adet || 1) + 1;
+                    localStorage.setItem('sepetVerisi', JSON.stringify(sepet));
+                    sepetiYukle(); 
+                });
+            });
+
+            // Ürün Adedini Azalt (-)
+            document.querySelectorAll('.eksi-butonu').forEach(buton => {
+                buton.addEventListener('click', function() {
+                    const indeks = parseInt(this.getAttribute('data-indeks'));
+                    if ((sepet[indeks].adet || 1) > 1) {
+                        sepet[indeks].adet -= 1;
+                        localStorage.setItem('sepetVerisi', JSON.stringify(sepet));
+                        sepetiYukle(); 
+                    } else {
+                        // Eğer miktar 1 ise ve tekrar eksiye basılırsa silme butonunu titret
+                        const kaldirButonu = this.closest('.aksiyon-kapsayici').querySelector('.kaldir-butonu');
+                        kaldirButonu.style.transform = 'scale(1.1)';
+                        setTimeout(() => kaldirButonu.style.transform = 'scale(1)', 200);
+                    }
+                });
+            });
+        }
+    </script>
+</body>
+</html>

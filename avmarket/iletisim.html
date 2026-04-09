@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>İletişim - AvMarket</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="iletisim.css">
+</head>
+<body>
+
+    <video autoplay loop muted playsinline id="iletisim-arka-plan-video">
+        <source src="resimler/doga_videosu.mp4" type="video/mp4">
+    </video>
+
+    <div class="iletisim-kapsayici">
+        <a href="index.html" class="geri-don-linki">← Ana Sayfaya Dön</a>
+        <h1>📞 İletişim ve Destek</h1>
+
+        <div class="iletisim-izgarasi">
+            <div class="bilgi-kutusu">
+                <div class="bilgi-elemani">
+                    <h3>📍 Merkez Mağaza Adresi</h3>
+                    <p>Avcılar Mah. Doğa Sokak No:17<br>Gönen / Balıkesir</p>
+                </div>
+                
+                <div class="bilgi-elemani">
+                    <h3>📱 Müşteri Hizmetleri</h3>
+                    <p>+90 (555) 123 45 67<br>Hafta içi: 09:00 - 18:00</p>
+                </div>
+
+                <div class="bilgi-elemani">
+                    <h3>✉️ E-Posta</h3>
+                    <p>destek@avmarketim.com.tr<br>bilgi@avmarketim.com.tr</p>
+                </div>
+            </div>
+
+            <form class="mesaj-formu" id="iletisimFormu">
+                <div class="form-grubu">
+                    <label>Adınız Soyadınız</label>
+                    <input type="text" placeholder="Örn: Avcı Mehmet" required>
+                </div>
+                <div class="form-grubu">
+                    <label>E-Posta Adresiniz</label>
+                    <input type="email" placeholder="ornek@mail.com" required>
+                </div>
+                <div class="form-grubu">
+                    <label>Mesajınız</label>
+                    <textarea placeholder="Bize ne sormak istersiniz?" required></textarea>
+                </div>
+                <button type="submit" class="gonder-butonu">📨 Mesajı Gönder</button>
+            </form>
+            
+            <div style="margin-top: 40px; grid-column: 1 / -1;">
+                <h3 style="color: #d4af37; font-family: 'Oswald', sans-serif; text-transform: uppercase;">⏱️ Çalışma Saatlerimiz</h3>
+                <table style="width: 100%; border-collapse: collapse; background: rgba(30, 30, 30, 0.8); border-radius: 8px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.5);">
+                    <thead>
+                        <tr style="background: #d4af37; color: #1a3a0a; font-family: 'Oswald', sans-serif;">
+                            <th style="padding: 12px; text-align: left; border-bottom: 2px solid #1a3a0a;">Günler</th>
+                            <th style="padding: 12px; text-align: left; border-bottom: 2px solid #1a3a0a;">Açılış</th>
+                            <th style="padding: 12px; text-align: left; border-bottom: 2px solid #1a3a0a;">Kapanış</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="padding: 12px; border-bottom: 1px solid rgba(212, 175, 55, 0.2);">Hafta İçi</td>
+                            <td style="padding: 12px; border-bottom: 1px solid rgba(212, 175, 55, 0.2);">09:00</td>
+                            <td style="padding: 12px; border-bottom: 1px solid rgba(212, 175, 55, 0.2);">18:00</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 12px; border-bottom: 1px solid rgba(212, 175, 55, 0.2);">Cumartesi</td>
+                            <td style="padding: 12px; border-bottom: 1px solid rgba(212, 175, 55, 0.2);">10:00</td>
+                            <td style="padding: 12px; border-bottom: 1px solid rgba(212, 175, 55, 0.2);">16:00</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 12px; color: #ff4757; font-weight: bold;">Pazar</td>
+                            <td style="padding: 12px; color: #ff4757;" colspan="2">Kapalı (Avdayız!)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <footer class="site-alt-bilgi">
+        <span>👨‍💻 Talha Özcan</span>
+        <span class="ayirici">|</span>
+        <span>🎓 Öğrenci No: 123456789</span>
+        <span class="ayirici">|</span>
+        <span>✉️ t4lhster@gmail.com</span>
+    </footer>
+
+    <script>
+        document.getElementById('iletisimFormu').addEventListener('submit', function(olay) {
+            olay.preventDefault();
+            const buton = document.querySelector('.gonder-butonu');
+            buton.style.background = '#2d5016';
+            buton.style.color = '#fff';
+            buton.innerText = '⏳ Gönderiliyor...';
+
+            setTimeout(() => {
+                alert("✅ Mesajınız başarıyla bize ulaştı! En kısa sürede dönüş yapacağız.");
+                this.reset(); // Formu temizle
+                buton.style.background = '#d4af37';
+                buton.style.color = '#1a3a0a';
+                buton.innerText = '📨 Mesajı Gönder';
+            }, 1200);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,165 @@
+/* --- GENEL TEMA --- */
+body {
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    padding: 40px 20px;
+    background-color: #0a1005; 
+    color: #f0e6d2;
+    min-height: 100vh;
+}
+
+/* --- ARKA PLAN VİDEOSU --- */
+#rehber-arka-plan-video {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    object-fit: cover;
+    z-index: -1; 
+    filter: brightness(0.35); 
+}
+
+/* --- REHBER KAPSAYICI --- */
+.rehber-kapsayici {
+    max-width: 1100px;
+    margin: 0 auto;
+    position: relative; 
+    z-index: 1; 
+    background: rgba(20, 20, 20, 0.85); 
+    border: 2px solid #d4af37;
+    border-radius: 12px;
+    padding: 40px;
+    box-shadow: 0 15px 50px rgba(0,0,0,0.9);
+    backdrop-filter: blur(10px); 
+    animation: iceriGiris 0.6s ease-out;
+    margin-bottom: 60px; /* Alttaki imza için boşluk */
+}
+
+h1 {
+    font-family: 'Oswald', sans-serif;
+    color: #d4af37;
+    text-align: center;
+    border-bottom: 2px solid #d4af37;
+    padding-bottom: 15px;
+    margin-top: 0;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+    margin-bottom: 40px;
+}
+
+.geri-don-linki {
+    display: inline-flex;
+    align-items: center;
+    background: rgba(212, 175, 55, 0.1);
+    color: #d4af37;
+    border: 1px solid #d4af37;
+    padding: 10px 22px;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: bold;
+    font-family: 'Oswald', sans-serif;
+    margin-bottom: 25px;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+    backdrop-filter: blur(3px);
+}
+
+.geri-don-linki:hover {
+    background: #d4af37;
+    color: #1a3a0a;
+    transform: translateX(-5px) scale(1.02);
+    box-shadow: 0 6px 15px rgba(212, 175, 55, 0.4);
+}
+
+/* --- REHBER İÇERİKLERİ --- */
+.rehber-icerigi {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 25px;
+}
+
+.rehber-elemani {
+    background: rgba(30,30,30,0.8);
+    padding: 25px;
+    border-left: 4px solid #d4af37;
+    border-radius: 6px;
+    transition: transform 0.3s ease, background 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+}
+
+.rehber-elemani:hover {
+    transform: translateY(-5px);
+    background: rgba(45,45,45,0.95);
+    box-shadow: 0 8px 20px rgba(212, 175, 55, 0.15);
+}
+
+.rehber-elemani h3 {
+    font-family: 'Oswald', sans-serif;
+    color: #d4af37;
+    margin-top: 0;
+    font-size: 22px;
+    text-transform: uppercase;
+    border-bottom: 1px dashed rgba(212, 175, 55, 0.3);
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+}
+
+ul { 
+    line-height: 1.8; 
+    margin: 0;
+    padding-left: 20px;
+}
+
+li {
+    color: #e8dcc8;
+    margin-bottom: 10px;
+}
+
+li b {
+    color: #d4af37;
+}
+
+/* --- İMZA BÖLÜMÜ --- */
+.site-alt-bilgi {
+    width: 100%;
+    background: rgba(10, 10, 10, 0.95);
+    border-top: 1px solid #d4af37;
+    color: #e8dcc8;
+    padding: 12px 0;
+    font-family: 'Roboto', sans-serif;
+    font-size: 14px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 30px;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    z-index: 10;
+}
+
+.site-alt-bilgi span {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.ayirici {
+    color: #d4af37;
+}
+
+/* --- ANİMASYONLAR --- */
+@keyframes iceriGiris {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* --- MOBİL UYUM --- */
+@media (max-width: 768px) {
+    .rehber-kapsayici { padding: 20px; }
+    .rehber-icerigi { grid-template-columns: 1fr; }
+    .site-alt-bilgi { flex-direction: column; gap: 8px; padding: 15px 0; position: relative;}
+}
