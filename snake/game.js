@@ -1,564 +1,486 @@
-// ============================================
-// 🐍 SNAKE OYUNU — Yenilmez AI Algoritması
-// BFS + Güvenlik Kontrolü + Kuyruk Takibi
-// ============================================
+// yılan oyunu - hamiltonyan döngü + kısayol algoritması
+// bu algoritma matematiksel olarak yenilmezdir
 
 (function () {
-    'use strict';
 
-    // ─── Yapılandırma ───
-    const GRID       = 20;         // 20x20 ızgara
-    const TICK_MS    = 110;        // ms/tick (~9 FPS oyun mantığı)
-    const AI_TIMEOUT = 10000;      // 10 saniye hareketsizlik → AI devralır
+    var canvas = document.getElementById('gameCanvas');
+    var ctx = canvas.getContext('2d');
 
-    // ─── Canvas Referansları ───
-    const canvas = document.getElementById('gameCanvas');
-    const ctx    = canvas.getContext('2d');
-    let CELL;  // piksel cinsinden hücre boyutu
+    // ayarlar
+    var GRID = 20;
+    var N = GRID * GRID; // toplam hücre: 400
+    var BASLANGIC_TICK = 110;
+    var TICK_MS = BASLANGIC_TICK;
+    var AI_BEKLEME = 10000;
+    var HUCRE;
 
-    // ─── Oyun Durumu ───
-    let snake, food, dir, nextDir;
-    let score, highScore, gameRunning, gameOver;
-    let isAI, lastInputTime;
-    let particles = [];
-    let foodPulse = 0;
+    // oyun durumu
+    var yilan, yem, yon, sonrakiYon;
+    var skor, enYuksek, oyunBitti, calisiyor;
+    var yapayZeka, sonGirdi;
+    var parcaciklar = [];
+    var yemNabiz = 0;
+    var hizCarpani = 1.0;
 
-    // ─── Başlatma ───
-    function init() {
-        highScore = parseInt(localStorage.getItem('snakeHS') || '0');
-        resize();
-        window.addEventListener('resize', resize);
-        setupInput();
-        updateUI();
+    // hamiltonyan döngü - tüm 400 hücreyi ziyaret eden döngü
+    var dongu = [];
+    var donguIdx = {}; // "x,y" -> döngüdeki sıra numarası
+
+    function hamiltonyanOlustur() {
+        dongu = [];
+        // zigzag deseni ile tüm hücreleri kapsayan döngü
+        // çift satırlar: sağa, tek satırlar: sola
+        for (var y = 0; y < GRID; y++) {
+            if (y % 2 === 0) {
+                for (var x = 0; x < GRID; x++) dongu.push({ x: x, y: y });
+            } else {
+                for (var x = GRID - 1; x >= 0; x--) dongu.push({ x: x, y: y });
+            }
+        }
+        // index haritası
+        donguIdx = {};
+        for (var i = 0; i < dongu.length; i++) {
+            donguIdx[dongu[i].x + ',' + dongu[i].y] = i;
+        }
     }
 
-    function resize() {
-        const area = canvas.parentElement;
-        const size = Math.min(area.clientWidth, area.clientHeight, 600);
-        canvas.width  = size * devicePixelRatio;
-        canvas.height = size * devicePixelRatio;
-        canvas.style.width  = size + 'px';
-        canvas.style.height = size + 'px';
+    // canvas boyut
+    function boyutAyarla() {
+        var alan = canvas.parentElement;
+        var boyut = Math.min(alan.clientWidth, alan.clientHeight, 600);
+        canvas.width = boyut * devicePixelRatio;
+        canvas.height = boyut * devicePixelRatio;
+        canvas.style.width = boyut + 'px';
+        canvas.style.height = boyut + 'px';
         ctx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
-        CELL = size / GRID;
+        HUCRE = boyut / GRID;
     }
 
-    function resetGame() {
-        const mid = Math.floor(GRID / 2);
-        snake   = [{ x: mid, y: mid }, { x: mid - 1, y: mid }, { x: mid - 2, y: mid }];
-        dir     = { x: 1, y: 0 };
-        nextDir = { x: 1, y: 0 };
-        score   = 0;
-        gameOver = false;
-        isAI    = false;
-        lastInputTime = Date.now();
-        particles = [];
-        spawnFood();
-        updateUI();
+    function baslat() {
+        enYuksek = parseInt(localStorage.getItem('snakeHS') || '0');
+        hamiltonyanOlustur();
+        boyutAyarla();
+        window.addEventListener('resize', boyutAyarla);
+        girdileriKur();
+        arayuzGuncelle();
     }
 
-    function startGame() {
+    function sifirla() {
+        var orta = Math.floor(GRID / 2);
+        yilan = [{ x: orta, y: orta }, { x: orta - 1, y: orta }, { x: orta - 2, y: orta }];
+        yon = { x: 1, y: 0 };
+        sonrakiYon = { x: 1, y: 0 };
+        skor = 0;
+        oyunBitti = false;
+        yapayZeka = false;
+        sonGirdi = Date.now();
+        parcaciklar = [];
+        hizCarpani = 1.0;
+        TICK_MS = BASLANGIC_TICK;
+        yemOlustur();
+        arayuzGuncelle();
+    }
+
+    function oyunuBaslat() {
         document.getElementById('startOverlay').classList.add('hidden');
-        resetGame();
-        gameRunning = true;
-        lastTick = performance.now();
-        accumulator = 0;
-        requestAnimationFrame(loop);
+        sifirla();
+        calisiyor = true;
+        sonTick = performance.now();
+        birikim = 0;
+        requestAnimationFrame(donguCalistir);
     }
 
-    // ─── Yem Üretimi ───
-    function spawnFood() {
-        const occupied = new Set(snake.map(s => s.x + ',' + s.y));
-        let pos;
-        do {
-            pos = { x: Math.floor(Math.random() * GRID), y: Math.floor(Math.random() * GRID) };
-        } while (occupied.has(pos.x + ',' + pos.y));
-        food = pos;
+    // yem oluştur
+    function yemOlustur() {
+        var dolu = {};
+        for (var i = 0; i < yilan.length; i++) {
+            dolu[yilan[i].x + ',' + yilan[i].y] = true;
+        }
+        var bos = [];
+        for (var i = 0; i < N; i++) {
+            var key = dongu[i].x + ',' + dongu[i].y;
+            if (!dolu[key]) bos.push(dongu[i]);
+        }
+        if (bos.length === 0) return; // tüm alan doldu, kazandın
+        yem = bos[Math.floor(Math.random() * bos.length)];
     }
 
-    // ─── Izgara Sarmalama (Wrapping) ───
-    function wrap(v) { return ((v % GRID) + GRID) % GRID; }
+    // ızgara sarmalama
+    function sar(v) { return ((v % GRID) + GRID) % GRID; }
 
-    // ─── Komşu Hücreler (Sarmalı) ───
-    function neighbors(p) {
+    // komşular (sarmalı dahil)
+    function komsulariAl(p) {
         return [
-            { x: wrap(p.x + 1), y: p.y,          dx: 1,  dy: 0  },
-            { x: wrap(p.x - 1), y: p.y,          dx: -1, dy: 0  },
-            { x: p.x,           y: wrap(p.y + 1), dx: 0,  dy: 1  },
-            { x: p.x,           y: wrap(p.y - 1), dx: 0,  dy: -1 }
+            { x: sar(p.x + 1), y: p.y,         dx: 1,  dy: 0  },
+            { x: sar(p.x - 1), y: p.y,         dx: -1, dy: 0  },
+            { x: p.x,          y: sar(p.y + 1), dx: 0,  dy: 1  },
+            { x: p.x,          y: sar(p.y - 1), dx: 0,  dy: -1 }
         ];
     }
 
-    // ============================================
-    // 🧠 YAPAY ZEKA — BFS Yol Bulma (Toroidal Izgara)
-    // ============================================
+    // =========================================================
+    // yapay zeka - hamiltonyan döngü + güvenli kısayol
+    // =========================================================
 
-    /**
-     * BFS ile start → target arası en kısa yolu bulur.
-     * İlk adımdaki yönü döndürür veya yol yoksa null.
-     * @param {Object} start - Başlangıç konumu {x, y}
-     * @param {Object} target - Hedef konum {x, y}
-     * @param {Array} blocked - Engelli hücreler listesi
-     * @returns {Object|null} İlk adımın yönü {x, y} veya null
-     */
-    function bfs(start, target, blocked) {
-        const blockSet = new Set();
-        for (let i = 0; i < blocked.length; i++) {
-            blockSet.add(blocked[i].x + ',' + blocked[i].y);
+    // kısayolun güvenli olup olmadığını kontrol et
+    // kural: baş→aday atlama bölgesinde gövde parçası olmamalı
+    function kisayolGüvenli(adayX, adayY) {
+        var adayKey = adayX + ',' + adayY;
+        var adayI = donguIdx[adayKey];
+        var basI = donguIdx[yilan[0].x + ',' + yilan[0].y];
+
+        // aday gövdede mi? (kuyruk hariç - o kayacak)
+        for (var i = 0; i < yilan.length - 1; i++) {
+            if (yilan[i].x + ',' + yilan[i].y === adayKey) return false;
         }
-        // Hedef ve başlangıcı engellerden çıkar
-        blockSet.delete(target.x + ',' + target.y);
-        blockSet.delete(start.x + ',' + start.y);
 
-        const visited = new Set();
-        visited.add(start.x + ',' + start.y);
+        // atlama mesafesi (ileri yönde)
+        var atlama = (adayI - basI + N) % N;
+        if (atlama === 0) return false;
 
-        const queue = [{ x: start.x, y: start.y, fdx: 0, fdy: 0, hasDir: false }];
-        let head = 0; // Kuyruk optimizasyonu: shift() yerine index
-
-        while (head < queue.length) {
-            const cur = queue[head++];
-
-            if (cur.x === target.x && cur.y === target.y) {
-                return { x: cur.fdx, y: cur.fdy };
-            }
-
-            const nbs = neighbors(cur);
-            for (let i = 0; i < nbs.length; i++) {
-                const n = nbs[i];
-                const key = n.x + ',' + n.y;
-                if (!visited.has(key) && !blockSet.has(key)) {
-                    visited.add(key);
-                    queue.push({
-                        x: n.x, y: n.y,
-                        fdx: cur.hasDir ? cur.fdx : n.dx,
-                        fdy: cur.hasDir ? cur.fdy : n.dy,
-                        hasDir: true
-                    });
-                }
-            }
+        // gövde parçası atlama bölgesinin içinde mi?
+        for (var i = 1; i < yilan.length; i++) {
+            var parcaI = donguIdx[yilan[i].x + ',' + yilan[i].y];
+            var parcaMesafe = (parcaI - basI + N) % N;
+            // parça atlama bölgesindeyse güvensiz
+            if (parcaMesafe > 0 && parcaMesafe <= atlama) return false;
         }
-        return null;
+
+        return true;
     }
 
-    /**
-     * Belirli bir hücreden erişilebilir boş alan sayısını hesaplar.
-     * Yılanın hareket alanının yeterliliğini kontrol etmek için kullanılır.
-     */
-    function floodCount(start, blocked) {
-        const blockSet = new Set();
-        for (let i = 0; i < blocked.length; i++) {
-            blockSet.add(blocked[i].x + ',' + blocked[i].y);
-        }
-        blockSet.delete(start.x + ',' + start.y);
+    function yapayZekaKarar() {
+        var basI = donguIdx[yilan[0].x + ',' + yilan[0].y];
+        var yemI = donguIdx[yem.x + ',' + yem.y];
 
-        const visited = new Set();
-        visited.add(start.x + ',' + start.y);
-        const stack = [start];
-        let count = 0;
+        // tüm güvenli komşuları bul
+        var komsular = komsulariAl(yilan[0]);
+        var enIyiYon = null;
+        var enIyiMesafe = N + 1;
 
-        while (stack.length > 0) {
-            const cur = stack.pop();
-            count++;
-            const nbs = neighbors(cur);
-            for (let i = 0; i < nbs.length; i++) {
-                const n = nbs[i];
-                const key = n.x + ',' + n.y;
-                if (!visited.has(key) && !blockSet.has(key)) {
-                    visited.add(key);
-                    stack.push({ x: n.x, y: n.y });
-                }
+        for (var i = 0; i < komsular.length; i++) {
+            var k = komsular[i];
+
+            if (!kisayolGüvenli(k.x, k.y)) continue;
+
+            // yeme döngüsel mesafe
+            var kI = donguIdx[k.x + ',' + k.y];
+            var yemMesafe = (yemI - kI + N) % N;
+
+            if (yemMesafe < enIyiMesafe) {
+                enIyiMesafe = yemMesafe;
+                enIyiYon = { x: k.dx, y: k.dy };
             }
         }
-        return count;
+
+        // güvenli kısayol yoksa döngüyü takip et
+        if (!enIyiYon) {
+            var sonrakiI = (basI + 1) % N;
+            var sonraki = dongu[sonrakiI];
+
+            var dx = sonraki.x - yilan[0].x;
+            var dy = sonraki.y - yilan[0].y;
+
+            // wrapping düzeltme
+            if (dx > 1) dx = -1;
+            if (dx < -1) dx = 1;
+            if (dy > 1) dy = -1;
+            if (dy < -1) dy = 1;
+
+            enIyiYon = { x: dx, y: dy };
+        }
+
+        return enIyiYon;
     }
 
-    /**
-     * 🧠 AI Karar Motoru
-     * 
-     * Strateji Sırası:
-     * 1. BFS ile yeme git + güvenlik kontrolü (kuyruk erişilebilirliği)
-     * 2. Güvenli değilse → kuyruğu takip et
-     * 3. Kuyruk erişilemezse → en geniş alana açılan hamle
-     */
-    function aiDecide() {
-        const head = snake[0];
-        const tail = snake[snake.length - 1];
+    // oyun güncelleme
+    function guncelle() {
+        if (oyunBitti) return;
 
-        // ── Strateji 1: Yeme güvenle git ──
-        const dirToFood = bfs(head, food, snake);
-
-        if (dirToFood) {
-            const newHead = { x: wrap(head.x + dirToFood.x), y: wrap(head.y + dirToFood.y) };
-            const isEating = (newHead.x === food.x && newHead.y === food.y);
-
-            // Hamle sonrası sanal yılan oluştur
-            let virtualSnake;
-            if (isEating) {
-                virtualSnake = [newHead, ...snake]; // Büyüme simülasyonu
-            } else {
-                virtualSnake = [newHead, ...snake.slice(0, -1)];
-            }
-
-            // Güvenlik: kuyruk hâlâ erişilebilir mi?
-            const vTail = virtualSnake[virtualSnake.length - 1];
-            const canReachTail = bfs(newHead, vTail, virtualSnake);
-
-            if (canReachTail) {
-                return dirToFood;
-            }
+        // ai zaman aşımı
+        if (!yapayZeka && Date.now() - sonGirdi > AI_BEKLEME) {
+            yapayZeka = true;
+            arayuzGuncelle();
         }
 
-        // ── Strateji 2: Kuyruğu takip et ──
-        const dirToTail = bfs(head, tail, snake.slice(0, -1));
-        if (dirToTail) {
-            return dirToTail;
+        // ai yön kararı
+        if (yapayZeka) {
+            var aiYon = yapayZekaKarar();
+            if (aiYon) sonrakiYon = aiYon;
         }
 
-        // ── Strateji 3: En geniş alana açılan hamle ──
-        const nbs = neighbors(head);
-        const bodySet = new Set(snake.map(s => s.x + ',' + s.y));
-        let bestDir  = null;
-        let bestArea = -1;
+        yon = sonrakiYon;
 
-        for (let i = 0; i < nbs.length; i++) {
-            const n = nbs[i];
-            const key = n.x + ',' + n.y;
-            if (!bodySet.has(key)) {
-                const virtualSnake2 = [{ x: n.x, y: n.y }, ...snake.slice(0, -1)];
-                const area = floodCount({ x: n.x, y: n.y }, virtualSnake2);
-                if (area > bestArea) {
-                    bestArea = area;
-                    bestDir = { x: n.dx, y: n.dy };
+        var bas = yilan[0];
+        var yeniBas = { x: sar(bas.x + yon.x), y: sar(bas.y + yon.y) };
+
+        // kendine çarpma kontrolü
+        for (var i = 0; i < yilan.length - 1; i++) {
+            if (yilan[i].x === yeniBas.x && yilan[i].y === yeniBas.y) {
+                oyunBitti = true;
+                if (skor > enYuksek) {
+                    enYuksek = skor;
+                    localStorage.setItem('snakeHS', enYuksek.toString());
                 }
-            }
-        }
-
-        return bestDir || dir; // Son çare: mevcut yön
-    }
-
-    // ─── Oyun Güncelleme ───
-    function update() {
-        if (gameOver) return;
-
-        // AI zaman aşımı kontrolü
-        if (!isAI && Date.now() - lastInputTime > AI_TIMEOUT) {
-            isAI = true;
-            updateUI();
-        }
-
-        // AI yön kararı
-        if (isAI) {
-            const aiDir = aiDecide();
-            if (aiDir) nextDir = aiDir;
-        }
-
-        dir = nextDir;
-
-        const head    = snake[0];
-        const newHead = { x: wrap(head.x + dir.x), y: wrap(head.y + dir.y) };
-
-        // Kendi kendine çarpma kontrolü
-        for (let i = 0; i < snake.length - 1; i++) {
-            if (snake[i].x === newHead.x && snake[i].y === newHead.y) {
-                gameOver = true;
-                if (score > highScore) {
-                    highScore = score;
-                    localStorage.setItem('snakeHS', highScore.toString());
-                }
-                updateUI();
+                arayuzGuncelle();
                 return;
             }
         }
 
-        snake.unshift(newHead);
+        yilan.unshift(yeniBas);
 
-        // Yem yeme kontrolü
-        if (newHead.x === food.x && newHead.y === food.y) {
-            score += 10;
-            spawnParticles(food.x, food.y);
-            spawnFood();
+        // yem yeme
+        if (yeniBas.x === yem.x && yeniBas.y === yem.y) {
+            skor += 10;
+            parcacikOlustur(yem.x, yem.y);
+            yemOlustur();
+
+            // hız artışı: her yemde %10 hızlan
+            hizCarpani += 0.1;
+            TICK_MS = Math.max(30, Math.round(BASLANGIC_TICK / hizCarpani));
         } else {
-            snake.pop();
+            yilan.pop();
         }
 
-        updateUI();
+        arayuzGuncelle();
     }
 
-    // ─── Parçacık Efektleri ───
-    function spawnParticles(gx, gy) {
-        const cx = (gx + 0.5) * CELL;
-        const cy = (gy + 0.5) * CELL;
-        for (let i = 0; i < 12; i++) {
-            const angle = Math.random() * Math.PI * 2;
-            const speed = 1.5 + Math.random() * 3;
-            particles.push({
+    // parçacık efekti
+    function parcacikOlustur(gx, gy) {
+        var cx = (gx + 0.5) * HUCRE;
+        var cy = (gy + 0.5) * HUCRE;
+        for (var i = 0; i < 12; i++) {
+            var aci = Math.random() * Math.PI * 2;
+            var hiz = 1.5 + Math.random() * 3;
+            parcaciklar.push({
                 x: cx, y: cy,
-                vx: Math.cos(angle) * speed,
-                vy: Math.sin(angle) * speed,
-                life: 1,
-                hue: 0 + Math.random() * 40 // Kırmızı-Turuncu
+                vx: Math.cos(aci) * hiz,
+                vy: Math.sin(aci) * hiz,
+                omur: 1,
+                renk: Math.random() * 40
             });
         }
     }
 
-    function tickParticles() {
-        for (let i = particles.length - 1; i >= 0; i--) {
-            const p = particles[i];
+    function parcaciklariGuncelle() {
+        for (var i = parcaciklar.length - 1; i >= 0; i--) {
+            var p = parcaciklar[i];
             p.x += p.vx;
             p.y += p.vy;
-            p.life -= 0.025;
-            if (p.life <= 0) particles.splice(i, 1);
+            p.omur -= 0.025;
+            if (p.omur <= 0) parcaciklar.splice(i, 1);
         }
     }
 
-    // ============================================
-    // 🎨 Render — Canvas Çizimi
-    // ============================================
-
-    function draw() {
-        const W = canvas.width / devicePixelRatio;
-        const H = canvas.height / devicePixelRatio;
+    // çizim
+    function ciz() {
+        var W = canvas.width / devicePixelRatio;
+        var H = canvas.height / devicePixelRatio;
         ctx.clearRect(0, 0, W, H);
 
-        // Izgara çizgileri
+        // ızgara
         ctx.strokeStyle = 'rgba(255,255,255,0.025)';
         ctx.lineWidth = 0.5;
-        for (let i = 0; i <= GRID; i++) {
-            ctx.beginPath();
-            ctx.moveTo(i * CELL, 0);
-            ctx.lineTo(i * CELL, H);
-            ctx.stroke();
-            ctx.beginPath();
-            ctx.moveTo(0, i * CELL);
-            ctx.lineTo(W, i * CELL);
-            ctx.stroke();
+        for (var i = 0; i <= GRID; i++) {
+            ctx.beginPath(); ctx.moveTo(i * HUCRE, 0); ctx.lineTo(i * HUCRE, H); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(0, i * HUCRE); ctx.lineTo(W, i * HUCRE); ctx.stroke();
         }
 
-        // Yem (nabız efektli)
-        foodPulse += 0.06;
-        const pulseR = CELL * 0.32 + Math.sin(foodPulse) * CELL * 0.06;
-        const fx = (food.x + 0.5) * CELL;
-        const fy = (food.y + 0.5) * CELL;
-
+        // yem (nabız efekti)
+        yemNabiz += 0.06;
+        var pr = HUCRE * 0.32 + Math.sin(yemNabiz) * HUCRE * 0.06;
+        var fx = (yem.x + 0.5) * HUCRE;
+        var fy = (yem.y + 0.5) * HUCRE;
         ctx.save();
         ctx.shadowColor = '#ef4444';
-        ctx.shadowBlur = 18 + Math.sin(foodPulse) * 6;
+        ctx.shadowBlur = 18 + Math.sin(yemNabiz) * 6;
         ctx.fillStyle = '#ef4444';
-        ctx.beginPath();
-        ctx.arc(fx, fy, pulseR, 0, Math.PI * 2);
-        ctx.fill();
-        // İç parlak çekirdek
+        ctx.beginPath(); ctx.arc(fx, fy, pr, 0, Math.PI * 2); ctx.fill();
         ctx.fillStyle = '#fca5a5';
-        ctx.beginPath();
-        ctx.arc(fx, fy, pulseR * 0.4, 0, Math.PI * 2);
-        ctx.fill();
+        ctx.beginPath(); ctx.arc(fx, fy, pr * 0.4, 0, Math.PI * 2); ctx.fill();
         ctx.restore();
 
-        // Yılan
-        const len = snake.length;
-        for (let i = len - 1; i >= 0; i--) {
-            const seg = snake[i];
-            const t = i / len;
-            const isHead = (i === 0);
+        // yılan
+        var uzunluk = yilan.length;
+        for (var i = uzunluk - 1; i >= 0; i--) {
+            var seg = yilan[i];
+            var t = i / uzunluk;
+            var basmi = (i === 0);
 
-            // Renk: Yeşil (normal) veya Mor (AI)
-            const hue = isAI ? 275 + t * 30 : 140 + t * 30;
-            const sat = 75;
-            const lum = isHead ? 60 : 55 - t * 18;
+            var renk = yapayZeka ? 275 + t * 30 : 140 + t * 30;
+            var parlaklik = basmi ? 60 : 55 - t * 18;
 
-            const pad = 1;
-            const sx = seg.x * CELL + pad;
-            const sy = seg.y * CELL + pad;
-            const sw = CELL - pad * 2;
-            const sh = CELL - pad * 2;
-            const rad = isHead ? CELL * 0.32 : CELL * 0.22;
+            var pad = 1;
+            var sx = seg.x * HUCRE + pad;
+            var sy = seg.y * HUCRE + pad;
+            var sw = HUCRE - pad * 2;
+            var sh = HUCRE - pad * 2;
+            var rad = basmi ? HUCRE * 0.32 : HUCRE * 0.22;
 
             ctx.save();
-            if (isHead) {
-                ctx.shadowColor = isAI ? '#a855f7' : '#22c55e';
+            if (basmi) {
+                ctx.shadowColor = yapayZeka ? '#a855f7' : '#22c55e';
                 ctx.shadowBlur = 14;
             }
-            ctx.fillStyle = 'hsl(' + hue + ',' + sat + '%,' + lum + '%)';
-            ctx.beginPath();
-            ctx.roundRect(sx, sy, sw, sh, rad);
-            ctx.fill();
+            ctx.fillStyle = 'hsl(' + renk + ',75%,' + parlaklik + '%)';
+            ctx.beginPath(); ctx.roundRect(sx, sy, sw, sh, rad); ctx.fill();
             ctx.restore();
 
-            // Göz çizimi (sadece baş)
-            if (isHead) {
-                drawEyes(seg);
-            }
+            if (basmi) gozCiz(seg);
         }
 
-        // Parçacıklar
-        for (let i = 0; i < particles.length; i++) {
-            const p = particles[i];
+        // parçacıklar
+        for (var i = 0; i < parcaciklar.length; i++) {
+            var p = parcaciklar[i];
             ctx.save();
-            ctx.globalAlpha = p.life;
-            ctx.fillStyle = 'hsl(' + p.hue + ',100%,65%)';
-            ctx.shadowColor = 'hsl(' + p.hue + ',100%,50%)';
+            ctx.globalAlpha = p.omur;
+            ctx.fillStyle = 'hsl(' + p.renk + ',100%,65%)';
+            ctx.shadowColor = 'hsl(' + p.renk + ',100%,50%)';
             ctx.shadowBlur = 6;
-            ctx.beginPath();
-            ctx.arc(p.x, p.y, 2.5 * p.life, 0, Math.PI * 2);
-            ctx.fill();
+            ctx.beginPath(); ctx.arc(p.x, p.y, 2.5 * p.omur, 0, Math.PI * 2); ctx.fill();
             ctx.restore();
         }
 
-        // Oyun Bitti ekranı
-        if (gameOver) {
+        // oyun bitti
+        if (oyunBitti) {
             ctx.fillStyle = 'rgba(0,0,0,0.75)';
             ctx.fillRect(0, 0, W, H);
-
             ctx.textAlign = 'center';
             ctx.fillStyle = '#fff';
-            ctx.font = 'bold ' + (CELL * 1.5) + 'px Outfit, sans-serif';
-            ctx.fillText('OYUN BİTTİ', W / 2, H / 2 - CELL);
-
+            ctx.font = 'bold ' + (HUCRE * 1.5) + 'px Outfit, sans-serif';
+            ctx.fillText('OYUN BİTTİ', W / 2, H / 2 - HUCRE);
             ctx.fillStyle = '#a0a0a0';
-            ctx.font = (CELL * 0.8) + 'px Outfit, sans-serif';
-            ctx.fillText('Skor: ' + score, W / 2, H / 2 + CELL * 0.2);
-            ctx.fillText('Yeniden başlamak için SPACE', W / 2, H / 2 + CELL * 1.2);
+            ctx.font = (HUCRE * 0.8) + 'px Outfit, sans-serif';
+            ctx.fillText('Skor: ' + skor + ' | Hız: ' + hizCarpani.toFixed(1) + 'x', W / 2, H / 2 + HUCRE * 0.2);
+            ctx.fillText('SPACE ile tekrar', W / 2, H / 2 + HUCRE * 1.2);
         }
     }
 
-    function drawEyes(seg) {
-        const cx = seg.x * CELL + CELL / 2;
-        const cy = seg.y * CELL + CELL / 2;
-        const off = CELL * 0.16;
-        const eyeR = CELL * 0.08;
-        const pupR = CELL * 0.04;
+    function gozCiz(seg) {
+        var cx = seg.x * HUCRE + HUCRE / 2;
+        var cy = seg.y * HUCRE + HUCRE / 2;
+        var off = HUCRE * 0.16;
+        var gr = HUCRE * 0.08;
+        var br = HUCRE * 0.04;
 
-        let e1x, e1y, e2x, e2y;
-        if (dir.x === 1)       { e1x = cx + off; e1y = cy - off; e2x = cx + off; e2y = cy + off; }
-        else if (dir.x === -1) { e1x = cx - off; e1y = cy - off; e2x = cx - off; e2y = cy + off; }
-        else if (dir.y === -1) { e1x = cx - off; e1y = cy - off; e2x = cx + off; e2y = cy - off; }
-        else                   { e1x = cx - off; e1y = cy + off; e2x = cx + off; e2y = cy + off; }
+        var e1x, e1y, e2x, e2y;
+        if (yon.x === 1) { e1x = cx + off; e1y = cy - off; e2x = cx + off; e2y = cy + off; }
+        else if (yon.x === -1) { e1x = cx - off; e1y = cy - off; e2x = cx - off; e2y = cy + off; }
+        else if (yon.y === -1) { e1x = cx - off; e1y = cy - off; e2x = cx + off; e2y = cy - off; }
+        else { e1x = cx - off; e1y = cy + off; e2x = cx + off; e2y = cy + off; }
 
-        // Beyaz göz
         ctx.fillStyle = '#fff';
-        ctx.beginPath(); ctx.arc(e1x, e1y, eyeR, 0, Math.PI * 2); ctx.fill();
-        ctx.beginPath(); ctx.arc(e2x, e2y, eyeR, 0, Math.PI * 2); ctx.fill();
-        // Siyah göz bebeği
+        ctx.beginPath(); ctx.arc(e1x, e1y, gr, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.arc(e2x, e2y, gr, 0, Math.PI * 2); ctx.fill();
         ctx.fillStyle = '#111';
-        ctx.beginPath(); ctx.arc(e1x, e1y, pupR, 0, Math.PI * 2); ctx.fill();
-        ctx.beginPath(); ctx.arc(e2x, e2y, pupR, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.arc(e1x, e1y, br, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.arc(e2x, e2y, br, 0, Math.PI * 2); ctx.fill();
     }
 
-    // ─── UI Güncelleme ───
-    function updateUI() {
-        document.getElementById('score').textContent     = score || 0;
-        document.getElementById('highScore').textContent  = highScore;
-        document.getElementById('length').textContent     = snake ? snake.length : 3;
-        document.getElementById('aiStatus').textContent   = isAI ? 'AKTİF' : 'KAPALI';
+    // arayüz güncelle
+    function arayuzGuncelle() {
+        document.getElementById('score').textContent = skor || 0;
+        document.getElementById('highScore').textContent = enYuksek;
+        document.getElementById('length').textContent = yilan ? yilan.length : 3;
+        document.getElementById('hiz').textContent = hizCarpani.toFixed(1) + 'x';
+        document.getElementById('aiStatus').textContent = yapayZeka ? 'AKTİF' : 'KAPALI';
 
-        const card = document.getElementById('aiIndicator');
-        if (isAI) card.classList.add('active');
-        else      card.classList.remove('active');
+        var kart = document.getElementById('aiIndicator');
+        if (yapayZeka) kart.classList.add('active');
+        else kart.classList.remove('active');
     }
 
-    // ─── Girdi Yönetimi ───
-    function setupInput() {
-        // Başlat butonu
-        document.getElementById('startBtn').addEventListener('click', startGame);
+    // girdi
+    function girdileriKur() {
+        document.getElementById('startBtn').addEventListener('click', oyunuBaslat);
 
-        // Klavye
         document.addEventListener('keydown', function (e) {
             if (e.key === ' ') {
                 e.preventDefault();
-                if (!gameRunning) { startGame(); return; }
-                if (gameOver) { resetGame(); return; }
+                if (!calisiyor) { oyunuBaslat(); return; }
+                if (oyunBitti) { sifirla(); return; }
             }
 
-            const map = {
-                ArrowUp:    { x: 0, y: -1 }, ArrowDown:  { x: 0, y: 1 },
-                ArrowLeft:  { x: -1, y: 0 }, ArrowRight: { x: 1, y: 0 },
+            var harita = {
+                ArrowUp: { x: 0, y: -1 }, ArrowDown: { x: 0, y: 1 },
+                ArrowLeft: { x: -1, y: 0 }, ArrowRight: { x: 1, y: 0 },
                 w: { x: 0, y: -1 }, s: { x: 0, y: 1 },
                 a: { x: -1, y: 0 }, d: { x: 1, y: 0 }
             };
-            const nd = map[e.key];
-            if (nd && gameRunning && !gameOver) {
+            var yeniYon = harita[e.key];
+            if (yeniYon && calisiyor && !oyunBitti) {
                 e.preventDefault();
-                if (nd.x !== -dir.x || nd.y !== -dir.y) {
-                    nextDir = nd;
-                    lastInputTime = Date.now();
-                    if (isAI) { isAI = false; updateUI(); }
+                if (yeniYon.x !== -yon.x || yeniYon.y !== -yon.y) {
+                    sonrakiYon = yeniYon;
+                    sonGirdi = Date.now();
+                    if (yapayZeka) { yapayZeka = false; arayuzGuncelle(); }
                 }
             }
         });
 
-        // Mobil dokunmatik butonlar
+        // mobil butonlar
         document.querySelectorAll('.touch-btn').forEach(function (btn) {
             btn.addEventListener('touchstart', function (e) {
                 e.preventDefault();
-                if (!gameRunning) { startGame(); return; }
-                if (gameOver) { resetGame(); return; }
-
-                const dirMap = {
-                    up:    { x: 0, y: -1 }, down:  { x: 0, y: 1 },
-                    left:  { x: -1, y: 0 }, right: { x: 1, y: 0 }
+                if (!calisiyor) { oyunuBaslat(); return; }
+                if (oyunBitti) { sifirla(); return; }
+                var yonHarita = {
+                    up: { x: 0, y: -1 }, down: { x: 0, y: 1 },
+                    left: { x: -1, y: 0 }, right: { x: 1, y: 0 }
                 };
-                const nd = dirMap[btn.dataset.dir];
-                if (nd && (nd.x !== -dir.x || nd.y !== -dir.y)) {
-                    nextDir = nd;
-                    lastInputTime = Date.now();
-                    if (isAI) { isAI = false; updateUI(); }
+                var yeniYon = yonHarita[btn.dataset.dir];
+                if (yeniYon && (yeniYon.x !== -yon.x || yeniYon.y !== -yon.y)) {
+                    sonrakiYon = yeniYon;
+                    sonGirdi = Date.now();
+                    if (yapayZeka) { yapayZeka = false; arayuzGuncelle(); }
                 }
             });
         });
 
-        // Kaydırma (Swipe) kontrolleri
-        let touchStartX, touchStartY;
+        // kaydırma
+        var baslangicX, baslangicY;
         canvas.addEventListener('touchstart', function (e) {
-            touchStartX = e.touches[0].clientX;
-            touchStartY = e.touches[0].clientY;
+            baslangicX = e.touches[0].clientX;
+            baslangicY = e.touches[0].clientY;
         }, { passive: true });
 
         canvas.addEventListener('touchend', function (e) {
-            if (!gameRunning) { startGame(); return; }
-            if (gameOver) { resetGame(); return; }
-
-            const dx = e.changedTouches[0].clientX - touchStartX;
-            const dy = e.changedTouches[0].clientY - touchStartY;
+            if (!calisiyor) { oyunuBaslat(); return; }
+            if (oyunBitti) { sifirla(); return; }
+            var dx = e.changedTouches[0].clientX - baslangicX;
+            var dy = e.changedTouches[0].clientY - baslangicY;
             if (Math.abs(dx) < 20 && Math.abs(dy) < 20) return;
-
-            let nd;
-            if (Math.abs(dx) > Math.abs(dy)) {
-                nd = dx > 0 ? { x: 1, y: 0 } : { x: -1, y: 0 };
-            } else {
-                nd = dy > 0 ? { x: 0, y: 1 } : { x: 0, y: -1 };
-            }
-            if (nd.x !== -dir.x || nd.y !== -dir.y) {
-                nextDir = nd;
-                lastInputTime = Date.now();
-                if (isAI) { isAI = false; updateUI(); }
+            var yeniYon;
+            if (Math.abs(dx) > Math.abs(dy)) yeniYon = dx > 0 ? { x: 1, y: 0 } : { x: -1, y: 0 };
+            else yeniYon = dy > 0 ? { x: 0, y: 1 } : { x: 0, y: -1 };
+            if (yeniYon.x !== -yon.x || yeniYon.y !== -yon.y) {
+                sonrakiYon = yeniYon;
+                sonGirdi = Date.now();
+                if (yapayZeka) { yapayZeka = false; arayuzGuncelle(); }
             }
         }, { passive: true });
     }
 
-    // ─── Oyun Döngüsü (Sabit tick + 60fps render) ───
-    let lastTick = 0;
-    let accumulator = 0;
+    // oyun döngüsü
+    var sonTick = 0;
+    var birikim = 0;
 
-    function loop(timestamp) {
-        if (!gameRunning) return;
+    function donguCalistir(zaman) {
+        if (!calisiyor) return;
+        var delta = zaman - sonTick;
+        sonTick = zaman;
+        birikim += delta;
 
-        const delta = timestamp - lastTick;
-        lastTick = timestamp;
-        accumulator += delta;
-
-        // Sabit adım güncelleme
-        while (accumulator >= TICK_MS) {
-            update();
-            accumulator -= TICK_MS;
+        while (birikim >= TICK_MS) {
+            guncelle();
+            birikim -= TICK_MS;
         }
 
-        tickParticles();
-        draw();
-        requestAnimationFrame(loop);
+        parcaciklariGuncelle();
+        ciz();
+        requestAnimationFrame(donguCalistir);
     }
 
-    // ─── Başlat ───
-    init();
+    baslat();
 
 })();
