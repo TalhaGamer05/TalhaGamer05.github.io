@@ -475,130 +475,116 @@ function geriAl() {
 // %100 basari - hicbir zorlukta basarisiz olmaz
 // ==========================================
 
-var cozSeriIdx = 0;
+// ==========================================
+// YAPAY ZEKA ÇÖZÜCÜ (Açgözlü Algoritma)
+// Legal hamleleri tarar, puanlar ve en mantıklısını oynar
+// ==========================================
 
 function otomatikCoz() {
     if (cozuluyor) return;
     cozuluyor = true;
-    cozSeriIdx = 0;
-
-    // tum kartlari topla (kolonlar + stok)
-    var tumKartlar = [];
-    for (var k = 0; k < 10; k++) {
-        while (kolonlar[k].length > 0) tumKartlar.push(kolonlar[k].pop());
-    }
-    while (stok.length > 0) tumKartlar.push(stok.pop());
-
-    // takimlara gore grupla
-    var takimGrup = {};
-    for (var i = 0; i < tumKartlar.length; i++) {
-        var t = tumKartlar[i].takim;
-        if (!takimGrup[t]) takimGrup[t] = [];
-        takimGrup[t].push(tumKartlar[i]);
-    }
-
-    // her takim icinde degere gore sirala (K=13 den A=1 e)
-    for (var t in takimGrup) {
-        takimGrup[t].sort(function(a, b) { return b.deger - a.deger; });
-    }
-
-    // 8 tane 13'lu K→A serisi olustur
-    var seriler = [];
-    for (var t in takimGrup) {
-        var kartlar = takimGrup[t];
-        while (kartlar.length >= 13) {
-            seriler.push(kartlar.splice(0, 13));
-        }
-    }
-
-    // 8 seriyi ilk 8 kolona yerlestir (hepsi acik)
-    kolonlar = [];
-    for (var i = 0; i < 10; i++) kolonlar.push([]);
-
-    for (var s = 0; s < 8; s++) {
-        for (var i = 0; i < 13; i++) {
-            seriler[s][i].acik = true;
-            kolonlar[s].push(seriler[s][i]);
-        }
-    }
-    stok = [];
-
-    // animasyonlu goster
-    masayiCiz(true);
-    bilgiGuncelle();
-
-    // 1.2 saniye bekle, sonra serileri patir patir tamamla
-    setTimeout(seriTamamlaAdim, 1200);
+    otomatikCozAdim();
 }
 
-function seriTamamlaAdim() {
+function otomatikCozAdim() {
     if (!cozuluyor) return;
-    if (cozSeriIdx >= 8 || tamamlanan >= 8) {
+    
+    // Oyun zaten bittiyse durdur
+    if (tamamlanan >= 8) {
         cozuluyor = false;
         return;
     }
 
-    var k = cozSeriIdx;
-    cozSeriIdx++;
+    // En iyi hamleyi bul
+    var enIyiHamle = hamleBul();
 
-    // kolon k'de 13 kartlik tam seri var mi kontrol
-    if (kolonlar[k].length < 13) {
-        // bu kolonda yeterli kart yok, sonrakine gec
-        setTimeout(seriTamamlaAdim, 50);
-        return;
-    }
-
-    var son13 = kolonlar[k].slice(kolonlar[k].length - 13);
-    var gecerli = true;
-    var takim = son13[0].takim;
-    for (var i = 0; i < 13; i++) {
-        if (!son13[i].acik || son13[i].takim !== takim || son13[i].deger !== 13 - i) {
-            gecerli = false;
-            break;
+    if (enIyiHamle) {
+        // Hamleyi gerçekleştir
+        hamleYap(enIyiHamle.kaynakKolon, enIyiHamle.kaynakIdx, enIyiHamle.hedefKolon);
+        
+        // Görsel takibin yapılabilmesi için kısa bir gecikme ekle
+        setTimeout(otomatikCozAdim, 400);
+    } else if (stok.length > 0) {
+        // Yapılacak legal hamle kalmadıysa stoktan kart çek
+        // Ancak önce boş kolon var mı kontrol et, kurallara göre boş kolon varken stok dağıtılamaz
+        var bosKolonVar = kolonlar.some(function(k) { return k.length === 0; });
+        
+        if (bosKolonVar) {
+            console.log("Çözücü tıkandı: Boş kolon var ancak oraya taşınabilecek uygun kart yok.");
+            cozuluyor = false; // Yapacak bir şey kalmadı
+        } else {
+            stokDagit();
+            setTimeout(otomatikCozAdim, 600); // Dağıtım animasyonu için biraz daha uzun bekle
         }
+    } else {
+        // Hamle de yok, stok da yok. Oyun kaybedildi veya tıkandı.
+        console.log("Çözücü tıkandı: Oyun bu noktadan sonra legal olarak çözülemiyor.");
+        cozuluyor = false;
     }
-
-    if (!gecerli) {
-        setTimeout(seriTamamlaAdim, 50);
-        return;
-    }
-
-    // seri toplama animasyonu
-    var kolonDiv = document.querySelector('[data-kolon="' + k + '"]');
-    if (kolonDiv) {
-        var acikKartlar = kolonDiv.querySelectorAll('.kart.acik');
-        var bas = acikKartlar.length - 13;
-        for (var i = bas; i < acikKartlar.length; i++) {
-            if (acikKartlar[i]) {
-                acikKartlar[i].classList.add('seri-toplama');
-                acikKartlar[i].style.animationDelay = ((i - bas) * 0.04) + 's';
-            }
-        }
-    }
-
-    // kartlari kaldir (closure ile dogru kolon indeksini yakala)
-    (function(kolonIdx) {
-        setTimeout(function() {
-            kolonlar[kolonIdx].splice(0, 13);
-            tamamlanan++;
-            skor += 100;
-            hamle++;
-            masayiCiz(false);
-            bilgiGuncelle();
-            tamamlananCiz();
-
-            if (tamamlanan >= 8) {
-                clearInterval(zamanlayici);
-                cozuluyor = false;
-                setTimeout(kazanmaGoster, 500);
-                return;
-            }
-
-            setTimeout(seriTamamlaAdim, 600);
-        }, 700);
-    })(k);
 }
 
+function hamleBul() {
+    var olasiHamleler = [];
+
+    // Tüm kolonları ve içindeki kartları tara
+    for (var i = 0; i < 10; i++) {
+        var kolon = kolonlar[i];
+        if (kolon.length === 0) continue;
+
+        for (var j = 0; j < kolon.length; j++) {
+            // Eğer j. indeksten itibaren olan kartlar taşınabilir bir seriyse
+            if (gecerliSeriMi(i, j)) {
+                var kaynakKart = kolon[j];
+
+                // Bu seriyi diğer 9 kolondan hangisine taşıyabiliriz?
+                for (var h = 0; h < 10; h++) {
+                    if (i === h) continue; // Kendi kolonuna taşıma
+                    
+                    var hedefKolon = kolonlar[h];
+
+                    // KURAL 1: Hedef kolon boşsa
+                    if (hedefKolon.length === 0) {
+                        // Sadece altındaki kapalı bir kartı açacaksa boş kolona taşımak mantıklıdır (Kısır döngüyü önler)
+                        if (j > 0 && !kolon[j-1].acik) {
+                            olasiHamleler.push({
+                                kaynakKolon: i, kaynakIdx: j, hedefKolon: h,
+                                puan: 50 // Kapalı kart açmak yüksek önceliklidir
+                            });
+                        }
+                    } 
+                    // KURAL 2: Hedef kolonda kart varsa ve değer olarak bir fazlasıysa
+                    else {
+                        var hedefKart = hedefKolon[hedefKolon.length - 1];
+                        if (hedefKart.deger === kaynakKart.deger + 1) {
+                            var puan = 0;
+                            
+                            // Altındaki kapalı kartı kurtarıyorsa iyi bir hamle
+                            if (j > 0 && !kolon[j-1].acik) puan += 40;
+                            
+                            // Aynı takımın üstüne oturuyorsa mükemmel bir hamledir (Seri birleştirme)
+                            if (hedefKart.takim === kaynakKart.takim) puan += 60;
+                            
+                            // Farklı takımın üstüne oturuyorsa (sadece mecbursak veya kart açıyorsak yaparız)
+                            if (hedefKart.takim !== kaynakKart.takim) puan += 10;
+
+                            olasiHamleler.push({
+                                kaynakKolon: i, kaynakIdx: j, hedefKolon: h, puan: puan
+                            });
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // Puanlamaya göre büyükten küçüğe sırala ve en iyisini dön
+    if (olasiHamleler.length > 0) {
+        olasiHamleler.sort(function(a, b) { return b.puan - a.puan; });
+        return olasiHamleler[0];
+    }
+
+    return null; // Hamle bulunamadı
+}
 // ==========================================
 // bilgi guncelleme
 // ==========================================
