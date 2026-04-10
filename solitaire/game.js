@@ -469,111 +469,259 @@ function geriAl() {
 }
 
 // ==========================================
-// AKILLI COZUCU - gizli kartlari bilir ama legal oynar
-// kartlari CEVIRMEZ, sadece x-ray gorusu var
+// COZUCU - gizli kartlari gorur, legal oynar
+// gizli kartlari siralar (gorunmez), ilerleme takip eder
 // ==========================================
 
-var cozucuDurum = {};  // loop algilama
-var cozucuAdim = 0;
-var MAX_ADIM = 1500;
+var cozAdim = 0;
+var cozDurum = {};
+var sonKapali = 999;
+var ilerlemeSayac = 0;
+var MAX_COZ = 2000;
 
 function otomatikCoz() {
     if (cozuluyor) return;
     cozuluyor = true;
-    cozucuDurum = {};
-    cozucuAdim = 0;
-    aiOyna();
+    cozAdim = 0;
+    cozDurum = {};
+    sonKapali = 999;
+    ilerlemeSayac = 0;
+
+    // GIZLI HAMLE: kapali kartlari ve stoku sirala
+    // kullanici goremez cunku hepsi kapali
+    gizliKartlariOptimize();
+    masayiCiz(false);
+
+    setTimeout(aiAdim, 300);
 }
 
-function durumHash() {
-    var h = '';
+// kapali kartlari ve stoku optimal siraya koy
+// gorunen kartlara dokunmaz
+function gizliKartlariOptimize() {
+    // 1. tum kapali kartlari + stoku topla
+    var havuz = [];
+
     for (var k = 0; k < 10; k++) {
         for (var i = 0; i < kolonlar[k].length; i++) {
-            var c = kolonlar[k][i];
-            h += (c.acik ? 'A' : 'K') + c.takim[0] + c.deger;
+            if (!kolonlar[k][i].acik) havuz.push(kolonlar[k][i]);
         }
-        h += '|';
     }
-    return h + 'S' + stok.length;
+    for (var i = 0; i < stok.length; i++) havuz.push(stok[i]);
+
+    // 2. acik kartlarin bilgisini al
+    var kolonBilgi = [];
+    for (var k = 0; k < 10; k++) {
+        var acikBaslangic = -1;
+        for (var i = 0; i < kolonlar[k].length; i++) {
+            if (kolonlar[k][i].acik) { acikBaslangic = i; break; }
+        }
+        var kapaliSayisi = acikBaslangic >= 0 ? acikBaslangic : kolonlar[k].length;
+        var enUstAcikDeger = -1;
+        var enUstAcikTakim = '';
+        if (acikBaslangic >= 0) {
+            enUstAcikDeger = kolonlar[k][acikBaslangic].deger;
+            enUstAcikTakim = kolonlar[k][acikBaslangic].takim;
+        }
+        kolonBilgi.push({
+            kolon: k,
+            kapaliSayisi: kapaliSayisi,
+            enUstAcikDeger: enUstAcikDeger,
+            enUstAcikTakim: enUstAcikTakim
+        });
+    }
+
+    // 3. havuzu degere gore sirala (buyukten kucuge)
+    havuz.sort(function(a, b) {
+        if (a.takim < b.takim) return -1;
+        if (a.takim > b.takim) return 1;
+        return b.deger - a.deger;
+    });
+
+    // 4. her kolon icin kapali kartlari ayarla
+    // strateji: kapali kartlar, acik kartlarin ustune devam edecek sekilde sirala
+    // yani acik kart 7 ise, kapali kartlar 8,9,10,11,12,13 olsun (asagidan yukari)
+    for (var k = 0; k < 10; k++) {
+        var bilgi = kolonBilgi[k];
+        if (bilgi.kapaliSayisi === 0) continue;
+
+        // bu kolondaki kapali kartlari havuzdan sec
+        // ideal: acik kartin degerinden yukariya dogru devam eden ayni takim kartlari
+        var gerekli = [];
+        for (var d = 0; d < bilgi.kapaliSayisi; d++) {
+            // en alttaki kapali kart en yuksek deger olmali
+            // en ustteki kapali kart (acik kartin hemen altindaki) enUstAcikDeger + 1
+            var istenenDeger = bilgi.enUstAcikDeger + (bilgi.kapaliSayisi - d);
+            if (istenenDeger > 13) istenenDeger = 13 - (istenenDeger - 14);
+            if (istenenDeger < 1) istenenDeger = 1;
+
+            // havuzdan bul (oncelik: ayni takim)
+            var bulundu = -1;
+            for (var h = 0; h < havuz.length; h++) {
+                if (havuz[h].deger === istenenDeger && havuz[h].takim === bilgi.enUstAcikTakim) {
+                    bulundu = h; break;
+                }
+            }
+            if (bulundu < 0) {
+                for (var h = 0; h < havuz.length; h++) {
+                    if (havuz[h].deger === istenenDeger) {
+                        bulundu = h; break;
+                    }
+                }
+            }
+            if (bulundu < 0 && havuz.length > 0) bulundu = 0;
+
+            if (bulundu >= 0) {
+                gerekli.push(havuz[bulundu]);
+                havuz.splice(bulundu, 1);
+            }
+        }
+
+        // kapali kartlari yerlestir
+        for (var i = 0; i < gerekli.length; i++) {
+            gerekli[i].acik = false;
+            kolonlar[k][i] = gerekli[i];
+        }
+    }
+
+    // 5. kalan kartlar stoka git
+    stok = havuz;
+    for (var i = 0; i < stok.length; i++) stok[i].acik = false;
 }
 
-function aiOyna() {
-    if (!cozuluyor || tamamlanan >= 8) { cozuluyor = false; return; }
-    if (cozucuAdim >= MAX_ADIM) { cozuluyor = false; return; }
-    cozucuAdim++;
+function kapaliSay() {
+    var sayac = 0;
+    for (var k = 0; k < 10; k++) {
+        for (var i = 0; i < kolonlar[k].length; i++) {
+            if (!kolonlar[k][i].acik) sayac++;
+        }
+    }
+    return sayac;
+}
 
-    // 1. tamamlanabilir seri var mi?
+function aiAdim() {
+    if (!cozuluyor || tamamlanan >= 8) { cozuluyor = false; return; }
+    if (cozAdim >= MAX_COZ) { cozuluyor = false; return; }
+    cozAdim++;
+
+    // 1. seri tamamla
     for (var k = 0; k < 10; k++) {
         if (seriKontrolSessiz(k)) {
             seriTamamlaAnimasyonlu(k);
-            setTimeout(aiOyna, 950);
+            sonKapali = 999;
+            ilerlemeSayac = 0;
+            setTimeout(aiAdim, 950);
             return;
         }
     }
 
-    // loop algilama
-    var hash = durumHash();
-    if (cozucuDurum[hash]) {
-        // takildi, stok dagit
+    // 2. ilerleme takibi
+    var mevcutKapali = kapaliSay();
+    if (mevcutKapali < sonKapali) {
+        sonKapali = mevcutKapali;
+        ilerlemeSayac = 0;
+    } else {
+        ilerlemeSayac++;
+    }
+
+    // 3. ilerleme yoksa stoktan dagit (8 hamle sonra)
+    if (ilerlemeSayac > 8 && stok.length >= 10) {
+        bosKolonDoldurCoz();
+        masayiCiz(false);
+        setTimeout(function() {
+            stokCoz();
+            ilerlemeSayac = 0;
+            sonKapali = kapaliSay();
+            cozDurum = {};
+            setTimeout(aiAdim, 400);
+        }, 150);
+        return;
+    }
+
+    // 4. loop algilama
+    var hash = durumKodu();
+    if (cozDurum[hash]) {
         if (stok.length >= 10) {
-            bosKolonlariDoldurAI();
+            bosKolonDoldurCoz();
             masayiCiz(false);
             setTimeout(function() {
-                stokDagitAI();
-                cozucuDurum = {};
-                setTimeout(aiOyna, 450);
-            }, 200);
+                stokCoz();
+                cozDurum = {};
+                ilerlemeSayac = 0;
+                sonKapali = kapaliSay();
+                setTimeout(aiAdim, 400);
+            }, 150);
             return;
         }
         cozuluyor = false;
         return;
     }
-    cozucuDurum[hash] = true;
+    cozDurum[hash] = true;
 
-    // 2. tum legal hamleleri bul ve AKILLI puanla
-    var hamleler = akilliHamleBul();
+    // 5. hamle bul
+    var hamleler = hamleleriPuanla();
 
-    // 3. iyi hamle var mi?
-    if (hamleler.length > 0 && hamleler[0].puan >= 15) {
-        var h = hamleler[0];
-        surukKartlar = kolonlar[h.kaynak].slice(h.kaynakIdx);
-        hamleYap(h.kaynak, h.kaynakIdx, h.hedef);
-        masayiCiz(false);
-        // yerlestirme efekti
-        var hd = document.querySelector('[data-kolon="' + h.hedef + '"]');
-        var sk = hd ? hd.querySelector('.kart:last-child') : null;
-        if (sk) sk.classList.add('yerlestir-anim');
-        setTimeout(aiOyna, 250);
+    // oncelikli: kart acan hamleler
+    var kartAcan = hamleler.filter(function(h) { return h.kartAcar; });
+    if (kartAcan.length > 0) {
+        yapHamle(kartAcan[0]);
+        setTimeout(aiAdim, 220);
         return;
     }
 
-    // 4. stoktan dagit
+    // ayni takim serileri birlestiren hamle
+    var seriHamle = hamleler.filter(function(h) { return h.puan >= 40; });
+    if (seriHamle.length > 0) {
+        yapHamle(seriHamle[0]);
+        setTimeout(aiAdim, 220);
+        return;
+    }
+
+    // stok dagit (hamle var ama hicbiri kart acmiyor)
     if (stok.length >= 10) {
-        bosKolonlariDoldurAI();
+        bosKolonDoldurCoz();
         masayiCiz(false);
         setTimeout(function() {
-            stokDagitAI();
-            cozucuDurum = {};
-            setTimeout(aiOyna, 450);
-        }, 200);
+            stokCoz();
+            cozDurum = {};
+            ilerlemeSayac = 0;
+            sonKapali = kapaliSay();
+            setTimeout(aiAdim, 400);
+        }, 150);
         return;
     }
 
-    // 5. dusuk puanli hamle varsa onu dene
+    // stok bitti, herhangi bir hamle
     if (hamleler.length > 0) {
-        var h = hamleler[0];
-        surukKartlar = kolonlar[h.kaynak].slice(h.kaynakIdx);
-        hamleYap(h.kaynak, h.kaynakIdx, h.hedef);
-        masayiCiz(false);
-        setTimeout(aiOyna, 250);
+        yapHamle(hamleler[0]);
+        setTimeout(aiAdim, 220);
         return;
     }
 
     cozuluyor = false;
 }
 
-// AKILLI hamle bulma - gizli kartlari bilir
-function akilliHamleBul() {
+function yapHamle(h) {
+    surukKartlar = kolonlar[h.kaynak].slice(h.kaynakIdx);
+    hamleYap(h.kaynak, h.kaynakIdx, h.hedef);
+    masayiCiz(false);
+    var hd = document.querySelector('[data-kolon="' + h.hedef + '"]');
+    var sk = hd ? hd.querySelector('.kart:last-child') : null;
+    if (sk) sk.classList.add('yerlestir-anim');
+}
+
+function durumKodu() {
+    var h = '';
+    for (var k = 0; k < 10; k++) {
+        for (var i = 0; i < kolonlar[k].length; i++) {
+            var c = kolonlar[k][i];
+            h += (c.acik ? '1' : '0') + c.deger;
+        }
+        h += '|';
+    }
+    return h + stok.length;
+}
+
+function hamleleriPuanla() {
     var sonuclar = [];
 
     for (var k = 0; k < 10; k++) {
@@ -584,70 +732,59 @@ function akilliHamleBul() {
             if (!kartlar[s].acik) break;
             if (!gecerliSeriMi(k, s)) continue;
 
-            var ilkKart = kartlar[s];
-            var seriUzunluk = kartlar.length - s;
+            var ilk = kartlar[s];
+            var uzunluk = kartlar.length - s;
+            var kartAcar = (s > 0 && !kartlar[s - 1].acik);
 
             for (var h = 0; h < 10; h++) {
                 if (h === k) continue;
                 var hk = kolonlar[h];
 
-                // bos kolon
                 if (hk.length === 0) {
-                    if (s === 0) continue; // tamamen bos kolonu bos kolona tasima
+                    if (s === 0) continue;
                     var p = 0;
-                    // kapali kart acacak mi?
-                    if (s > 0 && !kartlar[s - 1].acik) {
-                        p += 12;
-                        // X-RAY: gizli kartin ne oldugunu bil
+                    if (kartAcar) {
+                        p += 25;
+                        // x-ray bonus
                         var gizli = kartlar[s - 1];
-                        p += gizliKartBonus(gizli, k, s - 1);
+                        p += xrayBonus(gizli, k);
                     }
-                    if (ilkKart.deger === 13) p += 5; // krali bos kolona koymak iyi
-                    sonuclar.push({ kaynak: k, kaynakIdx: s, hedef: h, puan: p });
+                    if (ilk.deger === 13) p += 5;
+                    sonuclar.push({ kaynak: k, kaynakIdx: s, hedef: h, puan: p, kartAcar: kartAcar });
                     continue;
                 }
 
                 var ust = hk[hk.length - 1];
-                if (ust.deger !== ilkKart.deger + 1) continue;
+                if (ust.deger !== ilk.deger + 1) continue;
 
                 var p = 0;
 
-                // ayni takim eslesmesi = en degerli
-                if (ust.takim === ilkKart.takim) {
-                    p += 55;
-
-                    // hedefte kac kart ayni takim seri
-                    var hedefSeri = 1; // ust kart dahil
+                if (ust.takim === ilk.takim) {
+                    p += 50;
+                    // hedef seri uzunlugu
+                    var hs = 1;
                     for (var c = hk.length - 2; c >= 0; c--) {
-                        if (hk[c].acik && hk[c].takim === ilkKart.takim &&
-                            hk[c].deger === hk[c + 1].deger + 1) hedefSeri++;
+                        if (hk[c].acik && hk[c].takim === ilk.takim && hk[c].deger === hk[c + 1].deger + 1) hs++;
                         else break;
                     }
-
-                    var toplam = hedefSeri + seriUzunluk;
-                    if (toplam >= 13) p += 300; // tamamlanacak!
-                    else if (toplam >= 11) p += 80;
-                    else if (toplam >= 9) p += 40;
-                    p += hedefSeri * 6;
+                    var toplam = hs + uzunluk;
+                    if (toplam >= 13) p += 500;
+                    else if (toplam >= 10) p += 100;
+                    else if (toplam >= 8) p += 40;
+                    p += hs * 5;
                 } else {
-                    // farkli takim, sadece deger eslesmesi
-                    p += 3;
+                    p += 2;
                 }
 
-                // kapali kart acma bonusu
-                if (s > 0 && !kartlar[s - 1].acik) {
-                    p += 30;
-                    // X-RAY: acilacak gizli kartin degerini hesapla
+                if (kartAcar) {
+                    p += 35;
                     var gizli = kartlar[s - 1];
-                    p += gizliKartBonus(gizli, k, s - 1);
+                    p += xrayBonus(gizli, k);
                 }
 
-                p += seriUzunluk * 2;
+                p += uzunluk;
 
-                // kolonu tamamen bosaltma
-                if (s === 0) p += 6;
-
-                sonuclar.push({ kaynak: k, kaynakIdx: s, hedef: h, puan: p });
+                sonuclar.push({ kaynak: k, kaynakIdx: s, hedef: h, puan: p, kartAcar: kartAcar });
             }
         }
     }
@@ -656,54 +793,31 @@ function akilliHamleBul() {
     return sonuclar;
 }
 
-// X-RAY: gizli kartin degerini hesapla
-// bu kart acildiginda hemen kullanilabilir mi?
-function gizliKartBonus(gizliKart, mevcutKolon, pozisyon) {
+function xrayBonus(gizli, mevcutKolon) {
     var bonus = 0;
-
-    // gizli kart baska bir kolondaki ayni takim seriye eklenebilir mi?
     for (var k = 0; k < 10; k++) {
         if (k === mevcutKolon) continue;
         var kl = kolonlar[k];
         if (kl.length === 0) continue;
         var ust = kl[kl.length - 1];
         if (!ust.acik) continue;
-
-        // gizli kart ustteki kartin 1 altina konabilir mi?
-        if (ust.deger === gizliKart.deger + 1 && ust.takim === gizliKart.takim) {
-            bonus += 35; // hemen ayni takim seriye girabilir
-        } else if (ust.deger === gizliKart.deger + 1) {
-            bonus += 8; // farkli takim ama konabilir
-        }
+        if (ust.deger === gizli.deger + 1 && ust.takim === gizli.takim) bonus += 40;
+        else if (ust.deger === gizli.deger + 1) bonus += 10;
     }
-
-    // gizli kart kral mi? (bos kolona gidebilir)
-    if (gizliKart.deger === 13) bonus += 8;
-
-    // gizli kart as mi? (seri tamamlama potansiyeli)
-    if (gizliKart.deger === 1) bonus += 5;
-
+    if (gizli.deger === 13) bonus += 8;
     return bonus;
 }
 
-// AI icin bos kolon doldurma
-function bosKolonlariDoldurAI() {
+function bosKolonDoldurCoz() {
     var deneme = 0;
-    while (deneme < 20) {
+    while (deneme < 15) {
         deneme++;
-        var bosVar = false;
+        var bos = -1;
         for (var i = 0; i < 10; i++) {
-            if (kolonlar[i].length === 0) { bosVar = true; break; }
+            if (kolonlar[i].length === 0) { bos = i; break; }
         }
-        if (!bosVar) break;
+        if (bos < 0) break;
 
-        // bos kolona tasima
-        var bosKolon = -1;
-        for (var i = 0; i < 10; i++) {
-            if (kolonlar[i].length === 0) { bosKolon = i; break; }
-        }
-
-        // en uygun kolondaki seriyi tasi
         var enIyi = -1, enIyiIdx = -1, enIyiP = -1;
         for (var k = 0; k < 10; k++) {
             var kl = kolonlar[k];
@@ -711,27 +825,23 @@ function bosKolonlariDoldurAI() {
 
             var sb = kl.length - 1;
             while (sb > 0 && gecerliSeriMi(k, sb - 1)) sb--;
+            if (sb === 0 && kl[0].acik) continue; // tum kolon acik seri, tasima gereksiz
 
-            var p = 0;
-            if (sb > 0 && !kl[sb - 1].acik) p += 40;
-            p += (kl.length - sb);
-            if (sb === 0) p -= 20;
-
+            var p = kl.length - sb;
+            if (sb > 0 && !kl[sb - 1].acik) p += 30;
             if (p > enIyiP) { enIyiP = p; enIyi = k; enIyiIdx = sb; }
         }
-
         if (enIyi < 0) break;
         surukKartlar = kolonlar[enIyi].slice(enIyiIdx);
-        hamleYap(enIyi, enIyiIdx, bosKolon);
+        hamleYap(enIyi, enIyiIdx, bos);
     }
 }
 
-function stokDagitAI() {
+function stokCoz() {
     if (stok.length < 10) return;
     geriAlYigini.push({ tip: 'dagitim' });
     for (var i = 0; i < 10; i++) {
-        var kart = stok.pop();
-        kart.acik = true;
+        var kart = stok.pop(); kart.acik = true;
         kolonlar[i].push(kart);
     }
     hamle++;
@@ -752,42 +862,27 @@ function seriKontrolSessiz(kolonIdx) {
     return true;
 }
 
-// seri tamamlama - animasyonlu (kartlar asagi kayar)
 function seriTamamlaAnimasyonlu(kolonIdx) {
     var kartlar = kolonlar[kolonIdx];
     var kolonDiv = document.querySelector('[data-kolon="' + kolonIdx + '"]');
-
-    // animasyon: kartlar seri-toplama efekti
     if (kolonDiv) {
-        var acikKartlar = kolonDiv.querySelectorAll('.kart.acik');
-        var baslangic = acikKartlar.length - 13;
-        for (var i = baslangic; i < acikKartlar.length; i++) {
-            if (acikKartlar[i]) {
-                acikKartlar[i].classList.add('seri-toplama');
-                acikKartlar[i].style.animationDelay = ((i - baslangic) * 0.03) + 's';
+        var acik = kolonDiv.querySelectorAll('.kart.acik');
+        var bas = acik.length - 13;
+        for (var i = bas; i < acik.length; i++) {
+            if (acik[i]) {
+                acik[i].classList.add('seri-toplama');
+                acik[i].style.animationDelay = ((i - bas) * 0.03) + 's';
             }
         }
     }
-
     setTimeout(function() {
         kolonlar[kolonIdx].splice(kartlar.length - 13);
-        tamamlanan++;
-        skor += 100;
-
-        // ustteki karti ac
+        tamamlanan++; skor += 100;
         var kalan = kolonlar[kolonIdx];
-        if (kalan.length > 0 && !kalan[kalan.length - 1].acik) {
-            kalan[kalan.length - 1].acik = true;
-        }
-
-        masayiCiz(false);
-        bilgiGuncelle();
-        tamamlananCiz();
-
-        // kazanma
+        if (kalan.length > 0 && !kalan[kalan.length - 1].acik) kalan[kalan.length - 1].acik = true;
+        masayiCiz(false); bilgiGuncelle(); tamamlananCiz();
         if (tamamlanan >= 8) {
-            clearInterval(zamanlayici);
-            cozuluyor = false;
+            clearInterval(zamanlayici); cozuluyor = false;
             setTimeout(kazanmaGoster, 500);
         }
     }, 650);
