@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Galeri - Hava Durumu Panosu</title>
+
+    <!-- Kritik Kaynakları Önceden Yükle -->
+    <link rel="preload" href="style.css" as="style">
+    <link rel="preload" href="webgl.js" as="script">
+
+    <!-- Diğer Sayfaları Önceden Getir (Prefetch) -->
+    <link rel="prefetch" href="index.html">
+    <link rel="prefetch" href="hakkimizda.html">
+    <link rel="prefetch" href="istatistikler.html">
+    <link rel="prefetch" href="iletisim.html">
+    <link rel="prefetch" href="odevler.html">
+    <link rel="prefetch" href="nasil-yapildi.html">
+
+    <!-- Magnific Popup CSS (jQuery Lightbox için) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/magnific-popup.min.css" />
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <video autoplay loop muted id="bg-video" class="bg-video">
+        <source id="bg-video-source" src="videolar/yagmur.mp4" type="video/mp4">
+    </video>
+
+    <nav class="main-nav">
+        <ul>
+            <li><a href="index.html" rel="prefetch">Ana Sayfa</a></li>
+            <li><a href="hakkimizda.html" rel="prefetch">Hakkımızda</a></li>
+            <li><a href="istatistikler.html" rel="prefetch">İstatistikler</a></li>
+            <li><a href="galeri.html" class="active">Galeri</a></li>
+            <li><a href="iletisim.html" rel="prefetch">İletişim</a></li>
+            <li><a href="odevler.html" rel="prefetch">Ödevler</a></li>
+            <li><a href="nasil-yapildi.html" rel="prefetch">Nasıl Yapıldı?</a></li>
+        </ul>
+    </nav>
+
+    <main>
+        <section class="content-dashboard">
+            <canvas id="glassCanvas"></canvas>
+            <div class="glass-overlay"></div>
+            
+            <div class="content-scroll">
+                <h2>Medya Galerisi</h2>
+                <p>Türkiye'nin çeşitli bölgelerinden derlenen hava durumu manzaraları.</p>
+
+                <!-- jQuery Filtre Butonları -->
+                <div class="gallery-filters">
+                    <button class="filter-btn active" data-filter="all">Hepsi</button>
+                    <button class="filter-btn" data-filter="gunesli">Güneşli</button>
+                    <button class="filter-btn" data-filter="yagmur">Yağmurlu</button>
+                    <button class="filter-btn" data-filter="kar">Karlı</button>
+                    <button class="filter-btn" data-filter="bulut">Bulutlu</button>
+                    <button class="filter-btn" data-filter="firtina">Fırtınalı</button>
+                </div>
+
+                <!-- Dinamik Olarak Doldurulacak Grid -->
+                <div class="gallery-grid"></div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Magnific Popup İçin Gizli Video Lightbox Şablonu -->
+    <div id="videoLightbox" class="white-popup mfp-hide" style="position:relative; background:rgba(15, 23, 42, 0.9); padding:20px; width:90%; max-width:800px; margin:40px auto; border-radius:24px; border:1px solid rgba(255,255,255,0.25); text-align:center; box-shadow:0 30px 60px rgba(0,0,0,0.5); backdrop-filter:blur(20px);">
+        <video id="lightboxVideo" src="" controls autoplay style="width:100%; border-radius:16px; max-height:450px; outline:none; box-shadow:0 10px 30px rgba(0,0,0,0.5);"></video>
+        <h3 id="lightboxTitle" style="color:white; margin-top:20px; font-weight:800; font-size:1.3rem;"></h3>
+        <p id="lightboxDesc" style="color:rgba(255,255,255,0.7); margin-top:8px; font-size:0.9rem; line-height:1.5; font-weight:400;"></p>
+    </div>
+
+    <footer class="main-footer">
+        <p>&copy; 2026 Hava Durumu Panosu. Tüm Hakları Saklıdır.</p>
+    </footer>
+
+    <!-- jQuery, Magnific Popup ve WebGL Scripts -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/jquery.magnific-popup.min.js"></script>
+    <script src="webgl.js"></script>
+    
+    <script>
+        $(document).ready(function() {
+            // Dinamik İçerik Üretimi (Diziler/Objeler Kullanımı)
+            const galleryData = [
+                { category: 'gunesli', src: 'videolar/gunesli.mp4', title: 'Güneşli Hava', desc: 'Akdeniz kıyılarında sıcak ve pırıl pırıl bir gün.' },
+                { category: 'yagmur', src: 'videolar/yagmur.mp4', title: 'Yağmurlu Hava', desc: 'Karadeniz ormanlarında toprak kokulu tazeleyici yağmur.' },
+                { category: 'kar', src: 'videolar/karli.mp4', title: 'Karlı Hava', desc: 'Doğu Anadolu dağlarında bembeyaz ve sessiz bir kış manzarası.' },
+                { category: 'bulut', src: 'videolar/bulutlu.mp4', title: 'Bulutlu Hava', desc: 'Marmara semalarında sakin, dinlendirici kapalı hava.' },
+                { category: 'firtina', src: 'videolar/firtinali.mp4', title: 'Fırtınalı Hava', desc: 'Körfez kıyılarında gök gürültülü ve rüzgarlı fırtına.' }
+            ];
+
+            // Galeri Elemanlarını Döngüyle Dinamik Oluşturma Fonksiyonu
+            function renderGallery(filter = 'all') {
+                const $grid = $('.gallery-grid');
+                
+                // ==============================================================================================
+                // KRİTER 4: jQuery Kullanımı ve Animasyonlar - Efektler
+                // (fadeOut() ve fadeIn() animasyonları kullanılarak DOM elemanları görsel bir geçişle temizlenmektedir)
+                // ==============================================================================================
+                $grid.fadeOut(300, function() {
+                    $grid.empty();
+                    
+                    const filteredData = filter === 'all' 
+                        ? galleryData 
+                        : galleryData.filter(item => item.category === filter);
+                    
+                    filteredData.forEach(item => {
+                        // Dinamik DOM üretimi
+                        const $card = $(`
+                            <div class="gallery-item" style="cursor:pointer;">
+                                <video src="${item.src}" autoplay muted loop style="width:100%; border-radius:10px; height:150px; object-fit:cover;"></video>
+                                <h4>${item.title}</h4>
+                                <p style="font-size:0.75rem; color:#4b5563; margin-top:5px; padding:0 5px; min-height:36px;">${item.desc}</p>
+                                <div style="display:flex; gap:5px; margin-top:10px; padding:5px;">
+                                    <button class="play-btn" style="flex:1; padding:6px; font-size:0.75rem; border-radius:8px; border:none; background:#3b82f6; color:white; font-weight:700; cursor:pointer; transition:all 0.2s;">🔍 İzle (Lightbox)</button>
+                                    <button class="bg-btn" style="flex:1; padding:6px; font-size:0.75rem; border-radius:8px; border:none; background:#10b981; color:white; font-weight:700; cursor:pointer; transition:all 0.2s;">🌍 Arka Plan Yap</button>
+                                </div>
+                            </div>
+                        `);
+
+                        // Lightbox İzle Butonu Olay Dinleyicisi
+                        $card.find('.play-btn').on('click', function(e) {
+                            e.stopPropagation();
+                            // Popuptaki video özelliklerini yükle
+                            $('#lightboxVideo').attr('src', item.src);
+                            $('#lightboxTitle').text(item.title);
+                            $('#lightboxDesc').text(item.desc);
+                            
+                            // ==============================================================================================
+                            // KRİTER 6: Harici Bir jQuery Eklentisi (Plugin) Kullanımı
+                            // (Aşağıda 'Magnific Popup' eklentisi kullanılarak videolar için gelişmiş bir modal lightbox oluşturulmuştur)
+                            // ==============================================================================================
+                            $.magnificPopup.open({
+                                items: {
+                                    src: '#videoLightbox'
+                                },
+                                type: 'inline',
+                                callbacks: {
+                                    close: function() {
+                                        $('#lightboxVideo')[0].pause(); // Kapanınca videoyu durdur
+                                    }
+                                }
+                            });
+                        });
+
+                        // Arka Plan Yap Butonu Olay Dinleyicisi (DOM müdahalesi)
+                        $card.find('.bg-btn').on('click', function(e) {
+                            e.stopPropagation();
+                            $('#bg-video-source').attr('src', item.src);
+                            $('#bg-video')[0].load();
+                            $('#bg-video')[0].play();
+                        });
+
+                        $grid.append($card);
+                    });
+                    
+                    // Elemanlar yüklendikten sonra fadeIn animasyonuyla göster
+                    $grid.fadeIn(300);
+                });
+            }
+
+            // Sayfa açıldığında galeriyi ilk kez yükle
+            renderGallery('all');
+
+            // Filtre Butonları Tıklama Olayları (jQuery siblings() Traversal)
+            $('.filter-btn').on('click', function() {
+                // jQuery DOM Seçiciler ve Kardeş Öğeler Sınıf Manipülasyonları (Kriter 4)
+                $(this).addClass('active').siblings().removeClass('active');
+                
+                const filterValue = $(this).data('filter');
+                renderGallery(filterValue);
+            });
+        });
+    </script>
+</body>
+</html>
