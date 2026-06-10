@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Projeleri Portalı | Giriş Paneli</title>
+    
+    <!-- SEO Meta Etiketleri -->
+    <meta name="description" content="Üç farklı web projesini bir araya getiren modern, hızlı ve şık bir portal arayüzü. Not Hesaplama, Hava Durumu ve Av Market projelerine buradan erişebilirsiniz.">
+    <meta name="author" content="Talha, Berke, İlkay">
+    
+    <!-- Favicon (PWA standartlarında SVG ikon) -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚀</text></svg>">
+    
+    <!-- FontAwesome İkon Kütüphanesi -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Portal Stil Dosyası -->
+    <link rel="stylesheet" href="portal_style.css">
+</head>
+<body>
+
+    <!-- Arka Plandaki Dinamik Glowing Orbs (Ortam Işıkları) -->
+    <div class="ambient-bg">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+    </div>
+
+    <!-- Ana Konteyner -->
+    <div class="portal-container">
+        
+        <!-- Üst Başlık (Header) -->
+        <header class="portal-header">
+            <div class="portal-badge" id="live-badge">
+                <span class="dot"></span>
+                <span>Proje Hub Aktif</span>
+            </div>
+            <h1 class="portal-title">Web Projeleri Portalı</h1>
+            <p class="portal-subtitle">Geliştirilen dinamik ve kullanıcı dostu web uygulamalarına tek bir noktadan hızlıca erişin.</p>
+        </header>
+
+        <!-- Projeler Izgarası (Grid) -->
+        <main class="projects-grid">
+            
+            <!-- 1. KART: BERKE - VİZE FİNAL -->
+            <article class="project-card berke-card" id="card-berke">
+                <div class="card-header">
+                    <div class="icon-container">
+                        <i class="fa-solid fa-graduation-cap"></i>
+                    </div>
+                    <div class="developer-tag">Geliştirici: Berke</div>
+                    <h2 class="project-name">Akademik Not Portalı</h2>
+                    <p class="project-desc">Derslerinizin vize ve final notlarını girerek ortalamanızı hesaplayabileceğiniz, hedef final notlarınızı belirleyebileceğiniz ve geçmiş istatistiklerinizi izleyebileceğiniz portal.</p>
+                </div>
+                
+                <div class="card-footer-area">
+                    <div class="features-tags">
+                        <span class="tag">Not Hesaplama</span>
+                        <span class="tag">Hedef Not Bulucu</span>
+                        <span class="tag">İstatistik Paneli</span>
+                        <span class="tag">jQuery</span>
+                        <span class="tag">Slick Slider</span>
+                    </div>
+                    
+                    <a href="BERKE%20-%20V%C4%B0ZE%20F%C4%B0NAL/index.html" class="btn-open" target="_blank">
+                        <span>Projeyi Aç <i class="fa-solid fa-arrow-right"></i></span>
+                    </a>
+                </div>
+            </article>
+
+            <!-- 2. KART: TALHA - HAVADURUMU -->
+            <article class="project-card talha-card" id="card-talha">
+                <div class="card-header">
+                    <div class="icon-container">
+                        <i class="fa-solid fa-cloud-sun"></i>
+                    </div>
+                    <div class="developer-tag">Geliştirici: Talha</div>
+                    <h2 class="project-name">Hava Durumu Panosu</h2>
+                    <p class="project-desc">Şehir aramalı, 7 günlük tahmin içeren ve harita entegrasyonu sunan PWA uyumlu pano. Matter.js fizik motorlu yerçekimi modu ve WebGL efektleri içerir.</p>
+                </div>
+                
+                <div class="card-footer-area">
+                    <div class="features-tags">
+                        <span class="tag">PWA Desteği</span>
+                        <span class="tag">Leaflet Harita</span>
+                        <span class="tag">Matter.js Fizik</span>
+                        <span class="tag">WebGL Efektleri</span>
+                        <span class="tag">Ödevler & Galeri</span>
+                    </div>
+                    
+                    <a href="TALHA%20-%20havadurumu/index.html" class="btn-open" target="_blank">
+                        <span>Projeyi Aç <i class="fa-solid fa-arrow-right"></i></span>
+                    </a>
+                </div>
+            </article>
+
+            <!-- 3. KART: İLKAY - AV MARKET -->
+            <article class="project-card ilkay-card" id="card-ilkay">
+                <div class="card-header">
+                    <div class="icon-container">
+                        <i class="fa-solid fa-bullseye"></i>
+                    </div>
+                    <div class="developer-tag">Geliştirici: İlkay Didin</div>
+                    <h2 class="project-name">Av Market Sitesi</h2>
+                    <p class="project-desc">Avcılık ve balıkçılık ekipmanları sunan, dinamik ürün listeleme, sepet ekleme fonksiyonları ve bilgilendirici avcılık rehberi barındıran e-ticaret arayüzü.</p>
+                </div>
+                
+                <div class="card-footer-area">
+                    <div class="features-tags">
+                        <span class="tag">E-Ticaret Arayüzü</span>
+                        <span class="tag">Dinamik Sepet</span>
+                        <span class="tag">Avcılık Rehberi</span>
+                        <span class="tag">jQuery</span>
+                        <span class="tag">Lightbox2</span>
+                    </div>
+                    
+                    <a href="%C4%B0LKAY%20-%20AvMarketSitesi/index.html" class="btn-open" target="_blank">
+                        <span>Projeyi Aç <i class="fa-solid fa-arrow-right"></i></span>
+                    </a>
+                </div>
+            </article>
+
+        </main>
+
+        <!-- Alt Bilgi (Footer) -->
+        <footer class="portal-footer">
+            <div class="footer-info">
+                <span><i class="fa-solid fa-code"></i> HTML5 & Vanilla CSS3</span>
+                <span><i class="fa-solid fa-laptop-code"></i> Proje Entegrasyonu</span>
+                <span><i class="fa-solid fa-users"></i> Ortak Geliştirici Portalı</span>
+            </div>
+            <p class="footer-copyright">&copy; 2026 Web Geliştirme Portalı. Tüm Hakları Saklıdır.</p>
+        </footer>
+
+    </div>
+
+</body>
+</html>

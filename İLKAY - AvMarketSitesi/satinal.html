@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Güvenli Ödeme - AvMarket</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="satinal.css">
+    
+    <!-- jQuery and Lightbox CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/css/lightbox.min.css" rel="stylesheet">
+</head>
+<body>
+
+    <video autoplay loop muted playsinline id="odeme-arka-plan-video">
+        <source src="resimler/doga_videosu.mp4" type="video/mp4">
+    </video>
+
+    <div class="odeme-kapsayici">
+        <a href="index.html" class="geri-don-linki">← Alışverişe Dön</a>
+        <h1>🛡️ Güvenli Ödeme</h1>
+
+        <div class="kart-ikonlari">
+            💳 🏦
+        </div>
+        
+        <form id="odeme-formu">
+            <div id="satinal-hata-mesaji" style="display:none; background:#ff4757; color:#fff; padding:10px; border-radius:4px; margin-bottom:15px; font-weight:bold;"></div>
+            
+            <div class="form-grubu">
+                <label>Ad Soyad</label>
+                <input type="text" id="satinal-ad" placeholder="Örn: Avcı Mehmet">
+            </div>
+
+            <div class="form-grubu">
+                <label>E-posta Adresi</label>
+                <input type="email" id="satinal-eposta" placeholder="ornek@mail.com">
+            </div>
+
+            <div class="form-grubu">
+                <label>Teslimat Adresi</label>
+                <textarea id="satinal-adres" placeholder="Açık adresinizi giriniz..."></textarea>
+            </div>
+
+            <hr style="border: 0; border-top: 1px dashed rgba(212, 175, 55, 0.4); margin: 30px 0;">
+
+            <div class="form-grubu">
+                <label>Kart Üzerindeki İsim</label>
+                <input type="text" id="satinal-kartisim" placeholder="Ad Soyad">
+            </div>
+
+            <div class="form-grubu">
+                <label>Kart Numarası</label>
+                <input type="text" id="satinal-kartno" placeholder="0000 0000 0000 0000" maxlength="19">
+            </div>
+
+            <div class="form-satiri">
+                <div class="form-grubu">
+                    <label>Son Kullanma (Ay/Yıl)</label>
+                    <input type="text" id="satinal-skt" placeholder="AA/YY" maxlength="5">
+                </div>
+                <div class="form-grubu">
+                    <label>CVV (Güvenlik Kodu)</label>
+                    <input type="text" id="satinal-cvv" placeholder="123" maxlength="3">
+                </div>
+            </div>
+
+            <button type="submit" class="onay-butonu">Siparişi Onayla ve Satın Al</button>
+        </form>
+    </div>
+
+    <!-- Kriter 7: Vize standartları ve öğrenci kimlik bilgileri alt bilgi (footer) alanında korunmuştur. (Semantik HTML <footer/> kullanımı) -->
+    <footer class="site-alt-bilgi">
+        <span>👨‍💻 İlkay Didin</span>
+        <span class="ayirici">|</span>
+        <span>🎓 Öğrenci No: 2513201025</span>
+        <span class="ayirici">|</span>
+        <span>✉️ esmark175@gmail.com</span>
+        <span class="ayirici">|</span>
+        <a href="iletisim.html" style="color: #d4af37; text-decoration: none; font-weight: bold;">📞 İletişim</a>
+    </footer>
+
+    <!-- jQuery, Lightbox ve Custom JS (Kriter 6: Harici kütüphaneler dahil edilmiştir) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/js/lightbox.min.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>

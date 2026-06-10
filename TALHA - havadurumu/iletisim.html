@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>İletişim - Hava Durumu Panosu</title>
+
+    <!-- Kritik Kaynakları Önceden Yükle -->
+    <link rel="preload" href="style.css" as="style">
+    <link rel="preload" href="webgl.js" as="script">
+
+    <!-- Diğer Sayfaları Önceden Getir (Prefetch) -->
+    <link rel="prefetch" href="index.html">
+    <link rel="prefetch" href="hakkimizda.html">
+    <link rel="prefetch" href="istatistikler.html">
+    <link rel="prefetch" href="galeri.html">
+    <link rel="prefetch" href="nasil-yapildi.html">
+
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <video autoplay loop muted id="bg-video" class="bg-video">
+        <source id="bg-video-source" src="videolar/firtinali.mp4" type="video/mp4">
+    </video>
+
+    <nav class="main-nav">
+        <ul>
+            <li><a href="index.html" rel="prefetch">Ana Sayfa</a></li>
+            <li><a href="hakkimizda.html" rel="prefetch">Hakkımızda</a></li>
+            <li><a href="istatistikler.html" rel="prefetch">İstatistikler</a></li>
+            <li><a href="galeri.html" rel="prefetch">Galeri</a></li>
+            <li><a href="iletisim.html" class="active">İletişim</a></li>
+            <li><a href="odevler.html" rel="prefetch">Ödevler</a></li>
+            <li><a href="nasil-yapildi.html" rel="prefetch">Nasıl Yapıldı?</a></li>
+        </ul>
+    </nav>
+
+    <main>
+        <section class="content-dashboard">
+            <canvas id="glassCanvas"></canvas>
+            <div class="glass-overlay"></div>
+            
+            <div class="content-scroll">
+                <h2>İletişim Formu</h2>
+                <p>Sorularınız veya geri bildirimleriniz için aşağıdaki formu doldurarak bize ulaşın.</p>
+                
+                <div class="success-message" id="successMessage">
+                    <h4>🎉 Mesajınız İletildi!</h4>
+                    <p>Geri bildiriminiz başarıyla alındı. En kısa sürede size dönüş yapacağız.</p>
+                </div>
+
+                <form class="contact-form" id="contactForm" novalidate>
+                    <div class="form-group">
+                        <label for="name">Adınız Soyadınız:</label>
+                        <input type="text" id="name" name="name" placeholder="Adınızı girin">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email">E-posta Adresiniz:</label>
+                        <input type="email" id="email" name="email" placeholder="ornek@mail.com">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="subject">Konu:</label>
+                        <input type="text" id="subject" name="subject" placeholder="Mesajınızın konusu">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="message">Mesajınız:</label>
+                        <textarea id="message" name="message" rows="5" placeholder="Lütfen mesajınızı buraya yazın..."></textarea>
+                    </div>
+
+                    <button type="submit">Gönder</button>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <footer class="main-footer">
+        <p>&copy; 2026 Hava Durumu Panosu. Tüm Hakları Saklıdır.</p>
+    </footer>
+
+    <!-- jQuery ve WebGL Scripts -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="webgl.js"></script>
+    <script>
+        $(document).ready(function() {
+            // İletişim Formu Doğrulaması (Client-side Validation)
+            $('#contactForm').on('submit', function(e) {
+                e.preventDefault();
+                
+                // Önceki hata mesajlarını temizle
+                $('.error-message').remove();
+                $('.form-group').removeClass('has-error');
+                
+                let isValid = true;
+                
+                // Ad Soyad Kontrolü (boş olamaz, en az 5 karakter, ad ve soyad boşlukla ayrılmalı)
+                const name = $('#name').val().trim();
+                if (name === '') {
+                    showError('#name', 'Ad Soyad alanı boş bırakılamaz.');
+                    isValid = false;
+                } else if (name.length < 5) {
+                    showError('#name', 'Ad Soyad en az 5 karakter olmalıdır.');
+                    isValid = false;
+                } else if (!name.includes(' ')) {
+                    showError('#name', 'Lütfen adınızı ve soyadınızı aralarında boşluk bırakarak yazın.');
+                    isValid = false;
+                }
+                
+                // E-posta Kontrolü
+                const email = $('#email').val().trim();
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (email === '') {
+                    showError('#email', 'E-posta adresi boş bırakılamaz.');
+                    isValid = false;
+                } else if (!emailRegex.test(email)) {
+                    showError('#email', 'Geçersiz e-posta formatı. (Örn: isim@mail.com)');
+                    isValid = false;
+                }
+                
+                // Konu Kontrolü
+                const subject = $('#subject').val().trim();
+                if (subject === '') {
+                    showError('#subject', 'Konu alanı boş bırakılamaz.');
+                    isValid = false;
+                }
+                
+                // Mesaj Kontrolü
+                const message = $('#message').val().trim();
+                if (message === '') {
+                    showError('#message', 'Mesaj alanı boş bırakılamaz.');
+                    isValid = false;
+                } else if (message.length < 10) {
+                    showError('#message', 'Mesaj en az 10 karakter olmalıdır.');
+                    isValid = false;
+                }
+                
+                // Form geçerli ise slideUp ve fadeIn animasyonları
+                if (isValid) {
+                    $('#contactForm').slideUp(500, function() {
+                        $('#successMessage').fadeIn(500);
+                    });
+                }
+            });
+            
+            // Hata gösterici fonksiyon (jQuery DOM Traversal: parent() kullanımı)
+            function showError(fieldId, message) {
+                const $field = $(fieldId);
+                const $group = $field.parent(); // DOM Traversal
+                $group.addClass('has-error');
+                
+                const $errorDiv = $('<div class="error-message"></div>').text(message);
+                $group.append($errorDiv);
+                $errorDiv.slideDown(300); // SlideDown efekti
+            }
+        });
+    </script>
+</body>
+</html>
