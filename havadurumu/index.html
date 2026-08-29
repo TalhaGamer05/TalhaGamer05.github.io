@@ -30,34 +30,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
     
-    <style>
-        .floating-map-container {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            left: auto;
-            width: 350px;
-            height: 250px;
-            border-radius: 16px;
-            overflow: hidden;
-            border: 1px solid rgba(255,255,255,0.2);
-            box-shadow: 0 8px 32px 0 rgba(0,0,0,0.37);
-            z-index: 8000;
-            background: rgba(0,0,0,0.5);
-            backdrop-filter: blur(10px);
-            transition: all 0.3s ease;
-        }
-        @media (max-width: 768px) {
-            .floating-map-container {
-                width: calc(100% - 40px);
-                bottom: 80px; 
-                height: 200px;
-                left: 20px;
-                right: 20px;
-            }
-        }
-    </style>
-</head>
+    </head>
 
 <body>
     <!-- Hamburger Menü Butonu (Mobil) -->
@@ -111,13 +84,14 @@
         <div class="city-selector" id="citySelector"></div>
     </header>
 
-    <!-- Floating Map Container (Moved from sidebar) -->
+    <!-- Harita Butonu & Pop-up Modülü -->
+    <button id="mapToggleBtn" class="map-floating-btn"><i class="fa-solid fa-map"></i> Harita</button>
     <div id="mapContainer" class="floating-map-container">
         <div class="map-header-bar">
             <span><i class="fa-solid fa-map-location-dot" style="color:#8b5cf6;"></i> Canlı Türkiye Haritası</span>
-            <span style="font-size:0.7rem; color:#94a3b8;">Şehre Tıkla</span>
+            <button class="map-close-btn" id="mapCloseBtn"><i class="fa-solid fa-xmark"></i></button>
         </div>
-        <div id="leafletMap" style="width:100%; height:100%; padding-top:30px;"></div>
+        <div id="leafletMap" style="width:100%; height:100%; padding-top:35px;"></div>
     </div>
 
     <main>
@@ -467,7 +441,7 @@
             }
         }
 
-        function generateDashboard(weatherData) {
+                function generateDashboard(weatherData) {
             const container = document.getElementById('weatherContainer');
             container.innerHTML = '';
 
@@ -491,10 +465,15 @@
             const weatherHeader = document.createElement('div');
             weatherHeader.className = 'weather-header';
             weatherHeader.innerHTML = `
-                <div class="emoji">${weatherData.emoji}</div>
-                <div class="city-name">${weatherData.city}, ${weatherData.country}</div>
-                <div class="temperature">${weatherData.temperature}°C</div>
-                <div class="condition">${weatherData.condition}</div>
+                <div>
+                    <h2 style="margin:0; font-size:1.9rem; font-weight:800;">${weatherData.city}</h2>
+                    <p style="margin:0; color:rgba(255,255,255,0.75); font-size:0.95rem;">${weatherData.country}</p>
+                    <div style="margin-top:0.4rem; font-size:1.15rem; font-weight:600; color:#60a5fa;">${weatherData.condition}</div>
+                </div>
+                <div style="display:flex; align-items:center; gap:0.75rem;">
+                    <span style="font-size:2.6rem;">${weatherData.emoji}</span>
+                    <span class="temperature" style="font-size:3.6rem; font-weight:800; letter-spacing:-1px;">${weatherData.temperature}°C</span>
+                </div>
             `;
             currentWeather.appendChild(weatherHeader);
 
@@ -502,20 +481,24 @@
             detailsGrid.className = 'details-grid';
             detailsGrid.innerHTML = `
                 <div class="detail-item">
-                    <div class="emoji">💧</div>
-                    <p>Nem: %${weatherData.humidity}</p>
+                    <div class="icon">💧</div>
+                    <div class="label">Nem</div>
+                    <div class="value">%${weatherData.humidity}</div>
                 </div>
                 <div class="detail-item">
-                    <div class="emoji">💨</div>
-                    <p>Rüzgar: ${weatherData.windSpeed} km/s</p>
+                    <div class="icon">💨</div>
+                    <div class="label">Rüzgar</div>
+                    <div class="value">${weatherData.windSpeed} km/s</div>
                 </div>
                 <div class="detail-item">
-                    <div class="emoji">🔽</div>
-                    <p>Basınç: ${weatherData.pressure} mb</p>
+                    <div class="icon">🔽</div>
+                    <div class="label">Basınç</div>
+                    <div class="value">${weatherData.pressure} hPa</div>
                 </div>
                 <div class="detail-item">
-                    <div class="emoji">☀️</div>
-                    <p>UV İndeks: ${weatherData.uvIndex}</p>
+                    <div class="icon">☀️</div>
+                    <div class="label">UV İndeksi</div>
+                    <div class="value">${weatherData.uvIndex}</div>
                 </div>
             `;
             currentWeather.appendChild(detailsGrid);
@@ -524,7 +507,7 @@
             additionalDetails.className = 'additional-details';
             additionalDetails.innerHTML = `
                 <div class="additional-item">
-                    <div class="label">Hissedilen Sıcaklık</div>
+                    <div class="label">Hissedilen</div>
                     <div class="value">${weatherData.feelsLike}°C</div>
                 </div>
                 <div class="additional-item">
@@ -540,7 +523,7 @@
 
             const forecast = document.createElement('div');
             forecast.className = 'forecast';
-            forecast.innerHTML = '<h3>7 Günlük Tahmin</h3>';
+            forecast.innerHTML = '<h3 style="font-size:1.05rem; font-weight:700; margin-bottom:0.75rem; text-shadow: 0 2px 8px rgba(0,0,0,0.5);">7 Günlük Tahmin</h3>';
 
             const forecastGrid = document.createElement('div');
             forecastGrid.className = 'forecast-grid';
@@ -549,10 +532,10 @@
                 const card = document.createElement('div');
                 card.className = 'forecast-card';
                 card.innerHTML = `
-                    <div class="emoji">${day.emoji}</div>
-                    <strong>${day.day}</strong>
-                    <p>${day.high}° / ${day.low}°</p>
-                    <p>${day.condition}</p>
+                    <div class="emoji" style="font-size:1.5rem;">${day.emoji}</div>
+                    <strong style="font-size:0.85rem; margin-top:0.15rem;">${day.day}</strong>
+                    <p style="font-size:0.82rem; font-weight:700; margin:0.2rem 0;">${day.high}° / ${day.low}°</p>
+                    <p style="font-size:0.7rem; color:rgba(255,255,255,0.75);">${day.condition}</p>
                 `;
                 forecastGrid.appendChild(card);
             });
@@ -762,7 +745,32 @@
             });
         }
 
-        document.addEventListener("DOMContentLoaded", () => { createCityButtons(); initLeafletMap(); loadWeather("istanbul"); });
+                const mapBtn = document.getElementById('mapToggleBtn');
+        const mapContainer = document.getElementById('mapContainer');
+        const mapCloseBtn = document.getElementById('mapCloseBtn');
+
+        function toggleMap() {
+            if (mapContainer.style.display === 'block') {
+                mapContainer.style.display = 'none';
+            } else {
+                mapContainer.style.display = 'block';
+                if (!mapInitialized) {
+                    initLeafletMap();
+                    mapInitialized = true;
+                }
+                setTimeout(() => {
+                    if (map) map.invalidateSize();
+                }, 150);
+            }
+        }
+
+        if (mapBtn) mapBtn.addEventListener('click', toggleMap);
+        if (mapCloseBtn) mapCloseBtn.addEventListener('click', () => { mapContainer.style.display = 'none'; });
+
+        document.addEventListener("DOMContentLoaded", () => { 
+            createCityButtons(); 
+            loadWeather("istanbul"); 
+        });
 
         // ==========================================
         // SERVICE WORKER KAYDI (PWA İÇİN)

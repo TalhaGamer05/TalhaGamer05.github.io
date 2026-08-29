@@ -1,25 +1,15 @@
-/* Google Fonts - Modern 'Poppins' */
+/* ==========================================================================
+   HAVA DURUMU - Glassmorphism Dashboard Stylesheet (Clean, Polished, High-End)
+   ========================================================================== */
+
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
 
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-}
-html {
-    background-color: #0f172a;
-}
-
-body {
-    font-family: 'Poppins', sans-serif;
-    font-weight: 500;
-    background-color: transparent; 
-    color: #1e293b;
-    display: flex;
-    position: relative;
-    overflow: hidden;
-    min-height: 100vh;
-    width: 100%;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
 }
 
 /* Stealth Minimalist Scrollbar */
@@ -27,136 +17,137 @@ body {
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.15); border-radius: 10px; }
 ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.35); }
-* { scrollbar-width: thin; scrollbar-color: rgba(255, 255, 255, 0.15) transparent; }
 
-.sidebar-backdrop {
-    position: fixed;
-    top: 0;
-    left: 0;
+html {
+    background-color: #07090e;
+    color-scheme: dark;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+    background-color: #07090e;
+    color: #fff;
+    min-height: 100vh;
     width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.4);
-    backdrop-filter: blur(3px);
-    opacity: 0;
+    overflow-x: hidden;
+    position: relative;
+}
+
+/* --------------------------------------------------------------------------
+   Arka Plan Videosu (Full Screen Fixed)
+   -------------------------------------------------------------------------- */
+.bg-video, #bg-video {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    object-fit: cover;
+    z-index: -2;
     pointer-events: none;
-    transition: all 0.4s ease;
-    z-index: 15;
+    transition: filter 0.35s cubic-bezier(0.16, 1, 0.3, 1), brightness 0.35s ease;
 }
 
-.sidebar-backdrop.visible {
-    opacity: 1;
-    pointer-events: auto;
+/* --------------------------------------------------------------------------
+   Üst Portal Menüsü
+   -------------------------------------------------------------------------- */
+.main-nav {
+    position: fixed;
+    top: 20px;
+    right: 25px;
+    z-index: 90;
+    transition: filter 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.35s ease;
 }
 
-.sidebar-trigger {
+.main-nav ul {
+    list-style: none;
+}
+
+.main-nav a {
+    background: rgba(13, 17, 26, 0.75);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #fff;
+    text-decoration: none;
+    padding: 0.6rem 1.15rem;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 0.88rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+
+.main-nav a:hover {
+    background: #3b82f6;
+    border-color: #3b82f6;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 25px rgba(59, 130, 246, 0.4);
+}
+
+/* --------------------------------------------------------------------------
+   Sol Panel (Şehir Listesi / Sidebar)
+   -------------------------------------------------------------------------- */
+header#sidebar {
     position: fixed;
     left: 0;
     top: 0;
-    width: 25px; 
-    height: 100vh; 
-    z-index: 25;
-    cursor: pointer;
-    background: transparent;
-    display: flex;
-    align-items: center;
-    transition: opacity 0.3s ease;
-}
-
-.sidebar-trigger::before {
-    content: "❯";
-    position: absolute;
-    left: 0; 
-    top: 50%;
-    transform: translateY(-50%);
-    width: 35px;
-    height: 80px;
-    background: rgba(255, 255, 255, 0.2);
-    backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    border-left: none;
-    border-radius: 0 15px 15px 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.3rem;
-    font-weight: 700;
-    color: white;
-    text-shadow: 0px 0px 8px rgba(0,0,0,0.5); 
-    transition: all 0.3s ease;
-}
-
-.sidebar-trigger:hover::before {
-    width: 45px;
-    background: rgba(255, 255, 255, 0.35);
-}
-
-body:has(header.visible) .sidebar-trigger {
-    opacity: 0;
-    pointer-events: none;
-}
-
-header {
     width: 320px;
-    max-width: 90%;
-    background: rgba(13, 17, 26, 0.88);
+    max-width: 85vw;
+    height: 100vh;
+    background: rgba(11, 15, 23, 0.88);
     backdrop-filter: blur(24px);
     -webkit-backdrop-filter: blur(24px);
-    padding: 2rem 1.25rem;
-    flex-direction: column;
-    align-items: stretch;
-    color: white;
-    z-index: 100;
     border-right: 1px solid rgba(255, 255, 255, 0.12);
+    padding: 1.75rem 1.25rem;
     display: flex;
-    flex-shrink: 0;
-    position: fixed;
-    left: 0;
-    top: 0;
-    height: 100vh;
-    transform: none;
-    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-    overflow-y: auto;
+    flex-direction: column;
+    z-index: 100;
     box-shadow: 15px 0 45px rgba(0, 0, 0, 0.6);
+    overflow-y: auto;
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .sidebar-trigger {
     display: none !important;
 }
 
-/* Şehirler / Sidebar üzerine gelindiğinde ŞEHİRLER HARİÇ HER ŞEYE DEVRİM NİTELİĞİNDE BLUR */
-body:has(#sidebar:hover) #bg-video,
-body:has(#sidebar:hover) main,
-body:has(#sidebar:hover) .main-nav,
-body:has(#sidebar:hover) .main-footer,
-body:has(#sidebar:hover) .floating-map-container {
-    filter: blur(16px) brightness(0.4) !important;
-    transform: scale(0.985);
+/* Arama Formu */
+.search-form {
+    width: 100%;
+    margin-bottom: 0.75rem;
 }
 
-#bg-video, main, .main-nav, .main-footer, .floating-map-container {
-    transition: filter 0.35s cubic-bezier(0.16, 1, 0.3, 1), transform 0.35s ease, brightness 0.35s ease, opacity 0.35s ease;
+.search-input {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: #fff;
+    padding: 0.7rem 1rem;
+    border-radius: 10px;
+    font-size: 0.85rem;
+    font-family: inherit;
+    outline: none;
+    transition: all 0.2s ease;
 }
 
-main {
-    flex: 1;
-    margin-left: 320px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: calc(100% - 320px);
-    min-height: 100vh;
-    padding: 2rem; 
-    position: relative;
-    z-index: 10;
+.search-input:focus {
+    border-color: #3b82f6;
+    background: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
 }
 
-/* Şehir Sekmeleri (Tabs) */
+/* Bölge Sekmeleri (Tabs) */
 .city-tabs {
     display: flex;
     gap: 0.4rem;
     overflow-x: auto;
     padding-bottom: 0.5rem;
-    margin: 0.85rem 0 1rem 0;
+    margin-bottom: 0.85rem;
 }
 
 .city-tab-btn {
@@ -185,11 +176,11 @@ main {
     box-shadow: 0 2px 10px rgba(59, 130, 246, 0.4);
 }
 
-/* Şehir Butonları Kart Tasarımı */
+/* Şehir Butonları */
 .city-selector {
     display: flex;
     flex-direction: column;
-    gap: 0.55rem;
+    gap: 0.5rem;
     width: 100%;
 }
 
@@ -197,12 +188,12 @@ main {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0.75rem 1rem;
+    padding: 0.7rem 1rem;
     border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 12px;
     background: rgba(255, 255, 255, 0.04);
     color: white;
-    font-family: 'Poppins', sans-serif;
+    font-family: inherit;
     font-size: 0.88rem;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -217,7 +208,7 @@ main {
 }
 
 .city-btn.active {
-    background: linear-gradient(135deg, rgba(59, 130, 246, 0.85), rgba(139, 92, 246, 0.85));
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.9), rgba(139, 92, 246, 0.9));
     color: white;
     border-color: #60a5fa;
     box-shadow: 0 4px 18px rgba(59, 130, 246, 0.45);
@@ -225,186 +216,84 @@ main {
 
 .city-btn .badge-temp {
     font-size: 0.82rem;
-    background: rgba(0, 0, 0, 0.3);
+    background: rgba(0, 0, 0, 0.35);
     padding: 0.2rem 0.55rem;
     border-radius: 6px;
     font-weight: 700;
 }
 
-/* Floating Map Tasarımı */
-.floating-map-container {
-    position: fixed;
-    bottom: 25px;
-    right: 25px;
-    width: 360px;
-    height: 250px;
-    border-radius: 20px;
-    overflow: hidden;
-    border: 1px solid rgba(255, 255, 255, 0.25);
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.65);
-    z-index: 80;
-    background: rgba(13, 17, 26, 0.85);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+/* --------------------------------------------------------------------------
+   ŞEHİRLER HARİCİ TÜM EKRANA DEVRİM NİTELİĞİNDE BLUR (Focus Modu)
+   -------------------------------------------------------------------------- */
+body:has(#sidebar:hover) #bg-video,
+body:has(#sidebar:hover) main,
+body:has(#sidebar:hover) .main-nav,
+body:has(#sidebar:hover) .main-footer,
+body:has(#sidebar:hover) .floating-map-container,
+body:has(#sidebar:hover) .map-floating-btn {
+    filter: blur(16px) brightness(0.4) !important;
+    transform: scale(0.985);
 }
 
-.map-header-bar {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    padding: 0.5rem 0.85rem;
-    background: rgba(13, 17, 26, 0.9);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    z-index: 1000;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    font-size: 0.78rem;
-    font-weight: 700;
-    color: #f8fafc;
+#bg-video, main, .main-nav, .main-footer, .floating-map-container, .map-floating-btn {
+    transition: filter 0.35s cubic-bezier(0.16, 1, 0.3, 1), transform 0.35s ease, brightness 0.35s ease, opacity 0.35s ease;
 }
 
-.map-toggle-btn-small {
-    background: rgba(255, 255, 255, 0.1);
-    border: none;
-    color: #fff;
-    padding: 0.2rem 0.5rem;
-    border-radius: 4px;
-    font-size: 0.72rem;
-    cursor: pointer;
-}
-
-@media (max-width: 768px) {
-    header {
-        transform: translateX(-100%);
-    }
-    header.visible {
-        transform: translateX(0);
-    }
-    main {
-        margin-left: 0;
-        width: 100%;
-        padding: 1.25rem;
-    }
-    .floating-map-container {
-        width: calc(100% - 30px);
-        right: 15px;
-        bottom: 15px;
-        height: 210px;
-    }
-}
-
-
-header.visible { transform: translateX(0); }
-
-header h1 {
-    font-size: 1.4rem;
-    margin-bottom: 2rem;
-    font-weight: 700;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-}
-
-.city-selector {
-    display: flex;
-    flex-direction: column;
-    gap: 0.7rem;
-    width: 100%;
-}
-
-.city-btn {
-    padding: 0.7rem 1rem;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 10px;
-    background: rgba(255, 255, 255, 0.08);
-    color: white;
-    font-family: 'Poppins', sans-serif;
-    font-size: 0.85rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    font-weight: 500;
-    text-align: left;
-    padding-left: 1.2rem;
-}
-
-
-
-.city-btn.active {
-    background: rgba(59, 130, 246, 0.9); 
-    color: white;
-    border-color: #3b82f6;
-    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.6);
-    font-weight: 600;
-}
-
+/* --------------------------------------------------------------------------
+   Ana Hava Durumu Paneli (Glassmorphism & WebGL)
+   -------------------------------------------------------------------------- */
 main {
-    flex: 1;
-    margin-left: 280px;
+    margin-left: 320px;
+    min-height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
-    width: calc(100% - 280px);
-    min-height: 100vh;
-    padding: 2.5rem; 
+    padding: 2.5rem;
     position: relative;
     z-index: 10;
-    transition: filter 0.3s ease, opacity 0.3s ease;
 }
 
 #weatherContainer {
     width: 100%;
-    max-width: 850px; 
-    height: 100%;
+    max-width: 860px;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-/* JS BÜKÜLME PANELİ İÇİN TEMİZLENMİŞ CSS */
 .weather-dashboard {
     position: relative;
     border-radius: 35px;
     width: 100%;
-    max-height: 100%; 
+    max-height: 88vh;
     display: flex;
     flex-direction: column;
-    overflow: hidden; /* Canvas ve overlay taşmasını engeller */
-    animation: fadeInContent 1.2s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+    overflow: hidden;
     box-shadow: 
-        0 40px 80px rgba(0, 0, 0, 0.3),
+        0 40px 80px rgba(0, 0, 0, 0.5),
         inset 1px 1px 3px rgba(255, 255, 255, 0.6), 
         inset -1px -1px 4px rgba(255, 255, 255, 0.1); 
-    isolation: isolate; /* Animasyon sonrası z-index zıplamasındaki beyazlık sorununu çözer */
+    isolation: isolate;
+    animation: fadeInDashboard 0.4s ease backwards;
 }
 
-/* Sabit şeffaf beyaz katman eklendi */
+@keyframes fadeInDashboard {
+    from { opacity: 0; transform: scale(0.97); }
+    to { opacity: 1; transform: scale(1); }
+}
+
 .glass-overlay {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(255, 255, 255, 0.10); /* Şeffaflık iyice azaltıldı (daha net arka plan) */
-    z-index: 1; /* Canvas üzerinde */
+    background: rgba(255, 255, 255, 0.08);
+    z-index: 1;
     pointer-events: none;
     border-radius: 35px;
 }
 
-/* İçerik scroll edilebilmesi için eklendi */
-.weather-content-scroll {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    padding: 2rem;
-    overflow-y: auto;
-    z-index: 2; /* Temel katmanın üzerinde */
-    display: flex;
-    flex-direction: column;
-}
-
-/* JS BÜKÜLME CANVAS'I İÇİN ARKA PLAN KATMANI */
 #glassCanvas {
     position: absolute;
     top: 0;
@@ -413,462 +302,227 @@ main {
     height: 100%;
     border-radius: 35px;
     z-index: -1;
-    filter: blur(2px); /* Cam bulanıklığı */
     pointer-events: none;
 }
 
+.weather-content-scroll {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    padding: 2.25rem;
+    overflow-y: auto;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Dashboard İçi Tipografi ve Düzen */
 .current-weather {
     display: flex;
     flex-direction: column;
-    position: relative;
+    gap: 1.25rem;
 }
 
 .weather-header {
-    width: 320px;
-    max-width: 90%;
-    background: rgba(13, 17, 26, 0.88);
-    backdrop-filter: blur(24px);
-    -webkit-backdrop-filter: blur(24px);
-    padding: 2rem 1.25rem;
-    flex-direction: column;
-    align-items: stretch;
-    color: white;
-    z-index: 100;
-    border-right: 1px solid rgba(255, 255, 255, 0.12);
     display: flex;
-    flex-shrink: 0;
-    position: fixed;
-    left: 0;
-    top: 0;
-    height: 100vh;
-    transform: none;
-    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-    overflow-y: auto;
-    box-shadow: 15px 0 45px rgba(0, 0, 0, 0.6);
-}
-
-.sidebar-trigger {
-    display: none !important;
-}
-
-/* Şehirler / Sidebar üzerine gelindiğinde ŞEHİRLER HARİÇ HER ŞEYE DEVRİM NİTELİĞİNDE BLUR */
-body:has(#sidebar:hover) #bg-video,
-body:has(#sidebar:hover) main,
-body:has(#sidebar:hover) .main-nav,
-body:has(#sidebar:hover) .main-footer,
-body:has(#sidebar:hover) .floating-map-container {
-    filter: blur(16px) brightness(0.4) !important;
-    transform: scale(0.985);
-}
-
-#bg-video, main, .main-nav, .main-footer, .floating-map-container {
-    transition: filter 0.35s cubic-bezier(0.16, 1, 0.3, 1), transform 0.35s ease, brightness 0.35s ease, opacity 0.35s ease;
-}
-
-main {
-    flex: 1;
-    margin-left: 320px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: calc(100% - 320px);
-    min-height: 100vh;
-    padding: 2rem; 
-    position: relative;
-    z-index: 10;
-}
-
-/* Şehir Sekmeleri (Tabs) */
-.city-tabs {
-    display: flex;
-    gap: 0.4rem;
-    overflow-x: auto;
-    padding-bottom: 0.5rem;
-    margin: 0.85rem 0 1rem 0;
-}
-
-.city-tab-btn {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    color: #94a3b8;
-    padding: 0.35rem 0.75rem;
-    border-radius: 8px;
-    font-size: 0.78rem;
-    font-weight: 600;
-    cursor: pointer;
-    white-space: nowrap;
-    transition: all 0.2s ease;
-    font-family: inherit;
-}
-
-.city-tab-btn:hover {
-    color: #fff;
-    background: rgba(255, 255, 255, 0.1);
-}
-
-.city-tab-btn.active {
-    background: #3b82f6;
-    color: #fff;
-    border-color: #3b82f6;
-    box-shadow: 0 2px 10px rgba(59, 130, 246, 0.4);
-}
-
-/* Şehir Butonları Kart Tasarımı */
-.city-selector {
-    display: flex;
-    flex-direction: column;
-    gap: 0.55rem;
-    width: 100%;
-}
-
-.city-btn {
-    display: flex;
-    align-items: center;
     justify-content: space-between;
-    padding: 0.75rem 1rem;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 12px;
-    background: rgba(255, 255, 255, 0.04);
-    color: white;
-    font-family: 'Poppins', sans-serif;
-    font-size: 0.88rem;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    font-weight: 600;
-    text-align: left;
+    align-items: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    padding-bottom: 1rem;
 }
 
-.city-btn:hover {
+.weather-header h2 {
+    font-size: 1.8rem;
+    font-weight: 800;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+}
+
+.weather-header p {
+    font-size: 0.95rem;
+    color: rgba(255, 255, 255, 0.8);
+    font-weight: 500;
+}
+
+.temperature {
+    font-size: 4rem;
+    font-weight: 800;
+    text-shadow: 0 4px 15px rgba(0,0,0,0.5);
+    letter-spacing: -2px;
+}
+
+.condition {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 1.4rem;
+    font-weight: 700;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+}
+
+.condition .emoji {
+    font-size: 2.2rem;
+}
+
+/* 4'lü Detay Izgarası */
+.details-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 1rem;
+    margin-top: 0.5rem;
+}
+
+.detail-item {
     background: rgba(255, 255, 255, 0.12);
-    border-color: rgba(59, 130, 246, 0.4);
-    transform: translateX(4px);
-}
-
-.city-btn.active {
-    background: linear-gradient(135deg, rgba(59, 130, 246, 0.85), rgba(139, 92, 246, 0.85));
-    color: white;
-    border-color: #60a5fa;
-    box-shadow: 0 4px 18px rgba(59, 130, 246, 0.45);
-}
-
-.city-btn .badge-temp {
-    font-size: 0.82rem;
-    background: rgba(0, 0, 0, 0.3);
-    padding: 0.2rem 0.55rem;
-    border-radius: 6px;
-    font-weight: 700;
-}
-
-/* Floating Map Tasarımı */
-.floating-map-container {
-    position: fixed;
-    bottom: 25px;
-    right: 25px;
-    width: 360px;
-    height: 250px;
-    border-radius: 20px;
-    overflow: hidden;
+    backdrop-filter: blur(12px);
     border: 1px solid rgba(255, 255, 255, 0.25);
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.65);
-    z-index: 80;
-    background: rgba(13, 17, 26, 0.85);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.map-header-bar {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    padding: 0.5rem 0.85rem;
-    background: rgba(13, 17, 26, 0.9);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    z-index: 1000;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    font-size: 0.78rem;
-    font-weight: 700;
-    color: #f8fafc;
-}
-
-.map-toggle-btn-small {
-    background: rgba(255, 255, 255, 0.1);
-    border: none;
-    color: #fff;
-    padding: 0.2rem 0.5rem;
-    border-radius: 4px;
-    font-size: 0.72rem;
-    cursor: pointer;
-}
-
-@media (max-width: 768px) {
-    header {
-        transform: translateX(-100%);
-    }
-    header.visible {
-        transform: translateX(0);
-    }
-    main {
-        margin-left: 0;
-        width: 100%;
-        padding: 1.25rem;
-    }
-    .floating-map-container {
-        width: calc(100% - 30px);
-        right: 15px;
-        bottom: 15px;
-        height: 210px;
-    }
-}
-
-}
-
-/* =========================================
-   FORM DOĞRULAMA (VALIDATION) STİLLERİ
-   ========================================= */
-.form-group.has-error input,
-.form-group.has-error textarea {
-    border: 2px solid rgba(239, 68, 68, 0.6) !important;
-    background: rgba(239, 68, 68, 0.08) !important;
-    box-shadow: 0 0 10px rgba(239, 68, 68, 0.25) !important;
-}
-
-.error-message {
-    color: #f87171;
-    font-size: 0.78rem;
-    font-weight: 600;
-    margin-top: 4px;
-    display: none;
-    text-shadow: 0 1px 2px rgba(0,0,0,0.5);
-}
-
-.success-message {
-    background: rgba(16, 185, 129, 0.25);
-    border: 1.5px solid rgba(16, 185, 129, 0.6);
+    padding: 1rem;
     border-radius: 18px;
-    padding: 1.5rem;
-    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     text-align: center;
-    margin-bottom: 1.5rem;
-    display: none;
-    box-shadow: 0 10px 25px rgba(16, 185, 129, 0.3);
-    backdrop-filter: blur(10px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
 }
 
-.success-message h4 {
-    font-size: 1.25rem;
-    margin-bottom: 0.5rem;
+.detail-item .icon {
+    font-size: 1.6rem;
+    margin-bottom: 0.35rem;
+}
+
+.detail-item .label {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.75);
+    text-transform: uppercase;
+    font-weight: 600;
+}
+
+.detail-item .value {
+    font-size: 1.15rem;
+    font-weight: 800;
+    margin-top: 0.2rem;
+}
+
+/* Ek Detaylar */
+.additional-details {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem;
+    background: rgba(0, 0, 0, 0.25);
+    border-radius: 16px;
+    padding: 0.85rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.additional-item {
+    text-align: center;
+}
+
+.additional-item .label {
+    font-size: 0.72rem;
+    color: rgba(255, 255, 255, 0.65);
+}
+
+.additional-item .value {
+    font-size: 0.95rem;
     font-weight: 700;
+    color: #fff;
+    margin-top: 0.15rem;
 }
 
-/* =========================================
-   GALERİ FİLTRE BUTONLARI
-   ========================================= */
-.gallery-filters {
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-bottom: 2rem;
+/* 7 Günlük Tahmin */
+.forecast {
+    margin-top: 0.5rem;
 }
 
-.filter-btn {
-    padding: 8px 16px;
+.forecast h3 {
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+}
+
+.forecast-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 0.5rem;
+    overflow-x: auto;
+}
+
+.forecast-card {
+    background: rgba(255, 255, 255, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 20px;
-    background: rgba(255, 255, 255, 0.1);
-    color: white;
-    font-family: inherit;
-    font-size: 0.85rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.filter-btn:hover,
-.filter-btn.active {
-    background: rgba(139, 92, 246, 0.8); /* Violet */
-    border-color: #8b5cf6;
-    box-shadow: 0 4px 15px rgba(139, 92, 246, 0.5);
-    transform: translateY(-2px);
-}
-
-/* Magnific Popup Özelleştirmeleri (Cam Efekti için) */
-.mfp-bg {
-    background: rgba(15, 23, 42, 0.65) !important;
-    backdrop-filter: blur(8px) !important;
-}
-
-.mfp-content {
-    border-radius: 25px !important;
-    overflow: hidden;
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5) !important;
-}
-
-/* =========================================
-   ÖDEVLER PORTALI STİLLERİ (odevler.html)
-   ========================================= */
-.tabs-container {
+    border-radius: 14px;
+    padding: 0.75rem 0.4rem;
+    text-align: center;
     display: flex;
     flex-direction: column;
-    height: 100%;
-}
-
-.tabs-header {
-    width: 320px;
-    max-width: 90%;
-    background: rgba(13, 17, 26, 0.88);
-    backdrop-filter: blur(24px);
-    -webkit-backdrop-filter: blur(24px);
-    padding: 2rem 1.25rem;
-    flex-direction: column;
-    align-items: stretch;
-    color: white;
-    z-index: 100;
-    border-right: 1px solid rgba(255, 255, 255, 0.12);
-    display: flex;
-    flex-shrink: 0;
-    position: fixed;
-    left: 0;
-    top: 0;
-    height: 100vh;
-    transform: none;
-    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-    overflow-y: auto;
-    box-shadow: 15px 0 45px rgba(0, 0, 0, 0.6);
-}
-
-.sidebar-trigger {
-    display: none !important;
-}
-
-/* Şehirler / Sidebar üzerine gelindiğinde ŞEHİRLER HARİÇ HER ŞEYE DEVRİM NİTELİĞİNDE BLUR */
-body:has(#sidebar:hover) #bg-video,
-body:has(#sidebar:hover) main,
-body:has(#sidebar:hover) .main-nav,
-body:has(#sidebar:hover) .main-footer,
-body:has(#sidebar:hover) .floating-map-container {
-    filter: blur(16px) brightness(0.4) !important;
-    transform: scale(0.985);
-}
-
-#bg-video, main, .main-nav, .main-footer, .floating-map-container {
-    transition: filter 0.35s cubic-bezier(0.16, 1, 0.3, 1), transform 0.35s ease, brightness 0.35s ease, opacity 0.35s ease;
-}
-
-main {
-    flex: 1;
-    margin-left: 320px;
-    display: flex;
     align-items: center;
-    justify-content: center;
-    width: calc(100% - 320px);
-    min-height: 100vh;
-    padding: 2rem; 
-    position: relative;
-    z-index: 10;
+    gap: 0.25rem;
 }
 
-/* Şehir Sekmeleri (Tabs) */
-.city-tabs {
-    display: flex;
-    gap: 0.4rem;
-    overflow-x: auto;
-    padding-bottom: 0.5rem;
-    margin: 0.85rem 0 1rem 0;
+.forecast-card .emoji {
+    font-size: 1.4rem;
 }
 
-.city-tab-btn {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    color: #94a3b8;
-    padding: 0.35rem 0.75rem;
-    border-radius: 8px;
-    font-size: 0.78rem;
-    font-weight: 600;
-    cursor: pointer;
-    white-space: nowrap;
-    transition: all 0.2s ease;
-    font-family: inherit;
+.forecast-card strong {
+    font-size: 0.8rem;
 }
 
-.city-tab-btn:hover {
-    color: #fff;
-    background: rgba(255, 255, 255, 0.1);
+.forecast-card p {
+    font-size: 0.72rem;
+    color: rgba(255, 255, 255, 0.8);
 }
 
-.city-tab-btn.active {
-    background: #3b82f6;
-    color: #fff;
-    border-color: #3b82f6;
-    box-shadow: 0 2px 10px rgba(59, 130, 246, 0.4);
-}
-
-/* Şehir Butonları Kart Tasarımı */
-.city-selector {
-    display: flex;
-    flex-direction: column;
-    gap: 0.55rem;
-    width: 100%;
-}
-
-.city-btn {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0.75rem 1rem;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 12px;
-    background: rgba(255, 255, 255, 0.04);
-    color: white;
-    font-family: 'Poppins', sans-serif;
-    font-size: 0.88rem;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    font-weight: 600;
-    text-align: left;
-}
-
-.city-btn:hover {
-    background: rgba(255, 255, 255, 0.12);
-    border-color: rgba(59, 130, 246, 0.4);
-    transform: translateX(4px);
-}
-
-.city-btn.active {
-    background: linear-gradient(135deg, rgba(59, 130, 246, 0.85), rgba(139, 92, 246, 0.85));
-    color: white;
-    border-color: #60a5fa;
-    box-shadow: 0 4px 18px rgba(59, 130, 246, 0.45);
-}
-
-.city-btn .badge-temp {
-    font-size: 0.82rem;
-    background: rgba(0, 0, 0, 0.3);
-    padding: 0.2rem 0.55rem;
-    border-radius: 6px;
-    font-weight: 700;
-}
-
-/* Floating Map Tasarımı */
-.floating-map-container {
+/* --------------------------------------------------------------------------
+   Harita Butonu & Pop-up Harita Modülü
+   -------------------------------------------------------------------------- */
+.map-floating-btn {
     position: fixed;
     bottom: 25px;
     right: 25px;
-    width: 360px;
-    height: 250px;
-    border-radius: 20px;
+    background: linear-gradient(135deg, #8b5cf6, #6366f1);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    color: white;
+    padding: 0.75rem 1.4rem;
+    border-radius: 50px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    cursor: pointer;
+    box-shadow: 0 10px 30px rgba(139, 92, 246, 0.45);
+    z-index: 95;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    font-family: inherit;
+}
+
+.map-floating-btn:hover {
+    transform: translateY(-3px) scale(1.04);
+    box-shadow: 0 14px 35px rgba(139, 92, 246, 0.65);
+}
+
+.floating-map-container {
+    position: fixed;
+    bottom: 85px;
+    right: 25px;
+    width: 380px;
+    height: 270px;
+    border-radius: 22px;
     overflow: hidden;
     border: 1px solid rgba(255, 255, 255, 0.25);
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.65);
-    z-index: 80;
-    background: rgba(13, 17, 26, 0.85);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 16px 45px rgba(0, 0, 0, 0.75);
+    z-index: 95;
+    background: rgba(11, 15, 23, 0.92);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    display: none;
+    animation: popUpMap 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes popUpMap {
+    from { opacity: 0; transform: translateY(12px) scale(0.96); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 .map-header-bar {
@@ -876,33 +530,59 @@ main {
     top: 0;
     left: 0;
     width: 100%;
-    padding: 0.5rem 0.85rem;
-    background: rgba(13, 17, 26, 0.9);
+    padding: 0.55rem 1rem;
+    background: rgba(11, 15, 23, 0.92);
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     z-index: 1000;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    font-size: 0.78rem;
+    font-size: 0.8rem;
     font-weight: 700;
     color: #f8fafc;
 }
 
-.map-toggle-btn-small {
+.map-close-btn {
     background: rgba(255, 255, 255, 0.1);
     border: none;
     color: #fff;
-    padding: 0.2rem 0.5rem;
-    border-radius: 4px;
-    font-size: 0.72rem;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    font-size: 0.75rem;
     cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
 }
 
+.map-close-btn:hover {
+    background: #f43f5e;
+}
+
+/* --------------------------------------------------------------------------
+   Alt Bilgi (Footer)
+   -------------------------------------------------------------------------- */
+.main-footer {
+    position: fixed;
+    bottom: 15px;
+    left: 340px;
+    z-index: 10;
+    color: rgba(255, 255, 255, 0.4);
+    font-size: 0.78rem;
+    pointer-events: none;
+    transition: filter 0.35s ease, opacity 0.35s ease;
+}
+
+/* --------------------------------------------------------------------------
+   Duyarlı Tasarım (Responsive)
+   -------------------------------------------------------------------------- */
 @media (max-width: 768px) {
-    header {
+    header#sidebar {
         transform: translateX(-100%);
     }
-    header.visible {
+    header#sidebar.visible {
         transform: translateX(0);
     }
     main {
@@ -910,286 +590,19 @@ main {
         width: 100%;
         padding: 1.25rem;
     }
+    .main-footer {
+        left: 20px;
+        position: relative;
+        text-align: center;
+        margin-top: 1rem;
+    }
     .floating-map-container {
         width: calc(100% - 30px);
         right: 15px;
-        bottom: 15px;
-        height: 210px;
+        bottom: 80px;
+        height: 240px;
     }
-}
-
-
-    #weatherContainer {
-        height: auto;
-        min-height: auto;
-    }
-
-    .weather-dashboard, .content-dashboard {
-        max-height: none;
-        border-radius: 24px;
-    }
-
-    .weather-content-scroll, .content-scroll {
-        padding: 1.5rem 1.25rem;
-        overflow-y: visible;
-        height: auto;
-    }
-
-    /* Başlık ve Sıcaklık Yazı Boyutları */
-    .emoji {
-        font-size: 3.5rem;
-    }
-
-    .city-name {
-        font-size: 1.5rem;
-    }
-
-    .temperature {
-        font-size: 3rem;
-    }
-
-    .condition {
-        font-size: 1rem;
-    }
-
-    /* Detay Gridleri Mobilde 2x2 ve 1 sütun */
-    .details-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 0.6rem;
-    }
-
-    .additional-details {
-        grid-template-columns: 1fr;
-        gap: 0.6rem;
-    }
-
-    .additional-item {
-        padding: 0.9rem;
-    }
-
-    /* 7 Günlük Tahmin Mobilde 2 Sütun */
     .forecast-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 0.5rem;
-    }
-
-    /* Antigravity Butonu Mobilde Menüyle Çakışmayacak Konum */
-    
-
-    /* Floating Map Mobilde */
-    .floating-map-container {
-        width: calc(100% - 30px);
-        left: 15px;
-        bottom: 75px;
-        height: 220px;
-    }
-
-    /* Ödevler Sekmeleri Mobilde Yatay Kaydırma */
-    .tabs-header {
-    width: 320px;
-    max-width: 90%;
-    background: rgba(13, 17, 26, 0.88);
-    backdrop-filter: blur(24px);
-    -webkit-backdrop-filter: blur(24px);
-    padding: 2rem 1.25rem;
-    flex-direction: column;
-    align-items: stretch;
-    color: white;
-    z-index: 100;
-    border-right: 1px solid rgba(255, 255, 255, 0.12);
-    display: flex;
-    flex-shrink: 0;
-    position: fixed;
-    left: 0;
-    top: 0;
-    height: 100vh;
-    transform: none;
-    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-    overflow-y: auto;
-    box-shadow: 15px 0 45px rgba(0, 0, 0, 0.6);
-}
-
-.sidebar-trigger {
-    display: none !important;
-}
-
-/* Şehirler / Sidebar üzerine gelindiğinde ŞEHİRLER HARİÇ HER ŞEYE DEVRİM NİTELİĞİNDE BLUR */
-body:has(#sidebar:hover) #bg-video,
-body:has(#sidebar:hover) main,
-body:has(#sidebar:hover) .main-nav,
-body:has(#sidebar:hover) .main-footer,
-body:has(#sidebar:hover) .floating-map-container {
-    filter: blur(16px) brightness(0.4) !important;
-    transform: scale(0.985);
-}
-
-#bg-video, main, .main-nav, .main-footer, .floating-map-container {
-    transition: filter 0.35s cubic-bezier(0.16, 1, 0.3, 1), transform 0.35s ease, brightness 0.35s ease, opacity 0.35s ease;
-}
-
-main {
-    flex: 1;
-    margin-left: 320px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: calc(100% - 320px);
-    min-height: 100vh;
-    padding: 2rem; 
-    position: relative;
-    z-index: 10;
-}
-
-/* Şehir Sekmeleri (Tabs) */
-.city-tabs {
-    display: flex;
-    gap: 0.4rem;
-    overflow-x: auto;
-    padding-bottom: 0.5rem;
-    margin: 0.85rem 0 1rem 0;
-}
-
-.city-tab-btn {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    color: #94a3b8;
-    padding: 0.35rem 0.75rem;
-    border-radius: 8px;
-    font-size: 0.78rem;
-    font-weight: 600;
-    cursor: pointer;
-    white-space: nowrap;
-    transition: all 0.2s ease;
-    font-family: inherit;
-}
-
-.city-tab-btn:hover {
-    color: #fff;
-    background: rgba(255, 255, 255, 0.1);
-}
-
-.city-tab-btn.active {
-    background: #3b82f6;
-    color: #fff;
-    border-color: #3b82f6;
-    box-shadow: 0 2px 10px rgba(59, 130, 246, 0.4);
-}
-
-/* Şehir Butonları Kart Tasarımı */
-.city-selector {
-    display: flex;
-    flex-direction: column;
-    gap: 0.55rem;
-    width: 100%;
-}
-
-.city-btn {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0.75rem 1rem;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 12px;
-    background: rgba(255, 255, 255, 0.04);
-    color: white;
-    font-family: 'Poppins', sans-serif;
-    font-size: 0.88rem;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    font-weight: 600;
-    text-align: left;
-}
-
-.city-btn:hover {
-    background: rgba(255, 255, 255, 0.12);
-    border-color: rgba(59, 130, 246, 0.4);
-    transform: translateX(4px);
-}
-
-.city-btn.active {
-    background: linear-gradient(135deg, rgba(59, 130, 246, 0.85), rgba(139, 92, 246, 0.85));
-    color: white;
-    border-color: #60a5fa;
-    box-shadow: 0 4px 18px rgba(59, 130, 246, 0.45);
-}
-
-.city-btn .badge-temp {
-    font-size: 0.82rem;
-    background: rgba(0, 0, 0, 0.3);
-    padding: 0.2rem 0.55rem;
-    border-radius: 6px;
-    font-weight: 700;
-}
-
-/* Floating Map Tasarımı */
-.floating-map-container {
-    position: fixed;
-    bottom: 25px;
-    right: 25px;
-    width: 360px;
-    height: 250px;
-    border-radius: 20px;
-    overflow: hidden;
-    border: 1px solid rgba(255, 255, 255, 0.25);
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.65);
-    z-index: 80;
-    background: rgba(13, 17, 26, 0.85);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.map-header-bar {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    padding: 0.5rem 0.85rem;
-    background: rgba(13, 17, 26, 0.9);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    z-index: 1000;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    font-size: 0.78rem;
-    font-weight: 700;
-    color: #f8fafc;
-}
-
-.map-toggle-btn-small {
-    background: rgba(255, 255, 255, 0.1);
-    border: none;
-    color: #fff;
-    padding: 0.2rem 0.5rem;
-    border-radius: 4px;
-    font-size: 0.72rem;
-    cursor: pointer;
-}
-
-@media (max-width: 768px) {
-    header {
-        transform: translateX(-100%);
-    }
-    header.visible {
-        transform: translateX(0);
-    }
-    main {
-        margin-left: 0;
-        width: 100%;
-        padding: 1.25rem;
-    }
-    .floating-map-container {
-        width: calc(100% - 30px);
-        right: 15px;
-        bottom: 15px;
-        height: 210px;
-    }
-}
-
-    body:has(header.visible) main {
-        filter: blur(8px);
-    }
-    .sidebar-trigger {
-        display: none;
+        grid-template-columns: repeat(4, 1fr);
     }
 }
