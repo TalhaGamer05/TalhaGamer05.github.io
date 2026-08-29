@@ -1,164 +1,212 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Medya Galerisi | Proje Portalı</title>
-
-    <!-- Kritik Kaynakları Önceden Yükle -->
-    <link rel="preload" href="shared_style.css" as="style">
-    
-
-    <!-- Diğer Sayfaları Önceden Getir (Prefetch) -->
-    <link rel="prefetch" href="index.html">
-    <link rel="prefetch" href="hakkimizda.html">
-    <link rel="prefetch" href="istatistikler.html">
-    <link rel="prefetch" href="iletisim.html">
-    <link rel="prefetch" href="odevler.html">
-    <link rel="prefetch" href="nasil-yapildi.html">
-
-    <!-- Magnific Popup CSS (jQuery Lightbox için) -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/magnific-popup.min.css" />
+    <title>Medya Galerisi | t4lhster</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎬</text></svg>">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="shared_style.css">
+    <link rel="stylesheet" href="projects.css">
+    <style>
+        /* Lightbox Modal */
+        .modal-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(8px);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+        }
+        .modal-content {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            max-width: 800px;
+            width: 100%;
+            padding: 1.5rem;
+            position: relative;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+            animation: modalPop 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        @keyframes modalPop {
+            from { transform: scale(0.95); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: rgba(255,255,255,0.1);
+            border: none;
+            color: #fff;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            font-size: 1.1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+        .modal-close:hover {
+            background: var(--accent-rose);
+        }
+    </style>
 </head>
 <body>
-    <video autoplay loop muted id="bg-video" class="bg-video">
-        <source id="bg-video-source" src="havadurumu/videolar/yagmur.mp4" type="video/mp4">
+
+    <!-- Arka Plan Canlı Video -->
+    <video autoplay loop muted id="bgVideo" class="bg-video">
+        <source id="bgVideoSource" src="havadurumu/videolar/gunesli.mp4" type="video/mp4">
     </video>
 
-    <nav class="main-nav">
-        <ul>
-            <li><a href="index.html" title="Portal"><i class="fa-solid fa-house"></i> Portal</a></li>
-        </ul>
-    </nav>
+    <!-- Üst Menü -->
+    <header class="top-nav">
+        <div class="top-nav-inner">
+            <a href="index.html" class="nav-brand">
+                <i class="fa-solid fa-code"></i> t4lhster<span>.me</span>
+            </a>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="index.html" class="portal-link"><i class="fa-solid fa-house"></i> Portal</a></li>
+                    <li><a href="odevler.html"><i class="fa-solid fa-laptop-code"></i> Ödevler</a></li>
+                    <li><a href="istatistikler.html"><i class="fa-solid fa-chart-line"></i> İstatistikler</a></li>
+                    <li><a href="galeri.html" class="active"><i class="fa-solid fa-images"></i> Galeri</a></li>
+                    <li><a href="nasil-yapildi.html"><i class="fa-solid fa-file-code"></i> Nasıl Yapıldı?</a></li>
+                    <li><a href="iletisim.html"><i class="fa-solid fa-envelope"></i> İletişim</a></li>
+                    <li><a href="havadurumu/index.html"><i class="fa-solid fa-cloud-sun"></i> Hava Durumu</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
 
-    <main>
-        <section class="content-dashboard">
-            
-            
-            
-            <div class="content-scroll">
-                <h2>Medya Galerisi</h2>
-                <p>Türkiye'nin çeşitli bölgelerinden derlenen hava durumu manzaraları.</p>
+    <main class="page-container">
+        <div class="page-header">
+            <h1><i class="fa-solid fa-images" style="color:var(--accent-purple);"></i> Medya Galerisi & Canlı Arka Planlar</h1>
+            <p>Atmosfer koşullarını ve doğa manzaralarını yansıtan yüksek kaliteli video ve medya arşivi.</p>
+        </div>
 
-                <!-- jQuery Filtre Butonları -->
-                <div class="gallery-filters">
-                    <button class="filter-btn active" data-filter="all">Hepsi</button>
-                    <button class="filter-btn" data-filter="gunesli">Güneşli</button>
-                    <button class="filter-btn" data-filter="yagmur">Yağmurlu</button>
-                    <button class="filter-btn" data-filter="kar">Karlı</button>
-                    <button class="filter-btn" data-filter="bulut">Bulutlu</button>
-                    <button class="filter-btn" data-filter="firtina">Fırtınalı</button>
-                </div>
+        <!-- Filtre Butonları -->
+        <div class="gallery-filters">
+            <button class="filter-btn active" data-filter="all">Tümü (5)</button>
+            <button class="filter-btn" data-filter="gunesli">☀️ Güneşli</button>
+            <button class="filter-btn" data-filter="yagmur">🌧️ Yağmurlu</button>
+            <button class="filter-btn" data-filter="kar">❄️ Karlı</button>
+            <button class="filter-btn" data-filter="bulut">☁️ Bulutlu</button>
+            <button class="filter-btn" data-filter="firtina">⛈️ Fırtınalı</button>
+        </div>
 
-                <!-- Dinamik Olarak Doldurulacak Grid -->
-                <div class="gallery-grid"></div>
-            </div>
-        </section>
+        <!-- Galeri Izgarası -->
+        <div class="gallery-grid" id="galleryGrid"></div>
     </main>
 
-    <!-- Magnific Popup İçin Gizli Video Lightbox Şablonu -->
-    <div id="videoLightbox" class="white-popup mfp-hide" style="position:relative; background:rgba(15, 23, 42, 0.9); padding:20px; width:90%; max-width:800px; margin:40px auto; border-radius:24px; border:1px solid rgba(255,255,255,0.25); text-align:center; box-shadow:0 30px 60px rgba(0,0,0,0.5); backdrop-filter:blur(20px);">
-        <video id="lightboxVideo" src="" controls autoplay style="width:100%; border-radius:16px; max-height:450px; outline:none; box-shadow:0 10px 30px rgba(0,0,0,0.5);"></video>
-        <h3 id="lightboxTitle" style="color:white; margin-top:20px; font-weight:800; font-size:1.3rem;"></h3>
-        <p id="lightboxDesc" style="color:rgba(255,255,255,0.7); margin-top:8px; font-size:0.9rem; line-height:1.5; font-weight:400;"></p>
+    <!-- Video Modal / Lightbox -->
+    <div class="modal-backdrop" id="videoModal">
+        <div class="modal-content">
+            <button class="modal-close" id="modalCloseBtn"><i class="fa-solid fa-xmark"></i></button>
+            <video id="modalVideo" controls autoplay style="width:100%; border-radius:var(--radius-md); max-height:450px; background:#000;"></video>
+            <h3 id="modalTitle" style="margin-top:1rem; font-size:1.25rem;"></h3>
+            <p id="modalDesc" style="color:var(--text-secondary); font-size:0.9rem; margin-top:0.25rem;"></p>
+        </div>
     </div>
 
-    <footer class="main-footer">
-        <p>&copy; 2026 Proje Portalı. Tüm Hakları Saklıdır.</p>
+    <footer class="page-footer">
+        <p>&copy; 2026 t4lhster | <a href="index.html">Portal Ana Sayfa</a> | <a href="https://github.com/TalhaGamer05/TalhaGamer05.github.io" target="_blank">GitHub</a></p>
     </footer>
 
-    <!-- jQuery, Magnific Popup ve WebGL Scripts -->
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/jquery.magnific-popup.min.js"></script>
-    
-    
     <script>
-        $(document).ready(function() {
-            // Dinamik İçerik Üretimi (Diziler/Objeler Kullanımı)
-            const galleryData = [
-                { category: 'gunesli', src: 'havadurumu/videolar/gunesli.mp4', title: 'Güneşli Hava', desc: 'Akdeniz kıyılarında sıcak ve pırıl pırıl bir gün.' },
-                { category: 'yagmur', src: 'havadurumu/videolar/yagmur.mp4', title: 'Yağmurlu Hava', desc: 'Karadeniz ormanlarında toprak kokulu tazeleyici yağmur.' },
-                { category: 'kar', src: 'havadurumu/videolar/karli.mp4', title: 'Karlı Hava', desc: 'Doğu Anadolu dağlarında bembeyaz ve sessiz bir kış manzarası.' },
-                { category: 'bulut', src: 'havadurumu/videolar/bulutlu.mp4', title: 'Bulutlu Hava', desc: 'Marmara semalarında sakin, dinlendirici kapalı hava.' },
-                { category: 'firtina', src: 'havadurumu/videolar/firtinali.mp4', title: 'Fırtınalı Hava', desc: 'Körfez kıyılarında gök gürültülü ve rüzgarlı fırtına.' }
-            ];
+        const galleryData = [
+            { category: 'gunesli', src: 'havadurumu/videolar/gunesli.mp4', title: 'Güneşli Hava Manzarası', desc: 'Akdeniz kıyılarında sıcak ve berrak bir yaz günü.' },
+            { category: 'yagmur', src: 'havadurumu/videolar/yagmur.mp4', title: 'Yağmurlu Hava & Orman', desc: 'Karadeniz ormanlarında dinlendirici ve tazeleyici yağmur damlaları.' },
+            { category: 'kar', src: 'havadurumu/videolar/karli.mp4', title: 'Karlı Kış Atmosferi', desc: 'Doğu Anadolu dağlarında bembeyaz ve sessiz bir kış manzarası.' },
+            { category: 'bulut', src: 'havadurumu/videolar/bulutlu.mp4', title: 'Bulutlu & Sakin Gökyüzü', desc: 'Marmara semalarında huzurlu ve serin kapalı hava.' },
+            { category: 'firtina', src: 'havadurumu/videolar/firtinali.mp4', title: 'Gök Gürültülü Fırtına', desc: 'Körfez kıyılarında şimşekler ve rüzgarlı fırtına etkisi.' }
+        ];
 
-            // Galeri Elemanlarını Döngüyle Dinamik Oluşturma Fonksiyonu
-            function renderGallery(filter = 'all') {
-                const $grid = $('.gallery-grid');
-                
-                $grid.fadeOut(300, function() {
-                    $grid.empty();
-                    
-                    const filteredData = filter === 'all' 
-                        ? galleryData 
-                        : galleryData.filter(item => item.category === filter);
-                    
-                    filteredData.forEach(item => {
-                        // Dinamik DOM üretimi
-                        const $card = $(`
-                            <div class="gallery-item" style="cursor:pointer;">
-                                <video src="${item.src}" muted loop playsinline preload="metadata" onmouseenter="this.play()" onmouseleave="this.pause()" style="width:100%; border-radius:10px; height:150px; object-fit:cover; background:#0f172a;"></video>
-                                <h4>${item.title}</h4>
-                                <p style="font-size:0.75rem; color:#4b5563; margin-top:5px; padding:0 5px; min-height:36px;">${item.desc}</p>
-                                <div style="display:flex; gap:5px; margin-top:10px; padding:5px;">
-                                    <button class="play-btn" style="flex:1; padding:6px; font-size:0.75rem; border-radius:8px; border:none; background:#3b82f6; color:white; font-weight:700; cursor:pointer; transition:all 0.2s;">🔍 İzle (Lightbox)</button>
-                                    <button class="bg-btn" style="flex:1; padding:6px; font-size:0.75rem; border-radius:8px; border:none; background:#10b981; color:white; font-weight:700; cursor:pointer; transition:all 0.2s;">🌍 Arka Plan Yap</button>
-                                </div>
-                            </div>
-                        `);
+        function renderGallery(filter = 'all') {
+            const grid = document.getElementById('galleryGrid');
+            grid.innerHTML = '';
 
-                        // Lightbox İzle Butonu Olay Dinleyicisi
-                        $card.find('.play-btn').on('click', function(e) {
-                            e.stopPropagation();
-                            // Popuptaki video özelliklerini yükle
-                            $('#lightboxVideo').attr('src', item.src);
-                            $('#lightboxTitle').text(item.title);
-                            $('#lightboxDesc').text(item.desc);
-                            
-                            $.magnificPopup.open({
-                                items: {
-                                    src: '#videoLightbox'
-                                },
-                                type: 'inline',
-                                callbacks: {
-                                    close: function() {
-                                        $('#lightboxVideo')[0].pause(); // Kapanınca videoyu durdur
-                                    }
-                                }
-                            });
-                        });
+            const filtered = filter === 'all' ? galleryData : galleryData.filter(i => i.category === filter);
 
-                        // Arka Plan Yap Butonu Olay Dinleyicisi (DOM müdahalesi)
-                        $card.find('.bg-btn').on('click', function(e) {
-                            e.stopPropagation();
-                            $('#bg-video-source').attr('src', item.src);
-                            $('#bg-video')[0].load();
-                            $('#bg-video')[0].play();
-                        });
+            filtered.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'gallery-card';
+                card.innerHTML = `
+                    <video class="gallery-video-preview" src="${item.src}" muted loop playsinline preload="metadata" onmouseenter="this.play()" onmouseleave="this.pause()"></video>
+                    <div class="gallery-card-body">
+                        <h3>${item.title}</h3>
+                        <p>${item.desc}</p>
+                        <div class="gallery-actions">
+                            <button class="btn-action play" onclick="openModal('${item.src}', '${item.title}', '${item.desc}')">
+                                <i class="fa-solid fa-play"></i> İzle
+                            </button>
+                            <button class="btn-action bg" onclick="setAsBackground('${item.src}')">
+                                <i class="fa-solid fa-image"></i> Arka Plan Yap
+                            </button>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
 
-                        $grid.append($card);
-                    });
-                    
-                    // Elemanlar yüklendikten sonra fadeIn animasyonuyla göster
-                    $grid.fadeIn(300);
-                });
-            }
+        // Modal Logic
+        const modal = document.getElementById('videoModal');
+        const modalVideo = document.getElementById('modalVideo');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalDesc = document.getElementById('modalDesc');
 
-            // Sayfa açıldığında galeriyi ilk kez yükle
-            renderGallery('all');
+        window.openModal = function(src, title, desc) {
+            modalVideo.src = src;
+            modalTitle.textContent = title;
+            modalDesc.textContent = desc;
+            modal.style.display = 'flex';
+            modalVideo.play();
+        };
 
-            // Filtre Butonları Tıklama Olayları (jQuery siblings() Traversal)
-            $('.filter-btn').on('click', function() {
-                                $(this).addClass('active').siblings().removeClass('active');
-                
-                const filterValue = $(this).data('filter');
-                renderGallery(filterValue);
+        function closeModal() {
+            modal.style.display = 'none';
+            modalVideo.pause();
+            modalVideo.src = '';
+        }
+
+        document.getElementById('modalCloseBtn').addEventListener('click', closeModal);
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) closeModal();
+        });
+
+        // Arka Plan Değiştirme
+        window.setAsBackground = function(src) {
+            const bgVideo = document.getElementById('bgVideo');
+            const bgSource = document.getElementById('bgVideoSource');
+            bgSource.src = src;
+            bgVideo.load();
+            bgVideo.play();
+            
+            // Kullanıcıya küçük bildirim
+            const origTitle = document.title;
+            document.title = '✓ Arka Plan Değiştirildi!';
+            setTimeout(() => { document.title = origTitle; }, 1500);
+        };
+
+        // Filtreleme
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                renderGallery(btn.dataset.filter);
             });
         });
+
+        renderGallery('all');
     </script>
 </body>
 </html>
-

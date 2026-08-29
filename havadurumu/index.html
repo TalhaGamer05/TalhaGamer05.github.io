@@ -232,14 +232,27 @@
             });
         }
 
-        sidebarTrigger.addEventListener('click', openSidebar);
-        sidebarTrigger.addEventListener('mouseenter', openSidebar);
-        sidebar.addEventListener('mouseleave', (e) => {
-            const mapContainer = document.getElementById('mapContainer');
-            if (mapContainer && mapContainer.style.display === 'block') return; // Harita açıksa menü kapanmasın
-            closeSidebar();
-        });
-        sidebarBackdrop.addEventListener('click', closeSidebar);
+        const mainEl = document.querySelector('main');
+        if (sidebar && mainEl) {
+            sidebar.addEventListener('mouseenter', () => {
+                if (window.innerWidth > 768) {
+                    mainEl.style.filter = 'blur(8px)';
+                    mainEl.style.opacity = '0.85';
+                }
+            });
+            sidebar.addEventListener('mouseleave', () => {
+                if (window.innerWidth > 768) {
+                    mainEl.style.filter = 'none';
+                    mainEl.style.opacity = '1';
+                }
+            });
+        }
+        if (sidebarTrigger) {
+            sidebarTrigger.addEventListener('click', openSidebar);
+        }
+        if (sidebarBackdrop) {
+            sidebarBackdrop.addEventListener('click', closeSidebar);
+        }
 
         document.getElementById('luckyBtn').addEventListener('click', feelingLucky);
         document.getElementById('mapToggleBtn').addEventListener('click', toggleMap);

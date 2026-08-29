@@ -1,106 +1,101 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nasıl Yapıldı? | Proje Portalı</title>
-
-    <!-- Kritik Kaynakları Önceden Yükle -->
-    <link rel="preload" href="shared_style.css" as="style">
-    
-
-    <!-- Diğer Sayfaları Önceden Getir (Prefetch) -->
-    <link rel="prefetch" href="index.html">
-    <link rel="prefetch" href="hakkimizda.html">
-    <link rel="prefetch" href="istatistikler.html">
-    <link rel="prefetch" href="galeri.html">
-    <link rel="prefetch" href="iletisim.html">
-
+    <title>Nasıl Yapıldı? | t4lhster</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛠️</text></svg>">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="shared_style.css">
+    <link rel="stylesheet" href="projects.css">
 </head>
 <body>
-    
 
-    <nav class="main-nav">
-        <ul>
-            <li><a href="index.html" title="Portal"><i class="fa-solid fa-house"></i> Portal</a></li>
-        </ul>
-    </nav>
+    <!-- Üst Menü -->
+    <header class="top-nav">
+        <div class="top-nav-inner">
+            <a href="index.html" class="nav-brand">
+                <i class="fa-solid fa-code"></i> t4lhster<span>.me</span>
+            </a>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="index.html" class="portal-link"><i class="fa-solid fa-house"></i> Portal</a></li>
+                    <li><a href="odevler.html"><i class="fa-solid fa-laptop-code"></i> Ödevler</a></li>
+                    <li><a href="istatistikler.html"><i class="fa-solid fa-chart-line"></i> İstatistikler</a></li>
+                    <li><a href="galeri.html"><i class="fa-solid fa-images"></i> Galeri</a></li>
+                    <li><a href="nasil-yapildi.html" class="active"><i class="fa-solid fa-file-code"></i> Nasıl Yapıldı?</a></li>
+                    <li><a href="iletisim.html"><i class="fa-solid fa-envelope"></i> İletişim</a></li>
+                    <li><a href="havadurumu/index.html"><i class="fa-solid fa-cloud-sun"></i> Hava Durumu</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
 
-    <main>
-        <section class="content-dashboard">
-            
-            
-            
-            <div class="content-scroll">
-                <h2>Nasıl Yapıldı?</h2>
-                <p>Bu proje, modern web teknolojilerini bir araya getirerek hem görsel hem de işlevsel açıdan zengin bir kullanıcı deneyimi sunmak amacıyla geliştirilmiştir. Aşağıda projede kullanılan temel teknolojiler ve kullanım amaçları detaylandırılmıştır.</p>
-                
-                <div class="list-container">
-                    <h3>1. HTML5 ve Semantik Yapı</h3>
-                    <p><strong>Nasıl Kullanıldı:</strong> Projenin iskeleti, anlamlı (semantik) HTML5 etiketleri (<code>&lt;header&gt;</code>, <code>&lt;main&gt;</code>, <code>&lt;section&gt;</code>, <code>&lt;nav&gt;</code> vb.) kullanılarak inşa edilmiştir.</p>
-                    <p><strong>Neden Kullanıldı:</strong> Arama motoru optimizasyonu (SEO) ve erişilebilirlik (ekran okuyucular vb.) standartlarına uygun, temiz ve okunabilir bir DOM yapısı oluşturmak için tercih edilmiştir.</p>
+    <main class="page-container">
+        <div class="page-header">
+            <h1><i class="fa-solid fa-cubes-stacked" style="color:var(--accent-emerald);"></i> Proje Mimarisi & Nasıl Yapıldı?</h1>
+            <p>Sitede ve hava durumu projesinde uygulanan teknik çözümler, tasarım kalıpları ve optimizasyonlar.</p>
+        </div>
+
+        <div class="docs-grid">
+            <div class="doc-card">
+                <div class="doc-card-header">
+                    <div class="doc-icon"><i class="fa-brands fa-html5" style="color:#e34f26;"></i></div>
+                    <h3>1. Semantik HTML5 Mimarisi</h3>
                 </div>
-
-                <div class="list-container">
-                    <h3>2. CSS3 (Flexbox & Grid) ve Glassmorphism Modeli</h3>
-                    <p><strong>Nasıl Kullanıldı:</strong> Tasarımda saydamlık, arka plan bulanıklığı (backdrop-filter) ve ince beyaz kenarlıklar birleştirilerek "cam (glass)" dokusu elde edildi. Düzen için Flexbox ve Grid sistemleri aktif bir biçimde kullanıldı.</p>
-                    <p><strong>Neden Kullanıldı:</strong> Apple/iPhone tarzı premium hissiyatı veren modern Glassmorphism tasarım dilini uygulamak, arayüzü daha şık göstermek ve cihaz uyumluluğunu (Responsive Design) sağlamak için saf (vanilla) CSS tercih edilmiştir.</p>
-                </div>
-
-                <div class="list-container">
-                    <h3>3. Vanilla JavaScript (ES6)</h3>
-                    <p><strong>Nasıl Kullanıldı:</strong> Şehir verileri doğrudan bir JSON / JS objesi olarak tutulup, DOM manipülasyonu işlemleri tamamen saf JavaScript ile (harici kütüphane kullanılmadan) eylemlere bağlanmıştır.</p>
-                    <p><strong>Neden Kullanıldı:</strong> Performansı artırmak, sayfalar arası geçişlerde ve hava durumu güncellemelerinde anlık tepki alabilmek ve React/Vue gibi büyük framework yüklerinden kaçınmak amacıyla kullanıldı.</p>
-                </div>
-
-                <div class="list-container">
-                    <h3>4. WebGL (Fragment & Vertex Shaders)</h3>
-                    <p><strong>Nasıl Kullanıldı:</strong> Arka plan videosundaki görseller alınarak bir HTML <code>&lt;canvas&gt;</code> üzerine doku (texture) olarak işlendi. Özel yazılmış GLSL shader kodlarıyla balık gözü (fisheye) bükümü, renk sapması ve iç cam yansıması (glossy) efektleri hesaplanıp panele yansıtıldı.</p>
-                    <p><strong>Neden Kullanıldı:</strong> Klasik CSS <code>backdrop-filter</code> yeteneklerinin çok ötesinde, ışığın camdan geçerken gerçekçi biçimde kırılmasını (refraction) ve panelin kenarlarındaki iç yansımaları simüle edebilmek için grafik kartı (GPU) destekli WebGL teknolojisine başvurduk.</p>
-                </div>
-
-                <div class="list-container">
-                    <h3>5. Matter.js (Fizik Motoru)</h3>
-                    <p><strong>Nasıl Kullanıldı:</strong> Sayfadaki DOM objelerinin pozisyon ve boyutları hesaplanarak Matter.js içinde katı cisimler (rigid bodies) oluşturuldu. Gizli bir yerçekimi motoru arkaplanda çalıştırılarak objelerin koordinatları, tıklama eylemiyle 60 FPS ile HTML etiketlerine dönüştürüldü.</p>
-                    <p><strong>Neden Kullanıldı:</strong> Sayfadaki sabit "sıkıcı" elementlere "Google Antigravity" tarzında interaktif, eğlenceli ve fiziksel bir gerçekçilik katarak projenin çarpıcılığını (wow effect) maksimize etmek için entegre edildi.</p>
-                </div>
-
-                <div class="list-container">
-                    <h3>6. Leaflet.js ve CartoDB (Harita)</h3>
-                    <p><strong>Nasıl Kullanıldı:</strong> Türkiye merkezine konumlandırılmış interaktif bir harita sol menüye entegre edildi. Her şehir JSON üzerinden konumlandırılarak özel renkli pinlere dönüştürüldü.</p>
-                    <p><strong>Neden Kullanıldı:</strong> Klasik bir "Arama" veya "Liste" formunun çok ötesinde, kullanıcının doğrudan gözlemleyebildiği coğrafi bir deneyim sunarak uygulamanın "Enterprise-grade" seviyesine çıkması sağlandı.</p>
-                </div>
-
-                <div class="list-container">
-                    <h3>7. Chart.js & Progressive Web App (PWA)</h3>
-                    <p><strong>Nasıl Kullanıldı:</strong> Veriler Chart.js kullanılarak İstatistikler sayfasındaki dinamik pasta/bar grafiklerine dönüştürüldü. Projeye `manifest.json` ve `sw.js` dahil edildi.</p>
-                    <p><strong>Neden Kullanıldı:</strong> Veri analitiğini görselleştirmek ve sitenin kullanıcıların cihazlarına (telefon, bilgisayar) "gerçek bir uygulama" gibi yüklenebilmesi, çevrimdışı dahi çalışabilmesi amaçlanmıştır.</p>
-                </div>
-
-                <div class="list-container">
-                    <h3>8. jQuery, Eklentiler & İstemci Taraflı Form Doğrulama (Final)</h3>
-                    <p><strong>Nasıl Kullanıldı:</strong> Projenin genelinde DOM etkileşimi, dinamik filtreleme ve animasyonlu geçişler için jQuery tercih edildi. İletişim sayfasındaki form, sayfa yenilenmeden jQuery ile doğrulandı. Galeri sayfasında ise veriler diziden çekilerek harici Magnific Popup eklentisiyle şık bir Lightbox modalında sunuldu.</p>
-                    <p><strong>Neden Kullanıldı:</strong> Dersin final projesi kriterlerindeki istemci taraflı gelişmiş form kontrolü, harici eklenti entegrasyonu, parent/sibling gezinmesi ve animasyonlu DOM işlemlerini eksiksiz uygulamak amacıyla entegre edildi.</p>
-                </div>
-
-                <div class="list-container">
-                    <h3>9. İnteraktif Ödev Portalı</h3>
-                    <p><strong>Nasıl Kullanıldı:</strong> Dönem boyunca yapılan 5 adet ödev (Kişisel CV, Akıllı Hesap Makinesi, LocalStorage destekli Todo Listesi, Şifre Gücü Ölçer ve Karakter Sınırlayıcı, Kronometreli Canlı Saat) tek bir sayfa altında sekmeli yapıyla çalışan uygulamalara dönüştürüldü.</p>
-                    <p><strong>Neden Kullanıldı:</strong> Değerlendirme kriterlerinde bulunan ödev kısımlarını doğrudan nihai final projesiyle birleştirerek tek bir portal üzerinden tüm ödevlerin canlı test edilmesini sağlamak için kurgulandı.</p>
-                </div>
+                <p><strong>Uygulama:</strong> Sayfa düzeni <code>&lt;header&gt;</code>, <code>&lt;nav&gt;</code>, <code>&lt;main&gt;</code>, <code>&lt;section&gt;</code> ve <code>&lt;footer&gt;</code> etiketleriyle standartlara tam uygun olarak inşa edildi.</p>
+                <p><strong>Amaç:</strong> Erişilebilirlik (A11y) standartlarını yükseltmek, temiz bir DOM ağacı sunmak ve arama motorları için mükemmel SEO skoru sağlamak.</p>
             </div>
-        </section>
+
+            <div class="doc-card">
+                <div class="doc-card-header">
+                    <div class="doc-icon"><i class="fa-brands fa-css3-alt" style="color:#264de4;"></i></div>
+                    <h3>2. Modern CSS Grid & Flexbox</h3>
+                </div>
+                <p><strong>Uygulama:</strong> CSS değişkenleri (Custom Properties) kullanılarak koyu tema renk paleti merkezi olarak yönetildi. Kartlar ve paneller responsive grid yapısıyla dizildi.</p>
+                <p><strong>Amaç:</strong> Ağır CSS kütüphanelerine (Bootstrap vb.) ihtiyaç duymadan saf ve ultra hızlı sayfa yükleme performansı elde etmek.</p>
+            </div>
+
+            <div class="doc-card">
+                <div class="doc-card-header">
+                    <div class="doc-icon"><i class="fa-brands fa-js" style="color:#f7df1e;"></i></div>
+                    <h3>3. Saf JavaScript & DOM Yönetimi</h3>
+                </div>
+                <p><strong>Uygulama:</strong> Sekmeler (Tabs), Todo yönetimi (LocalStorage), Hesap makinesi ve saat modülleri saf ES6+ JavaScript ile kodlandı.</p>
+                <p><strong>Amaç:</strong> Sıfır gecikmeli kullanıcı etkileşimi, tarayıcı belleğini yormayan temiz olay dinleyicileri (event listeners) oluşturmak.</p>
+            </div>
+
+            <div class="doc-card">
+                <div class="doc-card-header">
+                    <div class="doc-icon"><i class="fa-solid fa-chart-pie" style="color:var(--accent-amber);"></i></div>
+                    <h3>4. Chart.js ile Veri Görselleştirme</h3>
+                </div>
+                <p><strong>Uygulama:</strong> İstatistikler sayfasında sıcaklık, nem ve rüzgar verileri duyarlı çizgi, halka ve sütun grafiklerine dönüştürüldü.</p>
+                <p><strong>Amaç:</strong> Karmaşık meteorolojik verileri kullanıcının tek bakışta anlayabileceği şık grafikler halinde sunmak.</p>
+            </div>
+
+            <div class="doc-card">
+                <div class="doc-card-header">
+                    <div class="doc-icon"><i class="fa-solid fa-video" style="color:var(--accent-purple);"></i></div>
+                    <h3>5. Optimize Medya & Lightbox</h3>
+                </div>
+                <p><strong>Uygulama:</strong> Galeri modülünde videolar `preload="metadata"` ile optimize edildi, üzerine gelindiğinde sessiz önizleme ve tam ekran modal oynatıcı eklendi.</p>
+                <p><strong>Amaç:</strong> Ağ trafiğini tüketmeden ve işlemciyi yormadan akıcı video galerisi deneyimi sağlamak.</p>
+            </div>
+
+            <div class="doc-card">
+                <div class="doc-card-header">
+                    <div class="doc-icon"><i class="fa-solid fa-wand-magic-sparkles" style="color:var(--accent);"></i></div>
+                    <h3>6. WebGL & Hava Durumu Paneli</h3>
+                </div>
+                <p><strong>Uygulama:</strong> Hava durumu projesinde arka plan videoları WebGL shader'ları üzerinden geçirilerek gerçekçi cam kırılması (refraction) ve derinlik sağlandı.</p>
+                <p><strong>Amaç:</strong> GPU tabanlı yüksek performanslı ve modern Glassmorphism tasarım estetiği üretmek.</p>
+            </div>
+        </div>
     </main>
 
-    <footer class="main-footer">
-        <p>&copy; 2026 Proje Portalı. Tüm Hakları Saklıdır.</p>
+    <footer class="page-footer">
+        <p>&copy; 2026 t4lhster | <a href="index.html">Portal Ana Sayfa</a> | <a href="https://github.com/TalhaGamer05/TalhaGamer05.github.io" target="_blank">GitHub</a></p>
     </footer>
 
-    <!-- jQuery ve WebGL Scripts -->
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    
 </body>
 </html>
-

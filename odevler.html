@@ -1,459 +1,499 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ödevler & Araçlar | Proje Portalı</title>
-
-    <!-- Kritik Kaynakları Önceden Yükle -->
-    <link rel="preload" href="shared_style.css" as="style">
-    
-
-    <!-- Diğer Sayfaları Önceden Getir (Prefetch) -->
-    <link rel="prefetch" href="index.html">
-    <link rel="prefetch" href="hakkimizda.html">
-    <link rel="prefetch" href="istatistikler.html">
-    <link rel="prefetch" href="galeri.html">
-    <link rel="prefetch" href="iletisim.html">
-    <link rel="prefetch" href="nasil-yapildi.html">
-
+    <title>Ödevler & Araçlar | t4lhster</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💻</text></svg>">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="shared_style.css">
+    <link rel="stylesheet" href="projects.css">
 </head>
 <body>
-    
 
-    <!-- Navigasyon Menüsü -->
-    <nav class="main-nav">
-        <ul>
-            <li><a href="index.html" title="Portal"><i class="fa-solid fa-house"></i> Portal</a></li>
-        </ul>
-    </nav>
+    <!-- Üst Menü -->
+    <header class="top-nav">
+        <div class="top-nav-inner">
+            <a href="index.html" class="nav-brand">
+                <i class="fa-solid fa-code"></i> t4lhster<span>.me</span>
+            </a>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="index.html" class="portal-link"><i class="fa-solid fa-house"></i> Portal</a></li>
+                    <li><a href="odevler.html" class="active"><i class="fa-solid fa-laptop-code"></i> Ödevler</a></li>
+                    <li><a href="istatistikler.html"><i class="fa-solid fa-chart-line"></i> İstatistikler</a></li>
+                    <li><a href="galeri.html"><i class="fa-solid fa-images"></i> Galeri</a></li>
+                    <li><a href="nasil-yapildi.html"><i class="fa-solid fa-file-code"></i> Nasıl Yapıldı?</a></li>
+                    <li><a href="iletisim.html"><i class="fa-solid fa-envelope"></i> İletişim</a></li>
+                    <li><a href="havadurumu/index.html"><i class="fa-solid fa-cloud-sun"></i> Hava Durumu</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
 
-    <main>
-        <section class="content-dashboard">
-            
-            
-            
-            <div class="content-scroll">
-                <h2>Dönem İçi Ödevler Portalı</h2>
-                <p>İnternet Programcılığı I dersi kapsamında hazırlanan 5 adet ödevin interaktif uygulaması.</p>
-                
-                <div class="tabs-container">
-                    <!-- Sekme Butonları -->
-                    <div class="tabs-header">
-                        <button class="tab-btn active" data-target="#tabOdev1">Ödev 1: CV Sayfası</button>
-                        <button class="tab-btn" data-target="#tabOdev2">Ödev 2: Hesap Makinesi</button>
-                        <button class="tab-btn" data-target="#tabOdev3">Ödev 3: Todo Listesi</button>
-                        <button class="tab-btn" data-target="#tabOdev4">Ödev 4: Şifre & Karakter Sayıcı</button>
-                        <button class="tab-btn" data-target="#tabOdev5">Ödev 5: Saat & Kronometre</button>
+    <main class="page-container">
+        <div class="page-header">
+            <h1><i class="fa-solid fa-laptop-code" style="color:var(--accent);"></i> Ödevler & İnteraktif Araçlar</h1>
+            <p>İnternet Programcılığı dersi kapsamında geliştirilen interaktif web modülleri ve uygulamaları.</p>
+        </div>
+
+        <div class="card">
+            <!-- Sekme Butonları -->
+            <div class="tabs-header">
+                <button class="tab-btn active" data-target="#tab1"><i class="fa-solid fa-user"></i> Ödev 1: CV Sayfası</button>
+                <button class="tab-btn" data-target="#tab2"><i class="fa-solid fa-calculator"></i> Ödev 2: Hesap Makinesi</button>
+                <button class="tab-btn" data-target="#tab3"><i class="fa-solid fa-list-check"></i> Ödev 3: Todo Listesi</button>
+                <button class="tab-btn" data-target="#tab4"><i class="fa-solid fa-shield-halved"></i> Ödev 4: Şifre & Sayaç</button>
+                <button class="tab-btn" data-target="#tab5"><i class="fa-solid fa-stopwatch"></i> Ödev 5: Saat & Kronometre</button>
+            </div>
+
+            <!-- ÖDEV 1: CV -->
+            <div class="tab-pane active" id="tab1">
+                <div class="cv-hero">
+                    <div class="cv-avatar">🎓</div>
+                    <div class="cv-hero-text">
+                        <h2>Talha | Web Geliştirici</h2>
+                        <p>Bilgisayar Programcılığı | Frontend & Modern Web Mimarisi</p>
                     </div>
+                </div>
+                <div class="cv-grid">
+                    <div class="cv-box">
+                        <h3><i class="fa-solid fa-graduation-cap"></i> Eğitim Bilgileri</h3>
+                        <ul>
+                            <li><strong>Üniversite:</strong> Balıkesir Üniversitesi (2024 - Devam)</li>
+                            <li><strong>Bölüm:</strong> Bilgisayar Programcılığı</li>
+                            <li><strong>Lise:</strong> Anadolu Teknik Lisesi (Bilişim Teknolojileri)</li>
+                        </ul>
+                    </div>
+                    <div class="cv-box">
+                        <h3><i class="fa-solid fa-layer-group"></i> Yetenekler & Teknolojiler</h3>
+                        <div class="tag-list" style="margin-top:0.5rem;">
+                            <span class="tag">HTML5 & CSS3</span>
+                            <span class="tag">JavaScript (ES6+)</span>
+                            <span class="tag">jQuery</span>
+                            <span class="tag">C# (.NET)</span>
+                            <span class="tag">Git & GitHub</span>
+                            <span class="tag">Responsive Design</span>
+                            <span class="tag">WebGL</span>
+                        </div>
+                    </div>
+                    <div class="cv-box">
+                        <h3><i class="fa-solid fa-briefcase"></i> Deneyim & Projeler</h3>
+                        <ul>
+                            <li><strong>Hava Durumu Panosu:</strong> Canlı API, Glassmorphism ve WebGL büküm efektleri.</li>
+                            <li><strong>İnteraktif Portal:</strong> Ödev ve araçları bir araya getiren optimize web arayüzü.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
 
-                    <!-- Sekme İçerikleri -->
-                    
-                    <!-- ÖDEV 1: CV (Özgeçmiş) -->
-                    <div class="tab-pane active" id="tabOdev1">
-                        <div class="cv-container">
-                            <div class="cv-header">
-                                <div class="cv-avatar">🎓</div>
-                                <div class="cv-info">
-                                    <h3>Web Geliştirici</h3>
-                                    <p>Bilgisayar Programcılığı | Frontend & Web Teknolojileri</p>
-                                </div>
-                            </div>
-                            <div class="cv-grid">
-                                <div class="list-container" style="margin-bottom:0;">
-                                    <h4>Eğitim Bilgileri</h4>
-                                    <ul style="margin-top:10px;">
-                                        <li><strong>Üniversite:</strong> Balıkesir Üniversitesi (2024 - Devam)</li>
-                                        <li><strong>Bölüm:</strong> Bilgisayar Programcılığı (İÖ)</li>
-                                        <li><strong>Lise:</strong> Anadolu Teknik Lisesi (Bilişim Teknolojileri)</li>
-                                    </ul>
-                                </div>
-                                <div class="list-container" style="margin-bottom:0;">
-                                    <h4>Yetenekler & Teknolojiler</h4>
-                                    <ul style="margin-top:10px;">
-                                        <li>Frontend: HTML5, CSS3, JavaScript (ES6+), jQuery</li>
-                                        <li>Backend: C# (WinForms, ASP.NET)</li>
-                                        <li>Araçlar: Git, VS Code, Visual Studio, WebGL</li>
-                                    </ul>
-                                </div>
-                            </div>
+            <!-- ÖDEV 2: Hesap Makinesi -->
+            <div class="tab-pane" id="tab2">
+                <div class="calc-wrapper">
+                    <div class="calc-display">
+                        <div class="calc-prev-val" id="calcPrev"></div>
+                        <div class="calc-curr-val" id="calcDisplay">0</div>
+                    </div>
+                    <div class="calc-grid">
+                        <button class="calc-btn clear" onclick="calcClear()">C</button>
+                        <button class="calc-btn op" onclick="calcOp('/')">/</button>
+                        <button class="calc-btn op" onclick="calcOp('*')">×</button>
+                        <button class="calc-btn op" onclick="calcOp('-')">-</button>
+                        
+                        <button class="calc-btn" onclick="calcNum('7')">7</button>
+                        <button class="calc-btn" onclick="calcNum('8')">8</button>
+                        <button class="calc-btn" onclick="calcNum('9')">9</button>
+                        <button class="calc-btn op" onclick="calcOp('+')">+</button>
+                        
+                        <button class="calc-btn" onclick="calcNum('4')">4</button>
+                        <button class="calc-btn" onclick="calcNum('5')">5</button>
+                        <button class="calc-btn" onclick="calcNum('6')">6</button>
+                        <button class="calc-btn" onclick="calcNum('.')">.</button>
+                        
+                        <button class="calc-btn" onclick="calcNum('1')">1</button>
+                        <button class="calc-btn" onclick="calcNum('2')">2</button>
+                        <button class="calc-btn" onclick="calcNum('3')">3</button>
+                        <button class="calc-btn" onclick="calcNum('0')">0</button>
+                        
+                        <button class="calc-btn equal" onclick="calcEqual()" style="grid-column: span 4;">=</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ÖDEV 3: Todo Listesi -->
+            <div class="tab-pane" id="tab3">
+                <div class="todo-wrapper">
+                    <form id="todoForm" class="todo-input-group">
+                        <input type="text" id="todoInput" class="input-text" placeholder="Yeni görev ekle..." required>
+                        <button type="submit" class="btn-primary"><i class="fa-solid fa-plus"></i> Ekle</button>
+                    </form>
+                    <div class="todo-filters">
+                        <button type="button" class="todo-filter-btn active" data-filter="all">Tümü (<span id="countAll">0</span>)</button>
+                        <button type="button" class="todo-filter-btn" data-filter="active">Yapılacaklar (<span id="countActive">0</span>)</button>
+                        <button type="button" class="todo-filter-btn" data-filter="completed">Tamamlanan (<span id="countCompleted">0</span>)</button>
+                    </div>
+                    <ul class="todo-list" id="todoList"></ul>
+                </div>
+            </div>
+
+            <!-- ÖDEV 4: Şifre & Sayaç -->
+            <div class="tab-pane" id="tab4">
+                <div class="counter-box">
+                    <div class="card" style="background: rgba(255,255,255,0.02); margin:0;">
+                        <h3 style="margin-bottom:0.75rem; font-size:1.1rem;"><i class="fa-solid fa-font"></i> Canlı Karakter & Kelime Sayıcı</h3>
+                        <textarea id="textCounterInput" class="form-control" rows="4" placeholder="Metninizi buraya yazın..." style="resize:vertical;"></textarea>
+                        <div style="display:flex; justify-content:space-between; margin-top:0.5rem; font-size:0.85rem; color:var(--text-secondary);">
+                            <span>Karakter: <strong id="charCount" style="color:#fff;">0</strong> / 250</span>
+                            <span>Kelime: <strong id="wordCount" style="color:#fff;">0</strong></span>
+                        </div>
+                        <div class="progress-bar-bg">
+                            <div class="progress-bar-fill" id="charProgress"></div>
                         </div>
                     </div>
 
-                    <!-- ÖDEV 2: Hesap Makinesi -->
-                    <div class="tab-pane" id="tabOdev2">
-                        <div class="calc-container">
-                            <div class="calc-display">
-                                <div class="calc-prev-val" id="calcPrev"></div>
-                                <div class="calc-curr-val" id="calcDisplay">0</div>
-                            </div>
-                            <div class="calc-buttons">
-                                <button class="calc-btn clear" onclick="clearCalc()">C</button>
-                                <button class="calc-btn op" onclick="setOp('/')">/</button>
-                                <button class="calc-btn op" onclick="setOp('*')">*</button>
-                                <button class="calc-btn op" onclick="setOp('-')">-</button>
-                                
-                                <button class="calc-btn" onclick="appendNum('7')">7</button>
-                                <button class="calc-btn" onclick="appendNum('8')">8</button>
-                                <button class="calc-btn" onclick="appendNum('9')">9</button>
-                                <button class="calc-btn op" onclick="setOp('+')">+</button>
-                                
-                                <button class="calc-btn" onclick="appendNum('4')">4</button>
-                                <button class="calc-btn" onclick="appendNum('5')">5</button>
-                                <button class="calc-btn" onclick="appendNum('6')">6</button>
-                                <button class="calc-btn equals" onclick="calculate()">=</button>
-                                
-                                <button class="calc-btn" onclick="appendNum('1')">1</button>
-                                <button class="calc-btn" onclick="appendNum('2')">2</button>
-                                <button class="calc-btn" onclick="appendNum('3')">3</button>
-                                <button class="calc-btn" onclick="appendNum('0')" style="grid-column: span 2;">0</button>
-                                <button class="calc-btn" onclick="appendNum('.')">.</button>
-                            </div>
+                    <div class="card" style="background: rgba(255,255,255,0.02); margin:0;">
+                        <h3 style="margin-bottom:0.75rem; font-size:1.1rem;"><i class="fa-solid fa-key"></i> Şifre Güvenlik Analizi</h3>
+                        <div style="display:flex; gap:0.5rem;">
+                            <input type="text" id="pwdInput" class="form-control" placeholder="Test edilecek şifreyi girin...">
+                            <button type="button" class="btn-primary" id="btnGenPwd" style="white-space:nowrap;"><i class="fa-solid fa-dice"></i> Üret</button>
                         </div>
-                    </div>
-
-                    <!-- ÖDEV 3: Todo Listesi -->
-                    <div class="tab-pane" id="tabOdev3">
-                        <div class="todo-container">
-                            <h4 style="margin-bottom: 10px; text-align: center;">Yapılacaklar Listesi</h4>
-                            <div class="todo-input-group">
-                                <input type="text" id="todoInput" class="todo-input" placeholder="Yeni görev ekle...">
-                                <button id="todoAddBtn" class="todo-add-btn">Ekle</button>
+                        <div style="margin-top:0.75rem;">
+                            <div style="display:flex; justify-content:space-between; font-size:0.85rem;">
+                                <span style="color:var(--text-secondary);">Güç Seviyesi:</span>
+                                <strong id="pwdStrengthText" style="color:var(--text-muted);">Boş</strong>
                             </div>
-                            <ul id="todoList" class="todo-list"></ul>
-                        </div>
-                    </div>
-
-                    <!-- ÖDEV 4: Şifre Gücü & Karakter Sayıcı -->
-                    <div class="tab-pane" id="tabOdev4">
-                        <div class="counter-container">
-                            <!-- Şifre Gücü Ölçer -->
-                            <div class="tool-section">
-                                <h4>Şifre Gücü Ölçer</h4>
-                                <input type="password" id="passwordInput" class="tool-input" placeholder="Şifrenizi yazmaya başlayın...">
-                                <div class="strength-meter">
-                                    <div id="strengthBar" class="strength-bar"></div>
-                                </div>
-                                <div id="strengthText" class="strength-text">Çok Zayıf</div>
-                            </div>
-                            
-                            <!-- Karakter Sayıcı -->
-                            <div class="tool-section">
-                                <h4>Karakter Sayıcı</h4>
-                                <p style="font-size:0.8rem; color:#475569;">Maksimum 150 karakter yazabilirsiniz:</p>
-                                <textarea id="textCounterInput" class="tool-input" rows="4" placeholder="Metninizi buraya girin..."></textarea>
-                                <div id="charCounter" class="char-counter">0 / 150</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- ÖDEV 5: Saat & Kronometre -->
-                    <div class="tab-pane" id="tabOdev5">
-                        <div class="time-container">
-                            <!-- Dijital Saat -->
-                            <div class="tool-section">
-                                <h4>🕒 Canlı Dijital Saat</h4>
-                                <div id="digitalClock" class="clock-display">00:00:00</div>
-                                <div id="clockDate" class="clock-date">Yükleniyor...</div>
-                            </div>
-
-                            <!-- Kronometre -->
-                            <div class="tool-section">
-                                <h4>⏱️ Hassas Kronometre</h4>
-                                <div id="stopwatchDisplay" class="stopwatch-display">00:00.00</div>
-                                <div class="time-btn-group">
-                                    <button id="swStartBtn" class="time-btn start">Başlat</button>
-                                    <button id="swLapBtn" class="time-btn lap">Tur</button>
-                                    <button id="swResetBtn" class="time-btn reset">Sıfırla</button>
-                                </div>
-                                <ul id="lapList" class="lap-list"></ul>
+                            <div class="progress-bar-bg">
+                                <div class="progress-bar-fill" id="pwdProgress"></div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </section>
+
+            <!-- ÖDEV 5: Saat & Kronometre -->
+            <div class="tab-pane" id="tab5">
+                <div class="clock-widget">
+                    <div class="clock-time" id="liveClock">00:00:00</div>
+                    <div class="clock-date" id="liveDate">Tarih yükleniyor...</div>
+                </div>
+
+                <div class="stopwatch-box">
+                    <div class="stopwatch-time" id="swDisplay">00:00.00</div>
+                    <div class="stopwatch-controls">
+                        <button type="button" class="btn-sw start" id="btnSwStart">Başlat</button>
+                        <button type="button" class="btn-sw lap" id="btnSwLap">Tur (Lap)</button>
+                        <button type="button" class="btn-sw reset" id="btnSwReset">Sıfırla</button>
+                    </div>
+                    <ul class="laps-list" id="swLapsList"></ul>
+                </div>
+            </div>
+
+        </div>
     </main>
 
-    <footer class="main-footer">
-        <p>&copy; 2026 Proje Portalı. Tüm Hakları Saklıdır.</p>
+    <footer class="page-footer">
+        <p>&copy; 2026 t4lhster | <a href="index.html">Portal Ana Sayfa</a> | <a href="https://github.com/TalhaGamer05/TalhaGamer05.github.io" target="_blank">GitHub</a></p>
     </footer>
 
-    <!-- jQuery & WebGL Scripts -->
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    
-
     <script>
-        $(document).ready(function() {
-            $('.tab-btn').on('click', function() {
-                if ($(this).hasClass('active')) return; // Zaten aktifse geçiş yapma
-                
-                // siblings() kullanarak diğer sekmelerden active sınıfını kaldır (Kriter 4 DOM Traversal)
-                $(this).addClass('active').siblings().removeClass('active');
-                
-                const target = $(this).data('target');
-                const $activePane = $('.tab-pane.active');
-                
-                // Mevcut aktif paneli fadeOut ile gizle ve yenisini fadeIn ile göster (Kriter 4 Animasyon)
-                if ($activePane.length) {
-                    $activePane.fadeOut(200, function() {
-                        $(this).removeClass('active');
-                        $(target).fadeIn(200, function() {
-                            $(this).addClass('active');
-                        });
-                    });
-                } else {
-                    $(target).fadeIn(200, function() {
-                        $(this).addClass('active');
-                    });
-                }
-            });
-
-            // ==========================================
-            // ÖDEV 3: TODO LIST LOGIC (jQuery & LocalStorage)
-            // ==========================================
-            let todos = JSON.parse(localStorage.getItem('baun_todos')) || [];
-
-            function renderTodos() {
-                const $list = $('#todoList');
-                $list.empty();
-                todos.forEach((todo, index) => {
-                    const $item = $(`
-                        <li class="todo-item ${todo.completed ? 'completed' : ''}">
-                            <div class="todo-item-left">
-                                <input type="checkbox" class="todo-check" ${todo.completed ? 'checked' : ''}>
-                                <span>${escapeHtml(todo.text)}</span>
-                            </div>
-                            <button class="todo-delete-btn" data-index="${index}">Sil</button>
-                        </li>
-                    `);
-
-                    // Tamamlama olayı (Checkbox)
-                    $item.find('.todo-check').on('change', function() {
-                        todos[index].completed = this.checked;
-                        saveTodos();
-                        renderTodos();
-                    });
-
-                    // Silme olayı
-                    $item.find('.todo-delete-btn').on('click', function() {
-                        todos.splice(index, 1);
-                        saveTodos();
-                        renderTodos();
-                    });
-
-                    $list.append($item);
-                });
-            }
-
-            function saveTodos() {
-                localStorage.setItem('baun_todos', JSON.stringify(todos));
-            }
-
-            $('#todoAddBtn').on('click', function() {
-                const text = $('#todoInput').val().trim();
-                if (text !== '') {
-                    todos.push({ text: text, completed: false });
-                    saveTodos();
-                    renderTodos();
-                    $('#todoInput').val('');
-                }
-            });
-
-            $('#todoInput').on('keypress', function(e) {
-                if (e.which === 13) {
-                    $('#todoAddBtn').click();
-                }
-            });
-
-            function escapeHtml(text) {
-                return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-            }
-
-            renderTodos();
-
-            // ==========================================
-            // ÖDEV 4: ŞİFRE GÜCÜ & KARAKTER SAYICI
-            // ==========================================
-            $('#passwordInput').on('input', function() {
-                const val = $(this).val();
-                let score = 0;
-                
-                if (val.length > 5) score++;
-                if (val.length > 10) score++;
-                if (/[A-Z]/.test(val)) score++;
-                if (/[0-9]/.test(val)) score++;
-                if (/[^A-Za-z0-9]/.test(val)) score++;
-
-                const $bar = $('#strengthBar');
-                const $text = $('#strengthText');
-
-                if (val.length === 0) {
-                    $bar.css({'width': '0%', 'background': 'transparent'});
-                    $text.text('Çok Zayıf').css('color', '#475569');
-                } else if (score <= 1) {
-                    $bar.css({'width': '25%', 'background': '#ef4444'}); // Kırmızı
-                    $text.text('Zayıf').css('color', '#ef4444');
-                } else if (score === 2 || score === 3) {
-                    $bar.css({'width': '55%', 'background': '#f59e0b'}); // Turuncu
-                    $text.text('Orta').css('color', '#f59e0b');
-                } else if (score === 4) {
-                    $bar.css({'width': '80%', 'background': '#3b82f6'}); // Mavi
-                    $text.text('İyi').css('color', '#3b82f6');
-                } else {
-                    $bar.css({'width': '100%', 'background': '#10b981'}); // Yeşil
-                    $text.text('Güçlü (Güvenli)').css('color', '#10b981');
-                }
-            });
-
-            // Karakter Sayıcı
-            $('#textCounterInput').on('input', function() {
-                let val = $(this).val();
-                const maxLength = 150;
-                
-                if (val.length > maxLength) {
-                    val = val.substring(0, maxLength);
-                    $(this).val(val);
-                }
-
-                $('#charCounter').text(`${val.length} / ${maxLength}`);
-            });
-
-            // ==========================================
-            // ÖDEV 5: DİJİTAL SAAT & KRONOMETRE
-            // ==========================================
-            
-            // Canlı Dijital Saat
-            function updateClock() {
-                const now = new Date();
-                const hrs = String(now.getHours()).padStart(2, '0');
-                const mins = String(now.getMinutes()).padStart(2, '0');
-                const secs = String(now.getSeconds()).padStart(2, '0');
-                
-                $('#digitalClock').text(`${hrs}:${mins}:${secs}`);
-
-                const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-                $('#clockDate').text(now.toLocaleDateString('tr-TR', options));
-            }
-            setInterval(updateClock, 1000);
-            updateClock();
-
-            // Kronometre Logic
-            let swInterval = null;
-            let swElapsedTime = 0; // Santisaniye cinsinden (1/100 saniye)
-            let swLaps = [];
-
-            function formatSwTime(time) {
-                const centisec = String(time % 100).padStart(2, '0');
-                const totalSeconds = Math.floor(time / 100);
-                const seconds = String(totalSeconds % 60).padStart(2, '0');
-                const minutes = String(Math.floor(totalSeconds / 60)).padStart(2, '0');
-                return `${minutes}:${seconds}.${centisec}`;
-            }
-
-            $('#swStartBtn').on('click', function() {
-                const $btn = $(this);
-                if (swInterval) {
-                    // Stop
-                    clearInterval(swInterval);
-                    swInterval = null;
-                    $btn.text('Başlat').removeClass('stop').addClass('start');
-                } else {
-                    // Start
-                    swInterval = setInterval(() => {
-                        swElapsedTime++;
-                        $('#stopwatchDisplay').text(formatSwTime(swElapsedTime));
-                    }, 10);
-                    $btn.text('Durdur').removeClass('start').addClass('stop');
-                }
-            });
-
-            $('#swLapBtn').on('click', function() {
-                if (swElapsedTime === 0) return;
-                swLaps.push(swElapsedTime);
-                const lapIndex = swLaps.length;
-                const $lapItem = $(`
-                    <li class="lap-item">
-                        <span>Tur ${lapIndex}</span>
-                        <span>${formatSwTime(swElapsedTime)}</span>
-                    </li>
-                `);
-                $('#lapList').prepend($lapItem);
-            });
-
-            $('#swResetBtn').on('click', function() {
-                clearInterval(swInterval);
-                swInterval = null;
-                swElapsedTime = 0;
-                swLaps = [];
-                $('#stopwatchDisplay').text('00:00.00');
-                $('#swStartBtn').text('Başlat').removeClass('stop').addClass('start');
-                $('#lapList').empty();
+        // ----------------------------------------------------------------------
+        // Sekmeler (Tabs)
+        // ----------------------------------------------------------------------
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+                btn.classList.add('active');
+                const target = document.querySelector(btn.dataset.target);
+                if (target) target.classList.add('active');
             });
         });
 
-        // ==========================================
-        // ÖDEV 2: HESAP MAKİNESİ LOGIC
-        // ==========================================
-        let currentInput = '0';
-        let previousInput = '';
-        let selectedOperator = null;
+        // ----------------------------------------------------------------------
+        // ÖDEV 2: Hesap Makinesi
+        // ----------------------------------------------------------------------
+        let calcCurrent = '0';
+        let calcPrev = '';
+        let calcOperator = null;
 
         function updateCalcDisplay() {
-            $('#calcDisplay').text(currentInput);
-            if (selectedOperator) {
-                $('#calcPrev').text(`${previousInput} ${selectedOperator}`);
+            document.getElementById('calcDisplay').textContent = calcCurrent;
+            const prevEl = document.getElementById('calcPrev');
+            if (calcOperator && calcPrev !== '') {
+                prevEl.textContent = `${calcPrev} ${calcOperator}`;
             } else {
-                $('#calcPrev').text('');
+                prevEl.textContent = '';
             }
         }
 
-        function appendNum(num) {
-            if (currentInput === '0' && num !== '.') {
-                currentInput = num;
+        function calcNum(n) {
+            if (calcCurrent === '0' && n !== '.') {
+                calcCurrent = n;
             } else {
-                if (num === '.' && currentInput.includes('.')) return; // Çift nokta engelle
-                currentInput += num;
+                if (n === '.' && calcCurrent.includes('.')) return;
+                calcCurrent += n;
             }
             updateCalcDisplay();
         }
 
-        function clearCalc() {
-            currentInput = '0';
-            previousInput = '';
-            selectedOperator = null;
+        function calcOp(op) {
+            if (calcCurrent === '0' && calcPrev === '') return;
+            calcOperator = op;
+            calcPrev = calcCurrent;
+            calcCurrent = '0';
             updateCalcDisplay();
         }
 
-        function setOp(op) {
-            if (currentInput === '0' && previousInput === '') return;
-            selectedOperator = op;
-            previousInput = currentInput;
-            currentInput = '0';
+        function calcClear() {
+            calcCurrent = '0';
+            calcPrev = '';
+            calcOperator = null;
             updateCalcDisplay();
         }
 
-        function calculate() {
-            if (!selectedOperator || previousInput === '') return;
-            const prev = parseFloat(previousInput);
-            const curr = parseFloat(currentInput);
-            let result = 0;
+        function calcEqual() {
+            if (!calcOperator || calcPrev === '') return;
+            const p = parseFloat(calcPrev);
+            const c = parseFloat(calcCurrent);
+            let res = 0;
+            switch(calcOperator) {
+                case '+': res = p + c; break;
+                case '-': res = p - c; break;
+                case '*': res = p * c; break;
+                case '/': res = c === 0 ? 'Hata' : p / c; break;
+            }
+            calcCurrent = String(res);
+            calcOperator = null;
+            calcPrev = '';
+            updateCalcDisplay();
+        }
 
-            switch (selectedOperator) {
-                case '+': result = prev + curr; break;
-                case '-': result = prev - curr; break;
-                case '*': result = prev * curr; break;
-                case '/': result = curr === 0 ? 'Sıfıra Bölünemez' : prev / curr; break;
+        // ----------------------------------------------------------------------
+        // ÖDEV 3: Todo Listesi (LocalStorage Destekli)
+        // ----------------------------------------------------------------------
+        let todos = JSON.parse(localStorage.getItem('t4lhster_todos') || '[]');
+        let currentFilter = 'all';
+
+        function saveTodos() {
+            localStorage.setItem('t4lhster_todos', JSON.stringify(todos));
+            renderTodos();
+        }
+
+        function renderTodos() {
+            const list = document.getElementById('todoList');
+            list.innerHTML = '';
+
+            const filtered = todos.filter(t => {
+                if (currentFilter === 'active') return !t.completed;
+                if (currentFilter === 'completed') return t.completed;
+                return true;
+            });
+
+            if (filtered.length === 0) {
+                list.innerHTML = '<li style="text-align:center; color:var(--text-muted); padding:1rem;">Görev bulunamadı.</li>';
+            } else {
+                filtered.forEach((t, i) => {
+                    const li = document.createElement('li');
+                    li.className = `todo-item ${t.completed ? 'completed' : ''}`;
+                    li.innerHTML = `
+                        <div style="display:flex; align-items:center; gap:0.75rem; flex:1;">
+                            <input type="checkbox" ${t.completed ? 'checked' : ''} style="cursor:pointer;" onchange="toggleTodo(${t.id})">
+                            <span>${escapeHtml(t.text)}</span>
+                        </div>
+                        <div class="todo-actions">
+                            <button class="btn-icon" onclick="deleteTodo(${t.id})" title="Sil"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                    `;
+                    list.appendChild(li);
+                });
             }
 
-            currentInput = String(result);
-            selectedOperator = null;
-            previousInput = '';
-            updateCalcDisplay();
+            document.getElementById('countAll').textContent = todos.length;
+            document.getElementById('countActive').textContent = todos.filter(t => !t.completed).length;
+            document.getElementById('countCompleted').textContent = todos.filter(t => t.completed).length;
+        }
+
+        function escapeHtml(text) {
+            const d = document.createElement('div');
+            d.textContent = text;
+            return d.innerHTML;
+        }
+
+        window.toggleTodo = function(id) {
+            todos = todos.map(t => t.id === id ? { ...t, completed: !t.completed } : t);
+            saveTodos();
+        };
+
+        window.deleteTodo = function(id) {
+            todos = todos.filter(t => t.id !== id);
+            saveTodos();
+        };
+
+        document.getElementById('todoForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const input = document.getElementById('todoInput');
+            const text = input.value.trim();
+            if (text) {
+                todos.unshift({ id: Date.now(), text: text, completed: false });
+                input.value = '';
+                saveTodos();
+            }
+        });
+
+        document.querySelectorAll('.todo-filter-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.todo-filter-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentFilter = btn.dataset.filter;
+                renderTodos();
+            });
+        });
+
+        renderTodos();
+
+        // ----------------------------------------------------------------------
+        // ÖDEV 4: Karakter Sayacı & Şifre
+        // ----------------------------------------------------------------------
+        const textInput = document.getElementById('textCounterInput');
+        textInput.addEventListener('input', () => {
+            const val = textInput.value;
+            const chars = val.length;
+            const words = val.trim() ? val.trim().split(/\s+/).length : 0;
+            document.getElementById('charCount').textContent = chars;
+            document.getElementById('wordCount').textContent = words;
+            
+            const pct = Math.min(100, (chars / 250) * 100);
+            const fill = document.getElementById('charProgress');
+            fill.style.width = pct + '%';
+            if (pct >= 100) {
+                fill.style.backgroundColor = 'var(--accent-rose)';
+            } else if (pct >= 80) {
+                fill.style.backgroundColor = 'var(--accent-amber)';
+            } else {
+                fill.style.backgroundColor = 'var(--accent)';
+            }
+        });
+
+        const pwdInput = document.getElementById('pwdInput');
+        pwdInput.addEventListener('input', checkPwdStrength);
+
+        function checkPwdStrength() {
+            const val = pwdInput.value;
+            const text = document.getElementById('pwdStrengthText');
+            const fill = document.getElementById('pwdProgress');
+            
+            if (!val) {
+                text.textContent = 'Boş';
+                text.style.color = 'var(--text-muted)';
+                fill.style.width = '0%';
+                return;
+            }
+
+            let score = 0;
+            if (val.length >= 8) score++;
+            if (/[A-Z]/.test(val)) score++;
+            if (/[0-9]/.test(val)) score++;
+            if (/[^A-Za-z0-9]/.test(val)) score++;
+
+            if (score <= 1) {
+                text.textContent = 'Zayıf ⚠️';
+                text.style.color = 'var(--accent-rose)';
+                fill.style.backgroundColor = 'var(--accent-rose)';
+                fill.style.width = '25%';
+            } else if (score === 2 || score === 3) {
+                text.textContent = 'Orta ⚡';
+                text.style.color = 'var(--accent-amber)';
+                fill.style.backgroundColor = 'var(--accent-amber)';
+                fill.style.width = '65%';
+            } else {
+                text.textContent = 'Güçlü 🛡️';
+                text.style.color = 'var(--accent-emerald)';
+                fill.style.backgroundColor = 'var(--accent-emerald)';
+                fill.style.width = '100%';
+            }
+        }
+
+        document.getElementById('btnGenPwd').addEventListener('click', () => {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+';
+            let res = '';
+            for (let i = 0; i < 14; i++) {
+                res += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            pwdInput.value = res;
+            checkPwdStrength();
+        });
+
+        // ----------------------------------------------------------------------
+        // ÖDEV 5: Saat & Kronometre
+        // ----------------------------------------------------------------------
+        function updateLiveClock() {
+            const now = new Date();
+            const h = String(now.getHours()).padStart(2, '0');
+            const m = String(now.getMinutes()).padStart(2, '0');
+            const s = String(now.getSeconds()).padStart(2, '0');
+            document.getElementById('liveClock').textContent = `${h}:${m}:${s}`;
+
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById('liveDate').textContent = now.toLocaleDateString('tr-TR', options);
+        }
+        setInterval(updateLiveClock, 1000);
+        updateLiveClock();
+
+        let swInterval = null;
+        let swTime = 0;
+        let swLaps = [];
+
+        function formatSw(ms) {
+            const c = String(ms % 100).padStart(2, '0');
+            const totalSec = Math.floor(ms / 100);
+            const s = String(totalSec % 60).padStart(2, '0');
+            const m = String(Math.floor(totalSec / 60)).padStart(2, '0');
+            return `${m}:${s}.${c}`;
+        }
+
+        const btnSwStart = document.getElementById('btnSwStart');
+        btnSwStart.addEventListener('click', () => {
+            if (swInterval) {
+                clearInterval(swInterval);
+                swInterval = null;
+                btnSwStart.textContent = 'Başlat';
+                btnSwStart.className = 'btn-sw start';
+            } else {
+                swInterval = setInterval(() => {
+                    swTime++;
+                    document.getElementById('swDisplay').textContent = formatSw(swTime);
+                }, 10);
+                btnSwStart.textContent = 'Durdur';
+                btnSwStart.className = 'btn-sw stop';
+            }
+        });
+
+        document.getElementById('btnSwLap').addEventListener('click', () => {
+            if (swTime === 0) return;
+            swLaps.unshift(swTime);
+            renderLaps();
+        });
+
+        document.getElementById('btnSwReset').addEventListener('click', () => {
+            clearInterval(swInterval);
+            swInterval = null;
+            swTime = 0;
+            swLaps = [];
+            document.getElementById('swDisplay').textContent = '00:00.00';
+            btnSwStart.textContent = 'Başlat';
+            btnSwStart.className = 'btn-sw start';
+            renderLaps();
+        });
+
+        function renderLaps() {
+            const list = document.getElementById('swLapsList');
+            list.innerHTML = '';
+            swLaps.forEach((t, i) => {
+                const li = document.createElement('li');
+                li.className = 'lap-item';
+                li.innerHTML = `<span>Tur ${swLaps.length - i}</span> <strong>${formatSw(t)}</strong>`;
+                list.appendChild(li);
+            });
         }
     </script>
 </body>
 </html>
-

@@ -1,151 +1,178 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>İletişim | Proje Portalı</title>
-
-    <!-- Kritik Kaynakları Önceden Yükle -->
-    <link rel="preload" href="shared_style.css" as="style">
-    
-
-    <!-- Diğer Sayfaları Önceden Getir (Prefetch) -->
-    <link rel="prefetch" href="index.html">
-    <link rel="prefetch" href="hakkimizda.html">
-    <link rel="prefetch" href="istatistikler.html">
-    <link rel="prefetch" href="galeri.html">
-    <link rel="prefetch" href="nasil-yapildi.html">
-
+    <title>İletişim | t4lhster</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✉️</text></svg>">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="shared_style.css">
+    <link rel="stylesheet" href="projects.css">
 </head>
 <body>
-    
 
-    <nav class="main-nav">
-        <ul>
-            <li><a href="index.html" title="Portal"><i class="fa-solid fa-house"></i> Portal</a></li>
-        </ul>
-    </nav>
+    <!-- Üst Menü -->
+    <header class="top-nav">
+        <div class="top-nav-inner">
+            <a href="index.html" class="nav-brand">
+                <i class="fa-solid fa-code"></i> t4lhster<span>.me</span>
+            </a>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="index.html" class="portal-link"><i class="fa-solid fa-house"></i> Portal</a></li>
+                    <li><a href="odevler.html"><i class="fa-solid fa-laptop-code"></i> Ödevler</a></li>
+                    <li><a href="istatistikler.html"><i class="fa-solid fa-chart-line"></i> İstatistikler</a></li>
+                    <li><a href="galeri.html"><i class="fa-solid fa-images"></i> Galeri</a></li>
+                    <li><a href="nasil-yapildi.html"><i class="fa-solid fa-file-code"></i> Nasıl Yapıldı?</a></li>
+                    <li><a href="iletisim.html" class="active"><i class="fa-solid fa-envelope"></i> İletişim</a></li>
+                    <li><a href="havadurumu/index.html"><i class="fa-solid fa-cloud-sun"></i> Hava Durumu</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
 
-    <main>
-        <section class="content-dashboard">
-            
-            
-            
-            <div class="content-scroll">
-                <h2>İletişim Formu</h2>
-                <p>Sorularınız veya geri bildirimleriniz için aşağıdaki formu doldurarak bize ulaşın.</p>
-                
-                <div class="success-message" id="successMessage">
-                    <h4>🎉 Mesajınız İletildi!</h4>
-                    <p>Geri bildiriminiz başarıyla alındı. En kısa sürede size dönüş yapacağız.</p>
+    <main class="page-container">
+        <div class="page-header">
+            <h1><i class="fa-solid fa-envelope" style="color:var(--accent);"></i> İletişim & Geri Bildirim</h1>
+            <p>Projeler hakkında soru, öneri veya iş birliği talepleriniz için bana ulaşabilirsiniz.</p>
+        </div>
+
+        <div class="contact-layout">
+            <!-- İletişim Formu -->
+            <div class="card">
+                <div class="success-banner" id="successBanner">
+                    <h4 style="margin-bottom:0.25rem;"><i class="fa-solid fa-circle-check"></i> Mesajınız Gönderildi!</h4>
+                    <p style="font-size:0.9rem;">Geri bildiriminiz başarıyla iletildi. En kısa sürede yanıt verilecektir.</p>
                 </div>
 
-                <form class="contact-form" id="contactForm" novalidate>
+                <form id="contactForm" novalidate>
                     <div class="form-group">
                         <label for="name">Adınız Soyadınız:</label>
-                        <input type="text" id="name" name="name" placeholder="Adınızı girin">
+                        <input type="text" id="name" class="form-control" placeholder="Örn: Ahmet Yılmaz">
+                        <div class="error-message" id="errName"></div>
                     </div>
-                    
+
                     <div class="form-group">
                         <label for="email">E-posta Adresiniz:</label>
-                        <input type="email" id="email" name="email" placeholder="ornek@mail.com">
+                        <input type="email" id="email" class="form-control" placeholder="ornek@domain.com">
+                        <div class="error-message" id="errEmail"></div>
                     </div>
 
                     <div class="form-group">
                         <label for="subject">Konu:</label>
-                        <input type="text" id="subject" name="subject" placeholder="Mesajınızın konusu">
+                        <input type="text" id="subject" class="form-control" placeholder="Mesajınızın konusu">
+                        <div class="error-message" id="errSubject"></div>
                     </div>
 
                     <div class="form-group">
                         <label for="message">Mesajınız:</label>
-                        <textarea id="message" name="message" rows="5" placeholder="Lütfen mesajınızı buraya yazın..."></textarea>
+                        <textarea id="message" class="form-control" rows="5" placeholder="Mesajınızı buraya yazın..." style="resize:vertical;"></textarea>
+                        <div class="error-message" id="errMessage"></div>
                     </div>
 
-                    <button type="submit">Gönder</button>
+                    <button type="submit" class="btn-primary" style="width:100%; justify-content:center;">
+                        <i class="fa-solid fa-paper-plane"></i> Mesajı Gönder
+                    </button>
                 </form>
             </div>
-        </section>
+
+            <!-- İletişim Bilgileri & Kartlar -->
+            <div style="display:flex; flex-direction:column; gap:1.5rem;">
+                <div class="card">
+                    <h3 style="margin-bottom:1rem; font-size:1.15rem;"><i class="fa-solid fa-address-card"></i> İletişim Kanalları</h3>
+                    <ul class="contact-info-list">
+                        <li class="contact-info-item">
+                            <div class="contact-info-icon"><i class="fa-solid fa-globe"></i></div>
+                            <div>
+                                <span style="font-size:0.8rem; color:var(--text-muted); display:block;">Web Sitesi</span>
+                                <a href="https://t4lhster.me" target="_blank" style="color:var(--accent-hover); text-decoration:none;">t4lhster.me</a>
+                            </div>
+                        </li>
+                        <li class="contact-info-item">
+                            <div class="contact-info-icon"><i class="fa-brands fa-github"></i></div>
+                            <div>
+                                <span style="font-size:0.8rem; color:var(--text-muted); display:block;">GitHub</span>
+                                <a href="https://github.com/TalhaGamer05" target="_blank" style="color:var(--accent-hover); text-decoration:none;">TalhaGamer05</a>
+                            </div>
+                        </li>
+                        <li class="contact-info-item">
+                            <div class="contact-info-icon"><i class="fa-solid fa-location-dot"></i></div>
+                            <div>
+                                <span style="font-size:0.8rem; color:var(--text-muted); display:block;">Konum</span>
+                                <span>Balıkesir / Türkiye</span>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <h3 style="margin-bottom:0.75rem; font-size:1.15rem;"><i class="fa-solid fa-circle-question"></i> Sıkça Sorulanlar</h3>
+                    <p style="font-size:0.88rem; color:var(--text-secondary); margin-bottom:0.75rem;">
+                        <strong>Projeler açık kaynak mı?</strong><br>
+                        Evet, tüm kodlara GitHub profilim üzerinden erişebilir ve inceleyebilirsiniz.
+                    </p>
+                    <p style="font-size:0.88rem; color:var(--text-secondary);">
+                        <strong>Hangi teknolojiler kullanıldı?</strong><br>
+                        Saf HTML5, CSS3, Modern ES6+ JavaScript, Chart.js ve WebGL teknolojileri kullanılmıştır.
+                    </p>
+                </div>
+            </div>
+        </div>
     </main>
 
-    <footer class="main-footer">
-        <p>&copy; 2026 Proje Portalı. Tüm Hakları Saklıdır.</p>
+    <footer class="page-footer">
+        <p>&copy; 2026 t4lhster | <a href="index.html">Portal Ana Sayfa</a> | <a href="https://github.com/TalhaGamer05/TalhaGamer05.github.io" target="_blank">GitHub</a></p>
     </footer>
 
-    <!-- jQuery ve WebGL Scripts -->
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    
     <script>
-        $(document).ready(function() {
-            $('#contactForm').on('submit', function(e) {
-                e.preventDefault();
-                
-                // Önceki hata mesajlarını temizle
-                $('.error-message').remove();
-                $('.form-group').removeClass('has-error');
-                
-                let isValid = true;
-                
-                // Ad Soyad Kontrolü (boş olamaz, en az 5 karakter, ad ve soyad boşlukla ayrılmalı)
-                const name = $('#name').val().trim();
-                if (name === '') {
-                    showError('#name', 'Ad Soyad alanı boş bırakılamaz.');
-                    isValid = false;
-                } else if (name.length < 5) {
-                    showError('#name', 'Ad Soyad en az 5 karakter olmalıdır.');
-                    isValid = false;
-                } else if (!name.includes(' ')) {
-                    showError('#name', 'Lütfen adınızı ve soyadınızı aralarında boşluk bırakarak yazın.');
-                    isValid = false;
-                }
-                
-                // E-posta Kontrolü
-                const email = $('#email').val().trim();
-                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                if (email === '') {
-                    showError('#email', 'E-posta adresi boş bırakılamaz.');
-                    isValid = false;
-                } else if (!emailRegex.test(email)) {
-                    showError('#email', 'Geçersiz e-posta formatı. (Örn: isim@mail.com)');
-                    isValid = false;
-                }
-                
-                // Konu Kontrolü
-                const subject = $('#subject').val().trim();
-                if (subject === '') {
-                    showError('#subject', 'Konu alanı boş bırakılamaz.');
-                    isValid = false;
-                }
-                
-                // Mesaj Kontrolü
-                const message = $('#message').val().trim();
-                if (message === '') {
-                    showError('#message', 'Mesaj alanı boş bırakılamaz.');
-                    isValid = false;
-                } else if (message.length < 10) {
-                    showError('#message', 'Mesaj en az 10 karakter olmalıdır.');
-                    isValid = false;
-                }
-                
-                if (isValid) {
-                    $('#contactForm').slideUp(500, function() {
-                        $('#successMessage').fadeIn(500);
-                    });
-                }
-            });
-            
-            function showError(fieldId, message) {
-                const $field = $(fieldId);
-                const $group = $field.parent(); // DOM Traversal
-                $group.addClass('has-error');
-                
-                const $errorDiv = $('<div class="error-message"></div>').text(message);
-                $group.append($errorDiv);
-                $errorDiv.slideDown(300); // SlideDown efekti
+        document.getElementById('contactForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            // Clear previous errors
+            document.querySelectorAll('.error-message').forEach(el => el.textContent = '');
+            document.getElementById('successBanner').style.display = 'none';
+
+            let isValid = true;
+
+            const name = document.getElementById('name').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const subject = document.getElementById('subject').value.trim();
+            const message = document.getElementById('message').value.trim();
+
+            if (!name) {
+                document.getElementById('errName').textContent = 'Lütfen adınızı ve soyadınızı girin.';
+                isValid = false;
+            } else if (name.length < 3) {
+                document.getElementById('errName').textContent = 'Ad Soyad en az 3 karakter olmalıdır.';
+                isValid = false;
+            }
+
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!email) {
+                document.getElementById('errEmail').textContent = 'Lütfen e-posta adresinizi girin.';
+                isValid = false;
+            } else if (!emailRegex.test(email)) {
+                document.getElementById('errEmail').textContent = 'Geçerli bir e-posta adresi yazın.';
+                isValid = false;
+            }
+
+            if (!subject) {
+                document.getElementById('errSubject').textContent = 'Lütfen bir konu belirtin.';
+                isValid = false;
+            }
+
+            if (!message) {
+                document.getElementById('errMessage').textContent = 'Lütfen mesajınızı yazın.';
+                isValid = false;
+            } else if (message.length < 10) {
+                document.getElementById('errMessage').textContent = 'Mesajınız en az 10 karakter olmalıdır.';
+                isValid = false;
+            }
+
+            if (isValid) {
+                document.getElementById('successBanner').style.display = 'block';
+                document.getElementById('contactForm').reset();
             }
         });
     </script>
 </body>
 </html>
-

@@ -1,128 +1,129 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hakkımızda | Proje Portalı</title>
-
-    <!-- Kritik Kaynakları Önceden Yükle -->
-    <link rel="preload" href="shared_style.css" as="style">
-    
-
-    <!-- Diğer Sayfaları Önceden Getir (Prefetch) -->
-    <link rel="prefetch" href="index.html">
-    <link rel="prefetch" href="istatistikler.html">
-    <link rel="prefetch" href="galeri.html">
-    <link rel="prefetch" href="iletisim.html">
-    <link rel="prefetch" href="nasil-yapildi.html">
-
+    <title>Hakkımızda | t4lhster</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💡</text></svg>">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="shared_style.css">
+    <link rel="stylesheet" href="projects.css">
 </head>
 <body>
-    
 
-    <nav class="main-nav">
-        <ul>
-            <li><a href="index.html" title="Portal"><i class="fa-solid fa-house"></i> Portal</a></li>
-        </ul>
-    </nav>
+    <!-- Üst Menü -->
+    <header class="top-nav">
+        <div class="top-nav-inner">
+            <a href="index.html" class="nav-brand">
+                <i class="fa-solid fa-code"></i> t4lhster<span>.me</span>
+            </a>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="index.html" class="portal-link"><i class="fa-solid fa-house"></i> Portal</a></li>
+                    <li><a href="odevler.html"><i class="fa-solid fa-laptop-code"></i> Ödevler</a></li>
+                    <li><a href="istatistikler.html"><i class="fa-solid fa-chart-line"></i> İstatistikler</a></li>
+                    <li><a href="galeri.html"><i class="fa-solid fa-images"></i> Galeri</a></li>
+                    <li><a href="nasil-yapildi.html"><i class="fa-solid fa-file-code"></i> Nasıl Yapıldı?</a></li>
+                    <li><a href="iletisim.html"><i class="fa-solid fa-envelope"></i> İletişim</a></li>
+                    <li><a href="havadurumu/index.html"><i class="fa-solid fa-cloud-sun"></i> Hava Durumu</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
 
-    <main>
-        <section class="content-dashboard">
-            
-            
-            
-            <div class="content-scroll">
-                <h2>Proje Hakkında</h2>
-                <p>Bu proje, estetik bir hava durumu panosu (dashboard) olarak tasarlanmış olup, Glassmorphism (Cam Efekti) konseptini merkeze alır. WebGL kullanılarak arka plan videoları üzerinden ince ışık kırılmaları (refraction) ve bükülmeler elde edilmektedir.</p>
-                
-                <div class="list-container">
-                    <h3>Öne Çıkan Özellikler</h3>
+    <main class="page-container">
+        <div class="page-header">
+            <h1><i class="fa-solid fa-circle-info" style="color:var(--accent);"></i> Proje & Geliştirici Hakkında</h1>
+            <p>Modern web teknolojileri ve interaktif kullanıcı deneyimi odaklı geliştirme serüveni.</p>
+        </div>
+
+        <div class="card">
+            <div class="cv-hero">
+                <div class="cv-avatar">⚡</div>
+                <div class="cv-hero-text">
+                    <h2>t4lhster Web Ekosistemi</h2>
+                    <p>Modern frontend araçları, interaktif hava durumu paneli ve dönem ödevleri arşivi.</p>
+                </div>
+            </div>
+
+            <p style="color:var(--text-secondary); margin-bottom:1.5rem; line-height:1.7;">
+                Bu web portalı, modern web standartlarını (HTML5 Semantik Yapı, Saf CSS3 Grid & Flexbox, ES6+ JavaScript ve WebGL) bir araya getirerek hem yüksek performanslı hem de görsel açıdan zengin bir deneyim sunmak üzere tasarlanmıştır. Tüm bileşenler gereksiz bağımlılıklardan arındırılmış, hafif ve insan eliyle optimize edilmiştir.
+            </p>
+
+            <div class="cv-grid">
+                <div class="cv-box">
+                    <h3><i class="fa-solid fa-bullseye"></i> Temel Hedefler</h3>
                     <ul>
-                        <li>Dinamik arka plan yapısı ve hava durumuna göre değişen videolar</li>
-                        <li>WebGL ile optimize edilmiş gelişmiş materyal shader'ı</li>
-                        <li>Matter.js kullanılarak oluşturulmuş animasyonlu fizik olayları</li>
-                        <li>Tam ekran ve duyarlı (responsive) CSS Grid ve Flexbox dizilimi</li>
+                        <li><strong>Maksimum Performans:</strong> İşlemciyi ve belleği yormayan hafif kod mimarisi.</li>
+                        <li><strong>Duyarlı Tasarım:</strong> Masaüstü, tablet ve cep telefonlarında kusursuz uyum.</li>
+                        <li><strong>Modüler Yapı:</strong> Birbirinden bağımsız çalışan temiz ödev ve araç modülleri.</li>
                     </ul>
                 </div>
 
-                <div class="list-container">
-                    <h3>Kullanılan Teknolojiler</h3>
-                    <ol>
-                        <li>HTML5 & Semantic Etiketler</li>
-                        <li>CSS3 & Animasyonlar (Box Model Çerçevesi)</li>
-                        <li>Vanilla JavaScript (ES6+)</li>
-                        <li>WebGL Shader Programcılığı</li>
-                        <li>Matter.js Fizik Motoru</li>
-                    </ol>
-                </div>
-
-                <!-- Ziyaretçi Yorumları Paneli (jQuery Animasyonlu) -->
-                <div class="list-container" id="commentsSection">
-                    <h3>Ziyaretçi Yorumları (Geri Bildirimler)</h3>
-                    <div id="commentsList" style="display:flex; flex-direction:column; gap:12px; margin-top:15px; margin-bottom:20px;">
-                        <div class="comment-item" style="background:rgba(255,255,255,0.15); padding:10px 15px; border-radius:10px; border:1px solid rgba(255,255,255,0.2);">
-                            <strong style="color:#1e3b8a;">Ahmet Yılmaz:</strong>
-                            <p style="margin:5px 0 0 0; font-size:0.85rem; font-weight:500;">Matter.js yerçekimi efekti inanılmaz olmuş! Tam bir görsel şölen.</p>
-                        </div>
-                        <div class="comment-item" style="background:rgba(255,255,255,0.15); padding:10px 15px; border-radius:10px; border:1px solid rgba(255,255,255,0.2);">
-                            <strong style="color:#1e3b8a;">Elif Demir:</strong>
-                            <p style="margin:5px 0 0 0; font-size:0.85rem; font-weight:500;">Glassmorphism cam tasarımı çok şık ve modern duruyor, ellerinize sağlık.</p>
-                        </div>
-                    </div>
-                    
-                    <div style="display:flex; flex-direction:column; gap:8px;">
-                        <input type="text" id="commenterName" placeholder="Adınız Soyadınız" style="padding:10px; border-radius:8px; border:none; background:rgba(255,255,255,0.6); outline:none; font-family:inherit;">
-                        <textarea id="commentText" placeholder="Görüşünüzü yazın..." rows="3" style="padding:10px; border-radius:8px; border:none; background:rgba(255,255,255,0.6); outline:none; font-family:inherit; resize:none;"></textarea>
-                        <button id="addCommentBtn" style="padding:10px; background:#3b82f6; border:none; border-radius:8px; color:white; font-weight:700; cursor:pointer; transition:all 0.3s; box-shadow:0 4px 10px rgba(59,130,246,0.3);">Yorum Ekle</button>
+                <div class="cv-box">
+                    <h3><i class="fa-solid fa-cubes"></i> Kullanılan Teknolojiler</h3>
+                    <div class="tag-list" style="margin-top:0.5rem;">
+                        <span class="tag">HTML5 Semantik</span>
+                        <span class="tag">CSS Grid / Flexbox</span>
+                        <span class="tag">Vanilla JS (ES6+)</span>
+                        <span class="tag">Chart.js</span>
+                        <span class="tag">Leaflet Harita</span>
+                        <span class="tag">WebGL Shaders</span>
+                        <span class="tag">Matter.js</span>
                     </div>
                 </div>
             </div>
-        </section>
+        </div>
+
+        <!-- Ziyaretçi Yorumları -->
+        <div class="card">
+            <h3 style="margin-bottom:1rem; font-size:1.2rem;"><i class="fa-solid fa-comments"></i> Ziyaretçi Geri Bildirimleri</h3>
+            
+            <div id="commentList" style="display:flex; flex-direction:column; gap:0.75rem; margin-bottom:1.5rem;">
+                <div style="background:rgba(255,255,255,0.02); border:1px solid var(--border); padding:1rem; border-radius:var(--radius-sm);">
+                    <strong style="color:var(--accent-hover);">Ahmet Yılmaz:</strong>
+                    <p style="color:var(--text-secondary); font-size:0.9rem; margin-top:0.25rem;">Tasarım çok sade ve akıcı olmuş, özellikle koyu tema ve araçlar çok kullanışlı.</p>
+                </div>
+                <div style="background:rgba(255,255,255,0.02); border:1px solid var(--border); padding:1rem; border-radius:var(--radius-sm);">
+                    <strong style="color:var(--accent-emerald);">Elif Demir:</strong>
+                    <p style="color:var(--text-secondary); font-size:0.9rem; margin-top:0.25rem;">Ödevlerin ve araçların tek bir portal altında toplanması harika bir fikir!</p>
+                </div>
+            </div>
+
+            <form id="commentForm" style="display:flex; flex-direction:column; gap:0.75rem;">
+                <input type="text" id="commentAuthor" class="form-control" placeholder="Adınız Soyadınız" required>
+                <textarea id="commentMsg" class="form-control" rows="3" placeholder="Görüşünüzü yazın..." style="resize:vertical;" required></textarea>
+                <button type="submit" class="btn-primary" style="align-self:flex-start;">
+                    <i class="fa-solid fa-plus"></i> Yorum Ekle
+                </button>
+            </form>
+        </div>
     </main>
 
-    <footer class="main-footer">
-        <p>&copy; 2026 Proje Portalı. Tüm Hakları Saklıdır.</p>
+    <footer class="page-footer">
+        <p>&copy; 2026 t4lhster | <a href="index.html">Portal Ana Sayfa</a> | <a href="https://github.com/TalhaGamer05/TalhaGamer05.github.io" target="_blank">GitHub</a></p>
     </footer>
 
-    <!-- jQuery ve WebGL Scripts -->
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    
     <script>
-        $(document).ready(function() {
-            // Yorum Ekleme Logic
-            $('#addCommentBtn').on('click', function() {
-                const name = $('#commenterName').val().trim();
-                const text = $('#commentText').val().trim();
-                
-                if (name === '' || text === '') {
-                    alert('Lütfen adınızı ve yorumunuzu yazın.');
-                    return;
-                }
-                
-                // Yeni yorum kutusunu oluştur (gizli başla ki animasyonla gösterebilelim)
-                const $newComment = $(`
-                    <div class="comment-item" style="background:rgba(255,255,255,0.2); padding:10px 15px; border-radius:10px; border:1px solid rgba(255,255,255,0.35); display:none; margin-bottom:12px;">
-                        <strong style="color:#1e3b8a;">${escapeHtml(name)}:</strong>
-                        <p style="margin:5px 0 0 0; font-size:0.85rem; font-weight:500;">${escapeHtml(text)}</p>
-                    </div>
-                `);
-                
-                // Prepend yap ve slideDown animasyonuyla göster
-                $('#commentsList').prepend($newComment);
-                $newComment.slideDown(400);
-                
-                // Alanları temizle
-                $('#commenterName').val('');
-                $('#commentText').val('');
-            });
-            
-            function escapeHtml(text) {
-                return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        document.getElementById('commentForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const author = document.getElementById('commentAuthor').value.trim();
+            const msg = document.getElementById('commentMsg').value.trim();
+
+            if (author && msg) {
+                const list = document.getElementById('commentList');
+                const div = document.createElement('div');
+                div.style = 'background:rgba(255,255,255,0.02); border:1px solid var(--border); padding:1rem; border-radius:var(--radius-sm); animation:fadeIn 0.3s ease;';
+                div.innerHTML = `<strong style="color:var(--accent-hover);">${escapeHtml(author)}:</strong><p style="color:var(--text-secondary); font-size:0.9rem; margin-top:0.25rem;">${escapeHtml(msg)}</p>`;
+                list.prepend(div);
+                document.getElementById('commentForm').reset();
             }
         });
+
+        function escapeHtml(text) {
+            const d = document.createElement('div');
+            d.textContent = text;
+            return d.innerHTML;
+        }
     </script>
 </body>
 </html>
-
