@@ -149,11 +149,7 @@ header h1 {
     padding-left: 1.2rem;
 }
 
-.city-btn:hover {
-    background: rgba(255, 255, 255, 0.2);
-    transform: translateX(6px);
-    border-color: rgba(255, 255, 255, 0.5);
-}
+
 
 .city-btn.active {
     background: rgba(59, 130, 246, 0.9); 
@@ -1498,3 +1494,13 @@ table th {
     }
 }
 
+
+/* City List Blur Hover Logic */
+.city-btn:hover {
+    background: rgba(255, 255, 255, 0.15); /* Slight highlight */
+}
+
+.city-selector:hover .city-btn:not(:hover) {
+    filter: blur(2px);
+    opacity: 0.6;
+}

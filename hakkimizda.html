@@ -1,0 +1,130 @@
+﻿<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hakkımızda - Hava Durumu Panosu</title>
+
+    <!-- Kritik Kaynakları Önceden Yükle -->
+    <link rel="preload" href="havadurumu/style.css" as="style">
+    <link rel="preload" href="webgl.js" as="script">
+
+    <!-- Diğer Sayfaları Önceden Getir (Prefetch) -->
+    <link rel="prefetch" href="index.html">
+    <link rel="prefetch" href="istatistikler.html">
+    <link rel="prefetch" href="galeri.html">
+    <link rel="prefetch" href="iletisim.html">
+    <link rel="prefetch" href="nasil-yapildi.html">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="havadurumu/style.css">
+</head>
+<body>
+    <video autoplay loop muted id="bg-video" class="bg-video">
+        <source id="bg-video-source" src="havadurumu/videolar/gunesli.mp4" type="video/mp4">
+    </video>
+
+    <nav class="main-nav">
+        <ul>
+            <li><a href="index.html" title="Portal"><i class="fa-solid fa-house"></i> Portal</a></li>
+        </ul>
+    </nav>
+
+    <main>
+        <section class="content-dashboard">
+            <canvas id="glassCanvas"></canvas>
+            <div class="glass-overlay"></div>
+            
+            <div class="content-scroll">
+                <h2>Proje Hakkında</h2>
+                <p>Bu proje, estetik bir hava durumu panosu (dashboard) olarak tasarlanmış olup, Glassmorphism (Cam Efekti) konseptini merkeze alır. WebGL kullanılarak arka plan videoları üzerinden ince ışık kırılmaları (refraction) ve bükülmeler elde edilmektedir.</p>
+                
+                <div class="list-container">
+                    <h3>Öne Çıkan Özellikler</h3>
+                    <ul>
+                        <li>Dinamik arka plan yapısı ve hava durumuna göre değişen videolar</li>
+                        <li>WebGL ile optimize edilmiş gelişmiş materyal shader'ı</li>
+                        <li>Matter.js kullanılarak oluşturulmuş animasyonlu fizik olayları</li>
+                        <li>Tam ekran ve duyarlı (responsive) CSS Grid ve Flexbox dizilimi</li>
+                    </ul>
+                </div>
+
+                <div class="list-container">
+                    <h3>Kullanılan Teknolojiler</h3>
+                    <ol>
+                        <li>HTML5 & Semantic Etiketler</li>
+                        <li>CSS3 & Animasyonlar (Box Model Çerçevesi)</li>
+                        <li>Vanilla JavaScript (ES6+)</li>
+                        <li>WebGL Shader Programcılığı</li>
+                        <li>Matter.js Fizik Motoru</li>
+                    </ol>
+                </div>
+
+                <!-- Ziyaretçi Yorumları Paneli (jQuery Animasyonlu) -->
+                <div class="list-container" id="commentsSection">
+                    <h3>Ziyaretçi Yorumları (Geri Bildirimler)</h3>
+                    <div id="commentsList" style="display:flex; flex-direction:column; gap:12px; margin-top:15px; margin-bottom:20px;">
+                        <div class="comment-item" style="background:rgba(255,255,255,0.15); padding:10px 15px; border-radius:10px; border:1px solid rgba(255,255,255,0.2);">
+                            <strong style="color:#1e3b8a;">Ahmet Yılmaz:</strong>
+                            <p style="margin:5px 0 0 0; font-size:0.85rem; font-weight:500;">Matter.js yerçekimi efekti inanılmaz olmuş! Tam bir görsel şölen.</p>
+                        </div>
+                        <div class="comment-item" style="background:rgba(255,255,255,0.15); padding:10px 15px; border-radius:10px; border:1px solid rgba(255,255,255,0.2);">
+                            <strong style="color:#1e3b8a;">Elif Demir:</strong>
+                            <p style="margin:5px 0 0 0; font-size:0.85rem; font-weight:500;">Glassmorphism cam tasarımı çok şık ve modern duruyor, ellerinize sağlık.</p>
+                        </div>
+                    </div>
+                    
+                    <div style="display:flex; flex-direction:column; gap:8px;">
+                        <input type="text" id="commenterName" placeholder="Adınız Soyadınız" style="padding:10px; border-radius:8px; border:none; background:rgba(255,255,255,0.6); outline:none; font-family:inherit;">
+                        <textarea id="commentText" placeholder="Görüşünüzü yazın..." rows="3" style="padding:10px; border-radius:8px; border:none; background:rgba(255,255,255,0.6); outline:none; font-family:inherit; resize:none;"></textarea>
+                        <button id="addCommentBtn" style="padding:10px; background:#3b82f6; border:none; border-radius:8px; color:white; font-weight:700; cursor:pointer; transition:all 0.3s; box-shadow:0 4px 10px rgba(59,130,246,0.3);">Yorum Ekle</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="main-footer">
+        <p>&copy; 2026 Hava Durumu Panosu. Tüm Hakları Saklıdır.</p>
+    </footer>
+
+    <!-- jQuery ve WebGL Scripts -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="havadurumu/webgl.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Yorum Ekleme Logic
+            $('#addCommentBtn').on('click', function() {
+                const name = $('#commenterName').val().trim();
+                const text = $('#commentText').val().trim();
+                
+                if (name === '' || text === '') {
+                    alert('Lütfen adınızı ve yorumunuzu yazın.');
+                    return;
+                }
+                
+                // Yeni yorum kutusunu oluştur (gizli başla ki animasyonla gösterebilelim)
+                const $newComment = $(`
+                    <div class="comment-item" style="background:rgba(255,255,255,0.2); padding:10px 15px; border-radius:10px; border:1px solid rgba(255,255,255,0.35); display:none; margin-bottom:12px;">
+                        <strong style="color:#1e3b8a;">${escapeHtml(name)}:</strong>
+                        <p style="margin:5px 0 0 0; font-size:0.85rem; font-weight:500;">${escapeHtml(text)}</p>
+                    </div>
+                `);
+                
+                // Prepend yap ve slideDown animasyonuyla göster
+                $('#commentsList').prepend($newComment);
+                $newComment.slideDown(400);
+                
+                // Alanları temizle
+                $('#commenterName').val('');
+                $('#commentText').val('');
+            });
+            
+            function escapeHtml(text) {
+                return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+            }
+        });
+    </script>
+</body>
+</html>
+

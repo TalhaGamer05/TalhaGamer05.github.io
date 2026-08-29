@@ -6,7 +6,7 @@
     <title>Ödevler - Hava Durumu Panosu</title>
 
     <!-- Kritik Kaynakları Önceden Yükle -->
-    <link rel="preload" href="style.css" as="style">
+    <link rel="preload" href="havadurumu/style.css" as="style">
     <link rel="preload" href="webgl.js" as="script">
 
     <!-- Diğer Sayfaları Önceden Getir (Prefetch) -->
@@ -18,24 +18,17 @@
     <link rel="prefetch" href="nasil-yapildi.html">
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="havadurumu/style.css">
 </head>
 <body>
     <video autoplay loop muted id="bg-video" class="bg-video">
-        <source id="bg-video-source" src="videolar/gunesli.mp4" type="video/mp4">
+        <source id="bg-video-source" src="havadurumu/videolar/gunesli.mp4" type="video/mp4">
     </video>
 
     <!-- Navigasyon Menüsü -->
     <nav class="main-nav">
         <ul>
-            <li><a href="../index.html" title="Portal Ana Sayfası"><i class="fa-solid fa-house"></i> Portal</a></li>
-            <li><a href="index.html" rel="prefetch">Ana Sayfa</a></li>
-            <li><a href="hakkimizda.html" rel="prefetch">Hakkımızda</a></li>
-            <li><a href="istatistikler.html" rel="prefetch">İstatistikler</a></li>
-            <li><a href="galeri.html" rel="prefetch">Galeri</a></li>
-            <li><a href="iletisim.html" rel="prefetch">İletişim</a></li>
-            <li><a href="odevler.html" class="active">Ödevler</a></li>
-            <li><a href="nasil-yapildi.html" rel="prefetch">Nasıl Yapıldı?</a></li>
+            <li><a href="index.html" title="Portal"><i class="fa-solid fa-house"></i> Portal</a></li>
         </ul>
     </nav>
 
@@ -192,7 +185,7 @@
 
     <!-- jQuery & WebGL Scripts -->
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    <script src="webgl.js"></script>
+    <script src="havadurumu/webgl.js"></script>
 
     <script>
         $(document).ready(function() {
