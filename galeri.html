@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Galeri - Hava Durumu Panosu</title>
+    <title>Medya Galerisi | Proje Portalı</title>
 
     <!-- Kritik Kaynakları Önceden Yükle -->
-    <link rel="preload" href="havadurumu/style.css" as="style">
-    <link rel="preload" href="webgl.js" as="script">
+    <link rel="preload" href="shared_style.css" as="style">
+    
 
     <!-- Diğer Sayfaları Önceden Getir (Prefetch) -->
     <link rel="prefetch" href="index.html">
@@ -20,7 +20,7 @@
     <!-- Magnific Popup CSS (jQuery Lightbox için) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/magnific-popup.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="havadurumu/style.css">
+    <link rel="stylesheet" href="shared_style.css">
 </head>
 <body>
     <video autoplay loop muted id="bg-video" class="bg-video">
@@ -35,8 +35,8 @@
 
     <main>
         <section class="content-dashboard">
-            <canvas id="glassCanvas"></canvas>
-            <div class="glass-overlay"></div>
+            
+            
             
             <div class="content-scroll">
                 <h2>Medya Galerisi</h2>
@@ -66,23 +66,23 @@
     </div>
 
     <footer class="main-footer">
-        <p>&copy; 2026 Hava Durumu Panosu. Tüm Hakları Saklıdır.</p>
+        <p>&copy; 2026 Proje Portalı. Tüm Hakları Saklıdır.</p>
     </footer>
 
     <!-- jQuery, Magnific Popup ve WebGL Scripts -->
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/jquery.magnific-popup.min.js"></script>
-    <script src="havadurumu/webgl.js"></script>
+    
     
     <script>
         $(document).ready(function() {
             // Dinamik İçerik Üretimi (Diziler/Objeler Kullanımı)
             const galleryData = [
-                { category: 'gunesli', src: 'videolar/gunesli.mp4', title: 'Güneşli Hava', desc: 'Akdeniz kıyılarında sıcak ve pırıl pırıl bir gün.' },
-                { category: 'yagmur', src: 'videolar/yagmur.mp4', title: 'Yağmurlu Hava', desc: 'Karadeniz ormanlarında toprak kokulu tazeleyici yağmur.' },
-                { category: 'kar', src: 'videolar/karli.mp4', title: 'Karlı Hava', desc: 'Doğu Anadolu dağlarında bembeyaz ve sessiz bir kış manzarası.' },
-                { category: 'bulut', src: 'videolar/bulutlu.mp4', title: 'Bulutlu Hava', desc: 'Marmara semalarında sakin, dinlendirici kapalı hava.' },
-                { category: 'firtina', src: 'videolar/firtinali.mp4', title: 'Fırtınalı Hava', desc: 'Körfez kıyılarında gök gürültülü ve rüzgarlı fırtına.' }
+                { category: 'gunesli', src: 'havadurumu/videolar/gunesli.mp4', title: 'Güneşli Hava', desc: 'Akdeniz kıyılarında sıcak ve pırıl pırıl bir gün.' },
+                { category: 'yagmur', src: 'havadurumu/videolar/yagmur.mp4', title: 'Yağmurlu Hava', desc: 'Karadeniz ormanlarında toprak kokulu tazeleyici yağmur.' },
+                { category: 'kar', src: 'havadurumu/videolar/karli.mp4', title: 'Karlı Hava', desc: 'Doğu Anadolu dağlarında bembeyaz ve sessiz bir kış manzarası.' },
+                { category: 'bulut', src: 'havadurumu/videolar/bulutlu.mp4', title: 'Bulutlu Hava', desc: 'Marmara semalarında sakin, dinlendirici kapalı hava.' },
+                { category: 'firtina', src: 'havadurumu/videolar/firtinali.mp4', title: 'Fırtınalı Hava', desc: 'Körfez kıyılarında gök gürültülü ve rüzgarlı fırtına.' }
             ];
 
             // Galeri Elemanlarını Döngüyle Dinamik Oluşturma Fonksiyonu

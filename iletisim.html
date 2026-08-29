@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>İletişim - Hava Durumu Panosu</title>
+    <title>İletişim | Proje Portalı</title>
 
     <!-- Kritik Kaynakları Önceden Yükle -->
-    <link rel="preload" href="havadurumu/style.css" as="style">
-    <link rel="preload" href="webgl.js" as="script">
+    <link rel="preload" href="shared_style.css" as="style">
+    
 
     <!-- Diğer Sayfaları Önceden Getir (Prefetch) -->
     <link rel="prefetch" href="index.html">
@@ -17,12 +17,10 @@
     <link rel="prefetch" href="nasil-yapildi.html">
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="havadurumu/style.css">
+    <link rel="stylesheet" href="shared_style.css">
 </head>
 <body>
-    <video autoplay loop muted id="bg-video" class="bg-video">
-        <source id="bg-video-source" src="havadurumu/videolar/firtinali.mp4" type="video/mp4">
-    </video>
+    
 
     <nav class="main-nav">
         <ul>
@@ -32,8 +30,8 @@
 
     <main>
         <section class="content-dashboard">
-            <canvas id="glassCanvas"></canvas>
-            <div class="glass-overlay"></div>
+            
+            
             
             <div class="content-scroll">
                 <h2>İletişim Formu</h2>
@@ -72,12 +70,12 @@
     </main>
 
     <footer class="main-footer">
-        <p>&copy; 2026 Hava Durumu Panosu. Tüm Hakları Saklıdır.</p>
+        <p>&copy; 2026 Proje Portalı. Tüm Hakları Saklıdır.</p>
     </footer>
 
     <!-- jQuery ve WebGL Scripts -->
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    <script src="havadurumu/webgl.js"></script>
+    
     <script>
         $(document).ready(function() {
             $('#contactForm').on('submit', function(e) {
