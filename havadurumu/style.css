@@ -1,10 +1,6 @@
 /* Google Fonts - Modern 'Poppins' */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
 
-/* ==============================================================================================
-   KRİTER 1: İleri Düzey CSS ve Duyarlı Tasarım (Responsive Design) - Modern CSS Düzenleri
-   (Aşağıdaki 'body' ve diğer ana iskeletlerde Flexbox ve CSS Grid aktif olarak kullanılmıştır)
-   ============================================================================================== */
 * {
     margin: 0;
     padding: 0;
@@ -755,10 +751,6 @@ table th {
     transform: translateY(-7px) rotate(-45deg);
 }
 
-/* ==============================================================================================
-   KRİTER 1: İleri Düzey CSS ve Duyarlı Tasarım (Responsive Design) - Media Queries
-   (Sitenin mobil ve tablet görünümlerine uyumlu olması için yazılmış kurallar)
-   ============================================================================================== */
 @media (max-width: 768px) {
     .hamburger-menu {
         display: flex;
@@ -1505,4 +1497,4 @@ table th {
         max-width: 280px;
     }
 }
-
+

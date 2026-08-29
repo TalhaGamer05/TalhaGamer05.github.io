@@ -1,12 +1,6 @@
 const bgVideo = document.getElementById('bg-video');
 let glAnimationId;
 
-// ==============================================================================================
-// KRİTER 8: Kod Organizasyonu ve Konsol Temizliği
-// (Javascript kodları modüler olarak harici dosyalara ayrılmış (örn: webgl.js),
-// tüm script hataları ve uyarıları (WebGL vb.) yakalanarak konsol tamamen temiz tutulmuştur.)
-// ==============================================================================================
-
 function startWebGLFisheye() {
     const canvas = document.getElementById('glassCanvas');
     // Sayfaya göre ilgili kapsayıcıyı seç:

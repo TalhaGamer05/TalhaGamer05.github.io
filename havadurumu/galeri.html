@@ -96,10 +96,6 @@
             function renderGallery(filter = 'all') {
                 const $grid = $('.gallery-grid');
                 
-                // ==============================================================================================
-                // KRİTER 4: jQuery Kullanımı ve Animasyonlar - Efektler
-                // (fadeOut() ve fadeIn() animasyonları kullanılarak DOM elemanları görsel bir geçişle temizlenmektedir)
-                // ==============================================================================================
                 $grid.fadeOut(300, function() {
                     $grid.empty();
                     
@@ -111,7 +107,7 @@
                         // Dinamik DOM üretimi
                         const $card = $(`
                             <div class="gallery-item" style="cursor:pointer;">
-                                <video src="${item.src}" autoplay muted loop style="width:100%; border-radius:10px; height:150px; object-fit:cover;"></video>
+                                <video src="${item.src}" muted loop playsinline preload="metadata" onmouseenter="this.play()" onmouseleave="this.pause()" style="width:100%; border-radius:10px; height:150px; object-fit:cover; background:#0f172a;"></video>
                                 <h4>${item.title}</h4>
                                 <p style="font-size:0.75rem; color:#4b5563; margin-top:5px; padding:0 5px; min-height:36px;">${item.desc}</p>
                                 <div style="display:flex; gap:5px; margin-top:10px; padding:5px;">
@@ -129,10 +125,6 @@
                             $('#lightboxTitle').text(item.title);
                             $('#lightboxDesc').text(item.desc);
                             
-                            // ==============================================================================================
-                            // KRİTER 6: Harici Bir jQuery Eklentisi (Plugin) Kullanımı
-                            // (Aşağıda 'Magnific Popup' eklentisi kullanılarak videolar için gelişmiş bir modal lightbox oluşturulmuştur)
-                            // ==============================================================================================
                             $.magnificPopup.open({
                                 items: {
                                     src: '#videoLightbox'
@@ -167,8 +159,7 @@
 
             // Filtre Butonları Tıklama Olayları (jQuery siblings() Traversal)
             $('.filter-btn').on('click', function() {
-                // jQuery DOM Seçiciler ve Kardeş Öğeler Sınıf Manipülasyonları (Kriter 4)
-                $(this).addClass('active').siblings().removeClass('active');
+                                $(this).addClass('active').siblings().removeClass('active');
                 
                 const filterValue = $(this).data('filter');
                 renderGallery(filterValue);

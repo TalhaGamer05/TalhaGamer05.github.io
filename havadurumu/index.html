@@ -5,11 +5,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hava Durumu Dashboard</title>
-    <!-- ==============================================================================================
-         KRİTER 7: Temel Kriterlerin Korunması
-         (Bu proje vize döneminde belirlenen "Çoklu Sayfa Yapısı", "Erişilebilirlik", "SEO Uyumlu Meta Etiketler"
-         gibi temel şartları koruyarak geliştirilmiştir.)
-         ============================================================================================== -->
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌤️</text></svg>">
     
     <!-- PWA Kurulabilirlik Etiketleri -->
@@ -250,10 +245,6 @@
         });
         sidebarBackdrop.addEventListener('click', closeSidebar);
 
-        // ==============================================================================================
-        // KRİTER 2: JavaScript ile DOM Manipülasyonu ve Olay Yönetimi (Events) - Olay Dinleyicileri
-        // (Aşağıda addEventListener kullanılarak tıklama, klavye ve fare olayları yakalanmaktadır)
-        // ==============================================================================================
         document.getElementById('luckyBtn').addEventListener('click', feelingLucky);
         document.getElementById('mapToggleBtn').addEventListener('click', toggleMap);
 
@@ -328,11 +319,6 @@
             if (btn) btn.click();
         }
 
-        // ==============================================================================================
-        // KRİTER 5: Dinamik İçerik Üretimi (Diziler/Objeler)
-        // (Aşağıdaki fonksiyonda citiesWeatherData nesnesi (Object) bir döngüye sokularak sayfaya dinamik
-        // HTML elementleri eklenmektedir.)
-        // ==============================================================================================
         function createCityButtons() {
             const selector = document.getElementById('citySelector');
             const sortedKeys = Object.keys(citiesWeatherData).sort((a,b) => citiesWeatherData[a].city.localeCompare(citiesWeatherData[b].city, 'tr'));

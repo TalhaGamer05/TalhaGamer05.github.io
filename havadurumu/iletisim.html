@@ -87,10 +87,6 @@
     <script src="webgl.js"></script>
     <script>
         $(document).ready(function() {
-            // ==============================================================================================
-            // KRİTER 3: JavaScript / jQuery ile İstemci Taraflı Form Doğrulama (Validation)
-            // (Boş alan, e-posta formatı, ve karakter uzunluğu kontrolleri sayfa yenilenmeden yapılmaktadır)
-            // ==============================================================================================
             $('#contactForm').on('submit', function(e) {
                 e.preventDefault();
                 
@@ -141,10 +137,6 @@
                     isValid = false;
                 }
                 
-                // ==============================================================================================
-                // KRİTER 4: jQuery Kullanımı ve Animasyonlar - Efektler
-                // (slideUp ve fadeIn animasyonlarının kullanımı)
-                // ==============================================================================================
                 if (isValid) {
                     $('#contactForm').slideUp(500, function() {
                         $('#successMessage').fadeIn(500);
@@ -152,10 +144,6 @@
                 }
             });
             
-            // ==============================================================================================
-            // KRİTER 4: jQuery Kullanımı ve Animasyonlar - DOM Gezinmesi (Traversal)
-            // (Hata gösterici fonksiyon içinde parent() metoduyla DOM'da yukarı çıkılarak işlem yapılmıştır)
-            // ==============================================================================================
             function showError(fieldId, message) {
                 const $field = $(fieldId);
                 const $group = $field.parent(); // DOM Traversal
