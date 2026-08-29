@@ -1326,4 +1326,183 @@ table th {
 
 .lap-item:last-child {
     border-bottom: none;
-}
+}
+
+/* ==========================================================================
+   GELİŞMİŞ MEDYA KONTROLLERİ & DUYARLI (RESPONSIVE) OPTİMİZASYONLAR
+   (Telefon, Tablet, Küçük Ekranlar ve Farklı Cihaz Uyumluluğu)
+   ========================================================================== */
+
+/* Tablet & Küçük Masaüstü (max-width: 1024px) */
+@media (max-width: 1024px) {
+    .content-dashboard, .weather-dashboard {
+        max-width: 95%;
+        min-height: auto;
+    }
+    
+    .forecast-grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 0.5rem;
+    }
+    
+    .forecast-grid .forecast-card:last-child {
+        grid-column: span 1;
+    }
+    
+    .additional-details {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+/* Mobil & Tablet Dikey (max-width: 768px) */
+@media (max-width: 768px) {
+    body {
+        overflow-y: auto;
+        min-height: 100vh;
+        height: auto;
+    }
+
+    main {
+        height: auto;
+        min-height: 100vh;
+        padding: 4.5rem 1rem 5.5rem 1rem;
+        align-items: flex-start;
+    }
+
+    #weatherContainer {
+        height: auto;
+        min-height: auto;
+    }
+
+    .weather-dashboard, .content-dashboard {
+        max-height: none;
+        border-radius: 24px;
+    }
+
+    .weather-content-scroll, .content-scroll {
+        padding: 1.5rem 1.25rem;
+        overflow-y: visible;
+        height: auto;
+    }
+
+    /* Başlık ve Sıcaklık Yazı Boyutları */
+    .emoji {
+        font-size: 3.5rem;
+    }
+
+    .city-name {
+        font-size: 1.5rem;
+    }
+
+    .temperature {
+        font-size: 3rem;
+    }
+
+    .condition {
+        font-size: 1rem;
+    }
+
+    /* Detay Gridleri Mobilde 2x2 ve 1 sütun */
+    .details-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.6rem;
+    }
+
+    .additional-details {
+        grid-template-columns: 1fr;
+        gap: 0.6rem;
+    }
+
+    .additional-item {
+        padding: 0.9rem;
+    }
+
+    /* 7 Günlük Tahmin Mobilde 2 Sütun */
+    .forecast-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.5rem;
+    }
+
+    /* Antigravity Butonu Mobilde Menüyle Çakışmayacak Konum */
+    .antigravity-trigger {
+        bottom: 80px;
+        right: 15px;
+        padding: 8px 12px;
+        font-size: 0.75rem;
+    }
+
+    /* Floating Map Mobilde */
+    .floating-map-container {
+        width: calc(100% - 30px);
+        left: 15px;
+        bottom: 75px;
+        height: 220px;
+    }
+
+    /* Ödevler Sekmeleri Mobilde Yatay Kaydırma */
+    .tabs-header {
+        display: flex;
+        overflow-x: auto;
+        white-space: nowrap;
+        padding-bottom: 8px;
+        gap: 6px;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+    }
+    .tabs-header::-webkit-scrollbar {
+        display: none;
+    }
+    .tab-btn {
+        flex-shrink: 0;
+        font-size: 0.8rem;
+        padding: 8px 12px;
+    }
+
+    .cv-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .charts-grid {
+        grid-template-columns: 1fr !important;
+    }
+
+    /* Galeri Grid Mobilde */
+    .gallery-grid {
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: 0.75rem;
+    }
+
+    .gallery-item video {
+        height: 110px !important;
+    }
+
+    .gallery-filters {
+        gap: 6px;
+    }
+
+    .filter-btn {
+        padding: 6px 10px;
+        font-size: 0.75rem;
+    }
+}
+
+/* Küçük Ekranlı Telefonlar (max-width: 480px) */
+@media (max-width: 480px) {
+    .portal-container {
+        padding: 2rem 1rem;
+    }
+
+    .details-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .forecast-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .calc-container {
+        width: 100%;
+        max-width: 280px;
+    }
+}
+
