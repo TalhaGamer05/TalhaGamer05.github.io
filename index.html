@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Web Projeleri Portalı | Giriş Paneli</title>
+    <title>Hava Durumu & Web Projeleri Portalı | Talha</title>
     
     <!-- SEO Meta Etiketleri -->
-    <meta name="description" content="Üç farklı web projesini bir araya getiren modern, hızlı ve şık bir portal arayüzü. Not Hesaplama, Hava Durumu ve Av Market projelerine buradan erişebilirsiniz.">
-    <meta name="author" content="Talha, Berke, İlkay">
+    <meta name="description" content="Talha tarafından geliştirilen modern Hava Durumu Panosu, PWA özellikleri, 7 günlük tahmin, Leaflet harita, WebGL ve Matter.js fizik entegrasyonu sunan interaktif web portalı.">
+    <meta name="author" content="Talha">
     
-    <!-- Favicon (PWA standartlarında SVG ikon) -->
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚀</text></svg>">
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌤️</text></svg>">
     
     <!-- FontAwesome İkon Kütüphanesi -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -20,7 +20,7 @@
 </head>
 <body>
 
-    <!-- Arka Plandaki Dinamik Glowing Orbs (Ortam Işıkları) -->
+    <!-- Arka Plandaki Dinamik Glowing Orbs (Atmosferik Işıklar) -->
     <div class="ambient-bg">
         <div class="orb orb-1"></div>
         <div class="orb orb-2"></div>
@@ -32,91 +32,169 @@
         
         <!-- Üst Başlık (Header) -->
         <header class="portal-header">
-            <div class="portal-badge" id="live-badge">
+            <div class="portal-badge">
                 <span class="dot"></span>
-                <span>Proje Hub Aktif</span>
+                <span>Canlı Web Portalı</span>
             </div>
-            <h1 class="portal-title">Web Projeleri Portalı</h1>
-            <p class="portal-subtitle">Geliştirilen dinamik ve kullanıcı dostu web uygulamalarına tek bir noktadan hızlıca erişin.</p>
+            <h1 class="portal-title">Hava Durumu & İnteraktif Projeler</h1>
+            <p class="portal-subtitle">Modern web teknolojileri, PWA altyapısı, dinamik API entegrasyonları ve interaktif araçlar tek bir merkezde.</p>
         </header>
 
-        <!-- Projeler Izgarası (Grid) -->
-        <main class="projects-grid">
+        <!-- Ana Vitrin: Hava Durumu Panosu (Hero Featured Card) -->
+        <section class="featured-section">
+            <article class="featured-card">
+                <div class="featured-content">
+                    <div class="featured-badge">
+                        <i class="fa-solid fa-star"></i> Ana Proje &bull; Canlı Yayında
+                    </div>
+                    <h2 class="featured-title">Hava Durumu Panosu</h2>
+                    <p class="featured-desc">
+                        Gerçek zamanlı hava durumu verileri, 7 günlük detaylı tahminler, interaktif Leaflet harita entegrasyonu, Matter.js tabanlı yerçekimi fizik motoru ve dinamik WebGL arka plan efektleri barındıran tam teşekküllü PWA uygulaması.
+                    </p>
+                    <div class="features-tags">
+                        <span class="tag"><i class="fa-solid fa-cloud-sun-rain"></i> Canlı API</span>
+                        <span class="tag"><i class="fa-solid fa-map-location-dot"></i> Leaflet Harita</span>
+                        <span class="tag"><i class="fa-solid fa-atom"></i> Matter.js Fizik</span>
+                        <span class="tag"><i class="fa-solid fa-wand-magic-sparkles"></i> WebGL Efektleri</span>
+                        <span class="tag"><i class="fa-solid fa-mobile-screen"></i> PWA Desteği</span>
+                    </div>
+                    <div class="featured-actions">
+                        <a href="TALHA%20-%20havadurumu/index.html" class="btn-primary" target="_self">
+                            <span>Hava Durumu Panosunu Aç <i class="fa-solid fa-arrow-right"></i></span>
+                        </a>
+                        <a href="TALHA%20-%20havadurumu/odevler.html" class="btn-secondary" target="_self">
+                            <span><i class="fa-solid fa-laptop-code"></i> Ödevler Modülü</span>
+                        </a>
+                    </div>
+                </div>
+                <div class="featured-visual">
+                    <div class="weather-widget-preview">
+                        <div class="preview-header">
+                            <i class="fa-solid fa-location-dot"></i>
+                            <span>İstanbul, TR</span>
+                            <span class="live-pill">CANLI</span>
+                        </div>
+                        <div class="preview-temp-wrap">
+                            <span class="preview-temp">24°C</span>
+                            <i class="fa-solid fa-cloud-sun preview-icon"></i>
+                        </div>
+                        <div class="preview-desc">Parçalı Bulutlu</div>
+                        <div class="preview-stats">
+                            <div class="stat-item">
+                                <i class="fa-solid fa-droplet"></i>
+                                <div>
+                                    <span class="label">Nem</span>
+                                    <span class="val">%58</span>
+                                </div>
+                            </div>
+                            <div class="stat-item">
+                                <i class="fa-solid fa-wind"></i>
+                                <div>
+                                    <span class="label">Rüzgar</span>
+                                    <span class="val">14 km/s</span>
+                                </div>
+                            </div>
+                            <div class="stat-item">
+                                <i class="fa-solid fa-gauge-high"></i>
+                                <div>
+                                    <span class="label">Basınç</span>
+                                    <span class="val">1013 hPa</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </article>
+        </section>
+
+        <!-- Alt Modüller & Proje Sayfaları Izgarası -->
+        <main class="modules-grid">
             
-            <!-- 1. KART: BERKE - VİZE FİNAL -->
-            <article class="project-card berke-card" id="card-berke">
-                <div class="card-header">
-                    <div class="icon-container">
-                        <i class="fa-solid fa-graduation-cap"></i>
-                    </div>
-                    <div class="developer-tag">Geliştirici: Berke</div>
-                    <h2 class="project-name">Akademik Not Portalı</h2>
-                    <p class="project-desc">Derslerinizin vize ve final notlarını girerek ortalamanızı hesaplayabileceğiniz, hedef final notlarınızı belirleyebileceğiniz ve geçmiş istatistiklerinizi izleyebileceğiniz portal.</p>
+            <!-- 1. KART: Ödevler Portalı -->
+            <article class="module-card">
+                <div class="card-icon-box cyan">
+                    <i class="fa-solid fa-code"></i>
                 </div>
-                
-                <div class="card-footer-area">
-                    <div class="features-tags">
-                        <span class="tag">Not Hesaplama</span>
-                        <span class="tag">Hedef Not Bulucu</span>
-                        <span class="tag">İstatistik Paneli</span>
-                        <span class="tag">jQuery</span>
-                        <span class="tag">Slick Slider</span>
+                <div class="card-body">
+                    <span class="module-category">İnteraktif Araçlar</span>
+                    <h3 class="module-title">Dönem Ödevleri Portalı</h3>
+                    <p class="module-desc">İnternet Programcılığı kapsamında geliştirilen CV, Hesap Makinesi, Todo Listesi, Şifre/Karakter Sayıcı ve Saat & Kronometre modülleri.</p>
+                </div>
+                <div class="card-footer">
+                    <div class="module-pills">
+                        <span>CV</span>
+                        <span>Hesap Makinesi</span>
+                        <span>Todo</span>
+                        <span>Kronometre</span>
                     </div>
-                    
-                    <a href="BERKE%20-%20V%C4%B0ZE%20F%C4%B0NAL/index.html" class="btn-open" target="_blank">
-                        <span>Projeyi Aç <i class="fa-solid fa-arrow-right"></i></span>
+                    <a href="TALHA%20-%20havadurumu/odevler.html" class="module-btn" target="_self">
+                        <span>Sayfaya Git <i class="fa-solid fa-arrow-up-right-from-square"></i></span>
                     </a>
                 </div>
             </article>
 
-            <!-- 2. KART: TALHA - HAVADURUMU -->
-            <article class="project-card talha-card" id="card-talha">
-                <div class="card-header">
-                    <div class="icon-container">
-                        <i class="fa-solid fa-cloud-sun"></i>
-                    </div>
-                    <div class="developer-tag">Geliştirici: Talha</div>
-                    <h2 class="project-name">Hava Durumu Panosu</h2>
-                    <p class="project-desc">Şehir aramalı, 7 günlük tahmin içeren ve harita entegrasyonu sunan PWA uyumlu pano. Matter.js fizik motorlu yerçekimi modu ve WebGL efektleri içerir.</p>
+            <!-- 2. KART: İstatistikler -->
+            <article class="module-card">
+                <div class="card-icon-box purple">
+                    <i class="fa-solid fa-chart-line"></i>
                 </div>
-                
-                <div class="card-footer-area">
-                    <div class="features-tags">
-                        <span class="tag">PWA Desteği</span>
-                        <span class="tag">Leaflet Harita</span>
-                        <span class="tag">Matter.js Fizik</span>
-                        <span class="tag">WebGL Efektleri</span>
-                        <span class="tag">Ödevler & Galeri</span>
+                <div class="card-body">
+                    <span class="module-category">Veri & Analiz</span>
+                    <h3 class="module-title">İstatistikler & Grafikler</h3>
+                    <p class="module-desc">Geçmiş sıcaklık trendleri, mevsimsel karşılaştırmalar, şehir bazlı hava kalitesi ve detaylı meteorolojik grafik analizleri.</p>
+                </div>
+                <div class="card-footer">
+                    <div class="module-pills">
+                        <span>Grafikler</span>
+                        <span>Mevsimsel Trend</span>
+                        <span>Veri Analizi</span>
                     </div>
-                    
-                    <a href="TALHA%20-%20havadurumu/index.html" class="btn-open" target="_blank">
-                        <span>Projeyi Aç <i class="fa-solid fa-arrow-right"></i></span>
+                    <a href="TALHA%20-%20havadurumu/istatistikler.html" class="module-btn" target="_self">
+                        <span>Sayfaya Git <i class="fa-solid fa-arrow-up-right-from-square"></i></span>
                     </a>
                 </div>
             </article>
 
-            <!-- 3. KART: İLKAY - AV MARKET -->
-            <article class="project-card ilkay-card" id="card-ilkay">
-                <div class="card-header">
-                    <div class="icon-container">
-                        <i class="fa-solid fa-bullseye"></i>
-                    </div>
-                    <div class="developer-tag">Geliştirici: İlkay Didin</div>
-                    <h2 class="project-name">Av Market Sitesi</h2>
-                    <p class="project-desc">Avcılık ve balıkçılık ekipmanları sunan, dinamik ürün listeleme, sepet ekleme fonksiyonları ve bilgilendirici avcılık rehberi barındıran e-ticaret arayüzü.</p>
+            <!-- 3. KART: Galeri & Medya -->
+            <article class="module-card">
+                <div class="card-icon-box blue">
+                    <i class="fa-solid fa-images"></i>
                 </div>
-                
-                <div class="card-footer-area">
-                    <div class="features-tags">
-                        <span class="tag">E-Ticaret Arayüzü</span>
-                        <span class="tag">Dinamik Sepet</span>
-                        <span class="tag">Avcılık Rehberi</span>
-                        <span class="tag">jQuery</span>
-                        <span class="tag">Lightbox2</span>
+                <div class="card-body">
+                    <span class="module-category">Görsel & Medya</span>
+                    <h3 class="module-title">Medya & Foto Galeri</h3>
+                    <p class="module-desc">Farklı atmosfer koşullarını, doğa manzaralarını ve meteorolojik fenomenleri sergileyen yüksek çözünürlüklü görsel kütüphane.</p>
+                </div>
+                <div class="card-footer">
+                    <div class="module-pills">
+                        <span>Görsel Arşivi</span>
+                        <span>Doğa Olayları</span>
+                        <span>Medya</span>
                     </div>
-                    
-                    <a href="%C4%B0LKAY%20-%20AvMarketSitesi/index.html" class="btn-open" target="_blank">
-                        <span>Projeyi Aç <i class="fa-solid fa-arrow-right"></i></span>
+                    <a href="TALHA%20-%20havadurumu/galeri.html" class="module-btn" target="_self">
+                        <span>Sayfaya Git <i class="fa-solid fa-arrow-up-right-from-square"></i></span>
+                    </a>
+                </div>
+            </article>
+
+            <!-- 4. KART: Nasıl Yapıldı & Mimari -->
+            <article class="module-card">
+                <div class="card-icon-box emerald">
+                    <i class="fa-solid fa-cubes-stacked"></i>
+                </div>
+                <div class="card-body">
+                    <span class="module-category">Teknik Dokümantasyon</span>
+                    <h3 class="module-title">Nasıl Yapıldı & Mimari</h3>
+                    <p class="module-desc">Projenin arkasındaki mimari, kullanılan API'ler, performans optimizasyonları ve JavaScript motorlarının teknik açıklamaları.</p>
+                </div>
+                <div class="card-footer">
+                    <div class="module-pills">
+                        <span>Web Mimarisi</span>
+                        <span>Optimizasyon</span>
+                        <span>Dokümantasyon</span>
+                    </div>
+                    <a href="TALHA%20-%20havadurumu/nasil-yapildi.html" class="module-btn" target="_self">
+                        <span>Sayfaya Git <i class="fa-solid fa-arrow-up-right-from-square"></i></span>
                     </a>
                 </div>
             </article>
@@ -126,11 +204,11 @@
         <!-- Alt Bilgi (Footer) -->
         <footer class="portal-footer">
             <div class="footer-info">
-                <span><i class="fa-solid fa-code"></i> HTML5 & Vanilla CSS3</span>
-                <span><i class="fa-solid fa-laptop-code"></i> Proje Entegrasyonu</span>
-                <span><i class="fa-solid fa-users"></i> Ortak Geliştirici Portalı</span>
+                <span><i class="fa-solid fa-cloud-bolt"></i> Hava Durumu Ekosistemi</span>
+                <span><i class="fa-solid fa-code"></i> HTML5 &bull; Modern CSS &bull; JavaScript</span>
+                <span><i class="fa-solid fa-user-astronaut"></i> Geliştirici: Talha</span>
             </div>
-            <p class="footer-copyright">&copy; 2026 Web Geliştirme Portalı. Tüm Hakları Saklıdır.</p>
+            <p class="footer-copyright">&copy; 2026 Talha | Hava Durumu ve İnteraktif Web Projeleri. Tüm Hakları Saklıdır.</p>
         </footer>
 
     </div>
