@@ -656,3 +656,142 @@ main {
         grid-template-columns: repeat(4, 1fr);
     }
 }
+
+/* --------------------------------------------------------------------------
+   Gelişmiş Şehir Kartları (Modern Glassmorphism)
+   -------------------------------------------------------------------------- */
+.city-selector {
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+    width: 100%;
+}
+
+.city-card-item {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
+    padding: 0.8rem 1rem;
+    cursor: pointer;
+    transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.city-card-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(59, 130, 246, 0.4);
+    transform: translateX(4px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+}
+
+.city-card-item.active {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.88), rgba(139, 92, 246, 0.88));
+    border-color: #60a5fa;
+    box-shadow: 0 6px 25px rgba(59, 130, 246, 0.5);
+}
+
+.city-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.city-card-title {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    font-weight: 800;
+    font-size: 0.92rem;
+    color: #fff;
+}
+
+.city-emoji {
+    font-size: 1.25rem;
+}
+
+.city-temp-badge {
+    font-size: 0.95rem;
+    font-weight: 800;
+    background: rgba(0, 0, 0, 0.35);
+    padding: 0.2rem 0.6rem;
+    border-radius: 8px;
+    color: #fff;
+    font-variant-numeric: tabular-nums;
+}
+
+.city-card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.76rem;
+    color: rgba(255, 255, 255, 0.75);
+    font-weight: 500;
+}
+
+/* --------------------------------------------------------------------------
+   Canlı Arka Plan Seçici Modal
+   -------------------------------------------------------------------------- */
+.bg-picker-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(12px);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+    animation: fadeIn 0.2s ease;
+}
+
+.bg-picker-content {
+    background: rgba(13, 17, 26, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 24px;
+    max-width: 440px;
+    width: 100%;
+    padding: 1.75rem;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8);
+    animation: popUpMap 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.bg-picker-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.bg-opt-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #fff;
+    padding: 0.85rem 1.1rem;
+    border-radius: 12px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: inherit;
+    text-align: left;
+}
+
+.bg-opt-btn:hover {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(59, 130, 246, 0.4);
+    transform: translateX(4px);
+}
+
+.bg-opt-btn.active {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.8), rgba(139, 92, 246, 0.8));
+    border-color: #60a5fa;
+    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+}

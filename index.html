@@ -10,6 +10,12 @@
     <link rel="stylesheet" href="portal_style.css">
 </head>
 <body>
+
+    <!-- Arka Plan Canlı Video -->
+    <video autoplay loop muted id="bgVideo" class="bg-video">
+        <source id="bgVideoSource" src="havadurumu/videolar/gunesli.mp4" type="video/mp4">
+    </video>
+
     <header>
         <h1>t4lhster.me</h1>
         <p>Geliştirdiğim web projeleri, araçlar ve deneyler.</p>
@@ -64,5 +70,21 @@
     <footer>
         <p>&copy; 2026 t4lhster | <a href="https://github.com/TalhaGamer05/TalhaGamer05.github.io" target="_blank">GitHub Deposu</a></p>
     </footer>
+
+    <script>
+        (function() {
+            const savedBg = localStorage.getItem('customBgVideo');
+            if (savedBg) {
+                const bgVideo = document.getElementById('bgVideo');
+                const bgSource = document.getElementById('bgVideoSource');
+                if (bgVideo && bgSource) {
+                    bgSource.src = savedBg;
+                    bgVideo.load();
+                    bgVideo.play().catch(e => console.log('Autoplay:', e));
+                }
+            }
+        })();
+    </script>
+
 </body>
 </html>

@@ -178,3 +178,16 @@ footer a:hover {
         grid-template-columns: 1fr;
     }
 }
+
+.bg-video {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    object-fit: cover;
+    z-index: -2;
+    opacity: 0.28;
+    pointer-events: none;
+    transition: opacity 0.5s ease;
+}

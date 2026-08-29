@@ -11,6 +11,12 @@
 </head>
 <body>
 
+    <!-- Arka Plan Canlı Video -->
+    <video autoplay loop muted id="bgVideo" class="bg-video">
+        <source id="bgVideoSource" src="havadurumu/videolar/gunesli.mp4" type="video/mp4">
+    </video>
+
+
     <!-- Üst Menü -->
     <header class="top-nav">
         <div class="top-nav-inner">
@@ -246,5 +252,21 @@
             });
         });
     </script>
+
+    <script>
+        (function() {
+            const savedBg = localStorage.getItem('customBgVideo');
+            if (savedBg) {
+                const bgVideo = document.getElementById('bgVideo');
+                const bgSource = document.getElementById('bgVideoSource');
+                if (bgVideo && bgSource) {
+                    bgSource.src = savedBg;
+                    bgVideo.load();
+                    bgVideo.play().catch(e => console.log('Autoplay:', e));
+                }
+            }
+        })();
+    </script>
+
 </body>
 </html>

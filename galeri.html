@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Medya Galerisi | t4lhster</title>
+    <title>Medya Galerisi & Canlı Arka Planlar | t4lhster</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎬</text></svg>">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="projects.css">
@@ -15,8 +15,8 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(8px);
+            background: rgba(0, 0, 0, 0.88);
+            backdrop-filter: blur(12px);
             z-index: 1000;
             display: none;
             align-items: center;
@@ -27,11 +27,11 @@
             background: var(--bg-card);
             border: 1px solid var(--border);
             border-radius: var(--radius-lg);
-            max-width: 800px;
+            max-width: 850px;
             width: 100%;
-            padding: 1.5rem;
+            padding: 1.75rem;
             position: relative;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+            box-shadow: 0 25px 60px rgba(0,0,0,0.8);
             animation: modalPop 0.25s cubic-bezier(0.16, 1, 0.3, 1);
         }
         @keyframes modalPop {
@@ -42,7 +42,7 @@
             position: absolute;
             top: 1rem;
             right: 1rem;
-            background: rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.12);
             border: none;
             color: #fff;
             width: 36px;
@@ -57,6 +57,32 @@
         }
         .modal-close:hover {
             background: var(--accent-rose);
+        }
+        /* Toast Notification */
+        .toast-notification {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: rgba(16, 185, 129, 0.95);
+            backdrop-filter: blur(12px);
+            color: #fff;
+            padding: 0.9rem 1.6rem;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.45);
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            z-index: 9999;
+            transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+            opacity: 0;
+            pointer-events: none;
+        }
+        .toast-notification.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
         }
     </style>
 </head>
@@ -90,7 +116,7 @@
     <main class="page-container">
         <div class="page-header">
             <h1><i class="fa-solid fa-images" style="color:var(--accent-purple);"></i> Medya Galerisi & Canlı Arka Planlar</h1>
-            <p>Atmosfer koşullarını ve doğa manzaralarını yansıtan yüksek kaliteli video ve medya arşivi.</p>
+            <p>Seçtiğin videoyu tüm web sitesinin ve hava durumu panosunun canlı arka planı yapabilirsin.</p>
         </div>
 
         <!-- Filtre Butonları -->
@@ -117,6 +143,12 @@
         </div>
     </div>
 
+    <!-- Toast Bildirimi -->
+    <div class="toast-notification" id="toast">
+        <i class="fa-solid fa-circle-check"></i>
+        <span id="toastMsg">Arka plan başarıyla ayarlandı!</span>
+    </div>
+
     <footer class="page-footer">
         <p>&copy; 2026 t4lhster | <a href="index.html">Portal Ana Sayfa</a> | <a href="https://github.com/TalhaGamer05/TalhaGamer05.github.io" target="_blank">GitHub</a></p>
     </footer>
@@ -130,26 +162,55 @@
             { category: 'firtina', src: 'havadurumu/videolar/firtinali.mp4', title: 'Gök Gürültülü Fırtına', desc: 'Körfez kıyılarında şimşekler ve rüzgarlı fırtına etkisi.' }
         ];
 
+        // Sayfa yüklendiğinde kayıtlı arka planı uygula
+        function applySavedBackground() {
+            const savedBg = localStorage.getItem('customBgVideo');
+            if (savedBg) {
+                const bgVideo = document.getElementById('bgVideo');
+                const bgSource = document.getElementById('bgVideoSource');
+                if (bgVideo && bgSource) {
+                    bgSource.src = savedBg;
+                    bgVideo.load();
+                    bgVideo.play().catch(e => console.log('Autoplay:', e));
+                }
+            }
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toastMsg');
+            toastMsg.textContent = msg;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2500);
+        }
+
         function renderGallery(filter = 'all') {
             const grid = document.getElementById('galleryGrid');
             grid.innerHTML = '';
 
+            const currentSavedBg = localStorage.getItem('customBgVideo') || 'havadurumu/videolar/gunesli.mp4';
             const filtered = filter === 'all' ? galleryData : galleryData.filter(i => i.category === filter);
 
             filtered.forEach(item => {
+                const isCurrentActive = currentSavedBg.includes(item.src) || item.src.includes(currentSavedBg);
                 const card = document.createElement('div');
                 card.className = 'gallery-card';
                 card.innerHTML = `
                     <video class="gallery-video-preview" src="${item.src}" muted loop playsinline preload="metadata" onmouseenter="this.play()" onmouseleave="this.pause()"></video>
                     <div class="gallery-card-body">
-                        <h3>${item.title}</h3>
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <h3>${item.title}</h3>
+                            ${isCurrentActive ? '<span style="font-size:0.75rem; background:rgba(16,185,129,0.2); color:#10b981; padding:0.2rem 0.5rem; border-radius:6px; font-weight:700;">Aktif</span>' : ''}
+                        </div>
                         <p>${item.desc}</p>
                         <div class="gallery-actions">
                             <button class="btn-action play" onclick="openModal('${item.src}', '${item.title}', '${item.desc}')">
-                                <i class="fa-solid fa-play"></i> İzle
+                                <i class="fa-solid fa-play"></i> Önizle
                             </button>
                             <button class="btn-action bg" onclick="setAsBackground('${item.src}')">
-                                <i class="fa-solid fa-image"></i> Arka Plan Yap
+                                <i class="fa-solid fa-wand-magic-sparkles"></i> Arka Plan Yap
                             </button>
                         </div>
                     </div>
@@ -183,18 +244,20 @@
             if (e.target === modal) closeModal();
         });
 
-        // Arka Plan Değiştirme
+        // Arka Plan Değiştirme ve LocalStorage'a Kalıcı Kaydetme
         window.setAsBackground = function(src) {
+            localStorage.setItem('customBgVideo', src);
+            
             const bgVideo = document.getElementById('bgVideo');
             const bgSource = document.getElementById('bgVideoSource');
-            bgSource.src = src;
-            bgVideo.load();
-            bgVideo.play();
+            if (bgVideo && bgSource) {
+                bgSource.src = src;
+                bgVideo.load();
+                bgVideo.play().catch(e => console.log(e));
+            }
             
-            // Kullanıcıya küçük bildirim
-            const origTitle = document.title;
-            document.title = '✓ Arka Plan Değiştirildi!';
-            setTimeout(() => { document.title = origTitle; }, 1500);
+            renderGallery(document.querySelector('.filter-btn.active').dataset.filter);
+            showToast('✓ Canlı arka plan ayarlandı ve tüm sayfalara uygulandı!');
         };
 
         // Filtreleme
@@ -206,6 +269,7 @@
             });
         });
 
+        applySavedBackground();
         renderGallery('all');
     </script>
 </body>

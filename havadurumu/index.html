@@ -56,33 +56,63 @@
     <div class="sidebar-trigger" id="sidebarTrigger"></div>
 
     <header id="sidebar">
-        <div style="display:flex; align-items:center; justify-content:space-between; width:100%; margin-bottom:1.25rem;">
-            <h1 style="font-size:1.2rem; margin:0; font-weight:800; letter-spacing:0.5px; display:flex; align-items:center; gap:0.5rem;">
-                <i class="fa-solid fa-cloud-sun-rain" style="color:#3b82f6;"></i> HAVA DURUMU
-            </h1>
-            <button id="luckyBtn" title="Rastgele Şehir Seç" style="background:rgba(59,130,246,0.15); border:1px solid rgba(59,130,246,0.3); color:#60a5fa; padding:0.35rem 0.65rem; border-radius:8px; font-size:0.75rem; font-weight:700; cursor:pointer;">
-                🎲 Şanslı
-            </button>
+        <!-- Sidebar Brand & Utility Actions -->
+        <div style="display:flex; flex-direction:column; gap:0.75rem; width:100%; margin-bottom:1.2rem;">
+            <div style="display:flex; align-items:center; justify-content:space-between;">
+                <h1 style="font-size:1.15rem; margin:0; font-weight:900; letter-spacing:0.5px; display:flex; align-items:center; gap:0.5rem; background:linear-gradient(135deg, #60a5fa, #c084fc); -webkit-background-clip:text; -webkit-text-fill-color:transparent;">
+                    <i class="fa-solid fa-cloud-sun-rain" style="-webkit-text-fill-color:#3b82f6;"></i> HAVA DURUMU
+                </h1>
+                <span id="cityCountBadge" style="font-size:0.75rem; background:rgba(255,255,255,0.08); padding:0.2rem 0.55rem; border-radius:6px; color:#94a3b8; font-weight:600;">81 Şehir</span>
+            </div>
+            
+            <div style="display:flex; gap:0.5rem;">
+                <button id="luckyBtn" title="Rastgele Şehir Seç" style="flex:1; background:rgba(59,130,246,0.15); border:1px solid rgba(59,130,246,0.3); color:#60a5fa; padding:0.45rem; border-radius:10px; font-size:0.8rem; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:0.4rem; transition:all 0.2s ease;">
+                    🎲 Şanslı Şehir
+                </button>
+                <button id="bgPickerBtn" title="Arka Plan Videosu Değiştir" style="flex:1; background:rgba(139,92,246,0.15); border:1px solid rgba(139,92,246,0.3); color:#c084fc; padding:0.45rem; border-radius:10px; font-size:0.8rem; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:0.4rem; transition:all 0.2s ease;">
+                    🎨 Arka Plan
+                </button>
+            </div>
         </div>
 
-        <form id="searchForm" class="search-form" style="width:100%;">
+        <!-- Arama Formu -->
+        <form id="searchForm" class="search-form" style="width:100%; position:relative;">
             <input type="text" id="searchInput" class="search-input" placeholder="Şehir ara (Örn: İzmir, Van)...">
+            <span style="position:absolute; right:12px; top:50%; transform:translateY(-50%); font-size:0.75rem; color:#64748b; pointer-events:none;"><i class="fa-solid fa-magnifying-glass"></i></span>
         </form>
 
         <!-- Bölge & Kategori Sekmeleri -->
         <div class="city-tabs" id="cityTabs">
-            <button class="city-tab-btn active" data-region="all">Tümü (81)</button>
-            <button class="city-tab-btn" data-region="popular">⭐ Popüler</button>
-            <button class="city-tab-btn" data-region="marmara">Marmara</button>
-            <button class="city-tab-btn" data-region="ege">Ege</button>
-            <button class="city-tab-btn" data-region="akdeniz">Akdeniz</button>
-            <button class="city-tab-btn" data-region="ic_anadolu">İç Anadolu</button>
-            <button class="city-tab-btn" data-region="karadeniz">Karadeniz</button>
-            <button class="city-tab-btn" data-region="dogu">Doğu</button>
+            <button class="city-tab-btn active" data-region="popular">🔥 Popüler</button>
+            <button class="city-tab-btn" data-region="all">🌐 Tümü (81)</button>
+            <button class="city-tab-btn" data-region="marmara">🌊 Marmara</button>
+            <button class="city-tab-btn" data-region="ege">☀️ Ege</button>
+            <button class="city-tab-btn" data-region="akdeniz">🌴 Akdeniz</button>
+            <button class="city-tab-btn" data-region="ic_anadolu">🌾 İç Anadolu</button>
+            <button class="city-tab-btn" data-region="karadeniz">🌲 Karadeniz</button>
+            <button class="city-tab-btn" data-region="dogu">🏔️ Doğu</button>
         </div>
 
         <div class="city-selector" id="citySelector"></div>
     </header>
+
+    <!-- Arka Plan Seçici Pop-up Modal -->
+    <div id="bgPickerModal" class="bg-picker-modal" style="display:none;">
+        <div class="bg-picker-content">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+                <h3 style="font-size:1.05rem; font-weight:700;"><i class="fa-solid fa-palette" style="color:#c084fc;"></i> Canlı Arka Plan Seç</h3>
+                <button id="bgPickerCloseBtn" class="map-close-btn"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="bg-picker-grid">
+                <button class="bg-opt-btn active" data-bg="auto"><i class="fa-solid fa-wand-magic-sparkles"></i> <span>⚡ Otomatik (Hava Durumuna Göre)</span></button>
+                <button class="bg-opt-btn" data-bg="videolar/gunesli.mp4"><i class="fa-solid fa-sun" style="color:#f59e0b;"></i> <span>☀️ Güneşli Gökyüzü</span></button>
+                <button class="bg-opt-btn" data-bg="videolar/yagmur.mp4"><i class="fa-solid fa-cloud-rain" style="color:#3b82f6;"></i> <span>🌧️ Yağmurlu Orman</span></button>
+                <button class="bg-opt-btn" data-bg="videolar/karli.mp4"><i class="fa-solid fa-snowflake" style="color:#60a5fa;"></i> <span>❄️ Karlı Kış</span></button>
+                <button class="bg-opt-btn" data-bg="videolar/bulutlu.mp4"><i class="fa-solid fa-cloud" style="color:#94a3b8;"></i> <span>☁️ Bulutlu Atmosfer</span></button>
+                <button class="bg-opt-btn" data-bg="videolar/firtinali.mp4"><i class="fa-solid fa-bolt" style="color:#a855f7;"></i> <span>⛈️ Şimşekli Fırtına</span></button>
+            </div>
+        </div>
+    </div>
 
     <!-- Harita Butonu & Pop-up Modülü -->
     <button id="mapToggleBtn" class="map-floating-btn"><i class="fa-solid fa-map"></i> Harita</button>
@@ -766,6 +796,49 @@
 
         if (mapBtn) mapBtn.addEventListener('click', toggleMap);
         if (mapCloseBtn) mapCloseBtn.addEventListener('click', () => { mapContainer.style.display = 'none'; });
+
+        
+        // ==========================================
+        // CANLI ARKA PLAN SEÇİCİ
+        // ==========================================
+        const bgPickerBtn = document.getElementById('bgPickerBtn');
+        const bgPickerModal = document.getElementById('bgPickerModal');
+        const bgPickerCloseBtn = document.getElementById('bgPickerCloseBtn');
+
+        if (bgPickerBtn) {
+            bgPickerBtn.addEventListener('click', () => {
+                bgPickerModal.style.display = 'flex';
+            });
+        }
+        if (bgPickerCloseBtn) {
+            bgPickerCloseBtn.addEventListener('click', () => {
+                bgPickerModal.style.display = 'none';
+            });
+        }
+        if (bgPickerModal) {
+            bgPickerModal.addEventListener('click', (e) => {
+                if (e.target === bgPickerModal) bgPickerModal.style.display = 'none';
+            });
+        }
+
+        document.querySelectorAll('.bg-opt-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const bg = btn.dataset.bg;
+                document.querySelectorAll('.bg-opt-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+
+                if (bg === 'auto') {
+                    localStorage.setItem('bgMode', 'auto');
+                    const cityData = citiesWeatherData[currentSelectedCity];
+                    if (cityData) updateBackgroundVideo(cityData.condition);
+                } else {
+                    localStorage.setItem('bgMode', 'custom');
+                    localStorage.setItem('customBgVideo', bg);
+                    updateBackgroundVideo('');
+                }
+                setTimeout(() => { bgPickerModal.style.display = 'none'; }, 200);
+            });
+        });
 
         document.addEventListener("DOMContentLoaded", () => { 
             createCityButtons(); 
