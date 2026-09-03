@@ -289,6 +289,20 @@ channel.onmessage = (e) => {
 };
 
 // ============================================================
+// ETKİLEŞİM & FARE (TEK EKRAN MODU)
+// ============================================================
+let mouseX = 0, mouseY = 0, isMouseDown = false;
+let mouseSpeed = 0, lastMouseX = null, lastMouseY = null;
+
+window.addEventListener('mousemove', (e) => { mouseX = e.clientX; mouseY = e.clientY; });
+window.addEventListener('mousedown', () => isMouseDown = true);
+window.addEventListener('mouseup', () => isMouseDown = false);
+window.addEventListener('mouseleave', () => isMouseDown = false);
+window.addEventListener('touchstart', (e) => { isMouseDown = true; mouseX = e.touches[0].clientX; mouseY = e.touches[0].clientY; });
+window.addEventListener('touchmove', (e) => { mouseX = e.touches[0].clientX; mouseY = e.touches[0].clientY; });
+window.addEventListener('touchend', () => isMouseDown = false);
+
+// ============================================================
 // RENDER DÖNGÜSÜ & GLOBAL SIRALAMA MANTIĞI
 // ============================================================
 let startTime = performance.now();
@@ -320,7 +334,42 @@ function loop() {
 
     let allBlobs = Object.values(activeWindows).filter(p => (now - p.time) < 800);
     allBlobs.push({ id: myId, color: myColor, cx: bounds.cx, cy: bounds.cy, speed: mySpeed });
-    allBlobs.sort((a, b) => a.id.localeCompare(b.id));
+
+    // TEK TOP VARSA VE FAREYE BASILIYSA, FAREYİ İKİNCİ BİR TOP GİBİ DAVRANDIR (SLIME ETKİSİ)
+    if (allBlobs.length === 1 && isMouseDown) {
+        const border = Math.max(0, (window.outerWidth - window.innerWidth) / 2);
+        const topChrome = Math.max(0, window.outerHeight - window.innerHeight - border);
+        const mcx = window.screenX + border + mouseX;
+        const mcy = window.screenY + topChrome + mouseY;
+
+        if (lastMouseX !== null) {
+            let mdx = mcx - lastMouseX;
+            let mdy = mcy - lastMouseY;
+            mouseSpeed = mouseSpeed * 0.88 + Math.hypot(mdx, mdy) * 0.015;
+        }
+        lastMouseX = mcx; lastMouseY = mcy;
+
+        allBlobs.push({ id: 'mouse', color: myColor, cx: mcx, cy: mcy, speed: mouseSpeed });
+    } else {
+        lastMouseX = null; lastMouseY = null; mouseSpeed = 0;
+    }
+
+    // >2 TOP KARIŞIKLIĞINI (KAFAYI SIYIRMASINI) ÖNLEMEK İÇİN YAKINLIK (GREEDY TSP) SIRALAMASI
+    let sortedBlobs = [];
+    if (allBlobs.length > 0) {
+        sortedBlobs.push(allBlobs.shift());
+        while(allBlobs.length > 0) {
+            let lastBlob = sortedBlobs[sortedBlobs.length - 1];
+            let closestIdx = 0;
+            let minD = Infinity;
+            for(let k=0; k < allBlobs.length; k++) {
+                let d = Math.hypot(allBlobs[k].cx - lastBlob.cx, allBlobs[k].cy - lastBlob.cy);
+                if (d < minD) { minD = d; closestIdx = k; }
+            }
+            sortedBlobs.push(allBlobs.splice(closestIdx, 1)[0]);
+        }
+    }
+    allBlobs = sortedBlobs;
 
     const maxBlobs = 10;
     let blobsData = new Float32Array(maxBlobs * 3);
