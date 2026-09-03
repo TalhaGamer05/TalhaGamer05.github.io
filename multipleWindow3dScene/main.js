@@ -229,8 +229,29 @@ const uniforms = {
 // ============================================================
 const channel = new BroadcastChannel('quantum_fluid_sync');
 const myId = Math.random().toString(36).substring(7);
-const colors = ['#00e5ff', '#ff0055', '#ffcc00', '#aa00ff'];
-const myColor = colors[Math.floor(Math.random() * colors.length)];
+// Generate a random vibrant color
+function getRandomColor() {
+    const hue = Math.random();
+    const h = hue * 6;
+    const i = Math.floor(h);
+    const f = h - i;
+    const q = 1 - f;
+    let r, g, b;
+    switch (i % 6) {
+        case 0: r = 1; g = f; b = 0; break;
+        case 1: r = q; g = 1; b = 0; break;
+        case 2: r = 0; g = 1; b = f; break;
+        case 3: r = 0; g = q; b = 1; break;
+        case 4: r = f; g = 0; b = 1; break;
+        case 5: r = 1; g = 0; b = q; break;
+    }
+    const toHex = x => {
+        const hex = Math.round(x * 255).toString(16);
+        return hex.length === 1 ? '0' + hex : hex;
+    };
+    return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+}
+const myColor = getRandomColor();
 let activeWindows = {};
 
 function hexToRgb(hex) {
@@ -292,7 +313,8 @@ channel.onmessage = (e) => {
 // ETKİLEŞİM & FARE (TEK EKRAN MODU)
 // ============================================================
 let mouseX = 0, mouseY = 0, isMouseDown = false;
-let mouseSpeed = 0, lastMouseX = null, lastMouseY = null;
+let slimeActive = false;
+let slimeX = 0, slimeY = 0, slimeVX = 0, slimeVY = 0;
 
 window.addEventListener('mousemove', (e) => { mouseX = e.clientX; mouseY = e.clientY; });
 window.addEventListener('mousedown', () => isMouseDown = true);
@@ -335,41 +357,55 @@ function loop() {
     let allBlobs = Object.values(activeWindows).filter(p => (now - p.time) < 800);
     allBlobs.push({ id: myId, color: myColor, cx: bounds.cx, cy: bounds.cy, speed: mySpeed });
 
-    // TEK TOP VARSA VE FAREYE BASILIYSA, FAREYİ İKİNCİ BİR TOP GİBİ DAVRANDIR (SLIME ETKİSİ)
-    if (allBlobs.length === 1 && isMouseDown) {
+    // GERÇEK SLIME MODU (Elastik Yay Fiziği)
+    let realBlobs = allBlobs.filter(b => b.id !== 'mouse');
+    
+    if (realBlobs.length === 1) {
         const border = Math.max(0, (window.outerWidth - window.innerWidth) / 2);
         const topChrome = Math.max(0, window.outerHeight - window.innerHeight - border);
         const mcx = window.screenX + border + mouseX;
         const mcy = window.screenY + topChrome + mouseY;
 
-        if (lastMouseX !== null) {
-            let mdx = mcx - lastMouseX;
-            let mdy = mcy - lastMouseY;
-            mouseSpeed = mouseSpeed * 0.88 + Math.hypot(mdx, mdy) * 0.015;
-        }
-        lastMouseX = mcx; lastMouseY = mcy;
-
-        allBlobs.push({ id: 'mouse', color: myColor, cx: mcx, cy: mcy, speed: mouseSpeed });
-    } else {
-        lastMouseX = null; lastMouseY = null; mouseSpeed = 0;
-    }
-
-    // >2 TOP KARIŞIKLIĞINI (KAFAYI SIYIRMASINI) ÖNLEMEK İÇİN YAKINLIK (GREEDY TSP) SIRALAMASI
-    let sortedBlobs = [];
-    if (allBlobs.length > 0) {
-        sortedBlobs.push(allBlobs.shift());
-        while(allBlobs.length > 0) {
-            let lastBlob = sortedBlobs[sortedBlobs.length - 1];
-            let closestIdx = 0;
-            let minD = Infinity;
-            for(let k=0; k < allBlobs.length; k++) {
-                let d = Math.hypot(allBlobs[k].cx - lastBlob.cx, allBlobs[k].cy - lastBlob.cy);
-                if (d < minD) { minD = d; closestIdx = k; }
+        if (isMouseDown) {
+            if (!slimeActive) {
+                slimeActive = true;
+                slimeX = bounds.cx;
+                slimeY = bounds.cy;
+                slimeVX = 0;
+                slimeVY = 0;
             }
-            sortedBlobs.push(allBlobs.splice(closestIdx, 1)[0]);
+            // Çekme kuvveti (mouse'a doğru)
+            slimeVX += (mcx - slimeX) * 0.15;
+            slimeVY += (mcy - slimeY) * 0.15;
+        } else if (slimeActive) {
+            // Geri sekme kuvveti (merkeze doğru)
+            slimeVX += (bounds.cx - slimeX) * 0.2;
+            slimeVY += (bounds.cy - slimeY) * 0.2;
+            
+            // Merkeze çok yaklaştıysa ve yavaşladıysa slime'ı kapat
+            if (Math.hypot(bounds.cx - slimeX, bounds.cy - slimeY) < 10 && Math.hypot(slimeVX, slimeVY) < 2) {
+                slimeActive = false;
+            }
         }
+
+        if (slimeActive) {
+            slimeVX *= 0.75; // Sürtünme (elastikiyet)
+            slimeVY *= 0.75;
+            slimeX += slimeVX;
+            slimeY += slimeVY;
+            
+            let sSpeed = Math.hypot(slimeVX, slimeVY) * 0.02;
+            allBlobs.push({ id: 'mouse', color: myColor, cx: slimeX, cy: slimeY, speed: sSpeed });
+        }
+    } else {
+        slimeActive = false;
     }
-    allBlobs = sortedBlobs;
+
+    // SENKRONİZASYON SORUNUNU KÖKTEN ÇÖZÜM: Tüm pencerelerde tamamen aynı zinciri oluşturmak için Soldan Sağa sıralama
+    allBlobs.sort((a, b) => {
+        if (Math.abs(a.cx - b.cx) > 10) return a.cx - b.cx;
+        return a.cy - b.cy;
+    });
 
     const maxBlobs = 10;
     let blobsData = new Float32Array(maxBlobs * 3);
@@ -411,7 +447,12 @@ function loop() {
             let ndy = peer.cy - allBlobs[i+1].cy;
             stretch += Math.hypot(ndx, ndy) / PIXEL_SCALE;
         }
-        radiiData[count] = Math.max(0.04, BASE_RADIUS - (stretch * MASS_LOSS_FACTOR));
+        
+        if (peer.id === 'mouse') {
+            radiiData[count] = 0.02; // İnce uçlu slime
+        } else {
+            radiiData[count] = Math.max(0.05, BASE_RADIUS - (stretch * MASS_LOSS_FACTOR));
+        }
 
         count++;
     }
