@@ -37,7 +37,6 @@ precision highp float;
 uniform vec2 uRes;
 uniform float uTime;
 uniform float uSmoothK;
-uniform float uRadius;
 uniform float uDPR;
 
 #define MAX_BLOBS 10
@@ -45,6 +44,7 @@ uniform int uBlobCount;
 uniform vec3 uBlobs[MAX_BLOBS];
 uniform vec3 uColors[MAX_BLOBS];
 uniform float uSpeeds[MAX_BLOBS]; 
+uniform float uRadii[MAX_BLOBS]; 
 
 vec3 hash3(vec3 p) {
     p = vec3(dot(p, vec3(127.1, 311.7, 74.7)),
@@ -86,7 +86,7 @@ vec4 mapBlend(vec3 p) {
         
         float currentAmp = 0.04 + (uSpeeds[i] * 0.12);
         float nVal = noise(normalize(rotatedVec) * 6.0 + uTime * 1.5); 
-        float dB = length(dVec) - uRadius - nVal * currentAmp;
+        float dB = length(dVec) - uRadii[i] - nVal * currentAmp;
 
         if (i == 0) {
             finalD = dB;
@@ -117,7 +117,8 @@ vec4 mapBlend(vec3 p) {
             float distAB = length(ba);
             float h_cap = clamp(dot(pa, ba) / max(dot(ba, ba), 0.0001), 0.0, 1.0);
 
-            float baseThickness = mix(uRadius * 0.45, 0.02, clamp(distAB / 4.0, 0.0, 1.0));
+            float avgRadius = (uRadii[i-1] + uRadii[i]) * 0.5;
+            float baseThickness = mix(avgRadius * 0.45, 0.02, clamp(distAB / 4.0, 0.0, 1.0));
             float thickness = baseThickness * (1.0 - 0.7 * sin(h_cap * 3.14159));
 
             float threadWobble = noise(p * 5.0 - uTime * 3.0) * (speedA + speedB) * 0.02;
@@ -217,7 +218,7 @@ gl.vertexAttribPointer(aPos, 2, gl.FLOAT, false, 0, 0);
 const U = name => gl.getUniformLocation(program, name);
 const uniforms = {
     uRes: U('uRes'), uTime: U('uTime'),
-    uSmoothK: U('uSmoothK'), uRadius: U('uRadius'),
+    uSmoothK: U('uSmoothK'), uRadii: U('uRadii'),
     uBlobCount: U('uBlobCount'), uBlobs: U('uBlobs'), 
     uColors: U('uColors'), uSpeeds: U('uSpeeds'),
     uDPR: U('uDPR') 
@@ -316,7 +317,6 @@ function loop() {
     gl.uniform1f(uniforms.uTime, time);
     gl.uniform1f(uniforms.uDPR, currentDPR);
     gl.uniform1f(uniforms.uSmoothK, 0.9);  
-    gl.uniform1f(uniforms.uRadius, 0.18);  
 
     let allBlobs = Object.values(activeWindows).filter(p => (now - p.time) < 800);
     allBlobs.push({ id: myId, color: myColor, cx: bounds.cx, cy: bounds.cy, speed: mySpeed });
@@ -326,8 +326,11 @@ function loop() {
     let blobsData = new Float32Array(maxBlobs * 3);
     let colorsData = new Float32Array(maxBlobs * 3);
     let speedsData = new Float32Array(maxBlobs);
+    let radiiData = new Float32Array(maxBlobs);
     
     let count = 0;
+    const BASE_RADIUS = 0.18;
+    const MASS_LOSS_FACTOR = 0.025; 
     
     for (let i = 0; i < allBlobs.length; i++) {
         if (count >= maxBlobs) break;
@@ -346,6 +349,21 @@ function loop() {
         colorsData[count*3+2] = peerRgb.b;
         
         speedsData[count] = peer.speed || 0.0;
+
+        // Kütle kaybı hesaplama (uzadıkça küçülme)
+        let stretch = 0;
+        if (i > 0) {
+            let pdx = peer.cx - allBlobs[i-1].cx;
+            let pdy = peer.cy - allBlobs[i-1].cy;
+            stretch += Math.hypot(pdx, pdy) / PIXEL_SCALE;
+        }
+        if (i < allBlobs.length - 1) {
+            let ndx = peer.cx - allBlobs[i+1].cx;
+            let ndy = peer.cy - allBlobs[i+1].cy;
+            stretch += Math.hypot(ndx, ndy) / PIXEL_SCALE;
+        }
+        radiiData[count] = Math.max(0.04, BASE_RADIUS - (stretch * MASS_LOSS_FACTOR));
+
         count++;
     }
 
@@ -353,6 +371,7 @@ function loop() {
     gl.uniform3fv(uniforms.uBlobs, blobsData);
     gl.uniform3fv(uniforms.uColors, colorsData);
     gl.uniform1fv(uniforms.uSpeeds, speedsData);
+    gl.uniform1fv(uniforms.uRadii, radiiData);
 
     gl.drawArrays(gl.TRIANGLES, 0, 6);
     requestAnimationFrame(loop);
